@@ -11,6 +11,12 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/dncore/retro-dvd-gameplay/releases/latest">
+    <b>Download the portable Windows build</b>
+  </a>
+</p>
+
+<p align="center">
   <img src="docs/screenshots/menu-01.png" width="720" alt="The 300-in-1 menu">
 </p>
 

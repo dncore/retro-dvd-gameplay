@@ -11,6 +11,12 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/dncore/retro-dvd-gameplay/releases/latest">
+    <b>下载 Windows 便携版</b>
+  </a>
+</p>
+
+<p align="center">
   <img src="docs/screenshots/menu-01.png" width="720" alt="300 合 1 菜单">
 </p>
 
