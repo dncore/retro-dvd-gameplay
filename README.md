@@ -1,128 +1,177 @@
 # retro-dvd-gameplay
 
-复刻 2005 年国产 DVD 播放器「300 合 1」NES 游戏碟的操作体验。
+<p align="center">
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a>
+</p>
 
-原机器的乐趣不在游戏本身（那就是个不准的 NES-on-chip），而在于**土黄的菜单、
-跑调的背景音乐、按下确认后那几百毫秒的读盘等待**。所以本项目不做硬件模拟，
-只做「外壳复刻 + 真 NES 核心」。
+<p align="center">
+  <img src="docs/screenshots/menu-01.png" width="720" alt="The 300-in-1 menu">
+</p>
 
+A love letter to the 2005 Chinese **“300 合 1”** DVD-player NES disc: the mustard-yellow
+menu, the slightly off-key background music, and the half second of disc seeking after
+you press Start.
+
+This is **not** a hardware emulator. It is a period-correct shell around a real NES core:
+the disc's own layout and boot animation, a recreated menu, and an in-process libretro host.
+
+## Features
+
+- All **300 entries** in the disc's original `G001`–`G300` order (146 unique games after de-duplication)
+- **2×5 grid**, paging, cursor highlight; keyboard and SDL gamepad both work
+- The disc's **22-second boot animation** (`CDI_BUM.DAT`), extracted from your own image at runtime
+- The disc's **background music**, looping in the menu
+- **Built-in libretro host** (`rdvd/libretro.py`, `ctypes`): fceumm or Nestopia runs in-process,
+  no RetroArch installation required; automatic save state on exit
+- Optional fallback to an external emulator (RetroArch, FCEUX, Mesen, Nestopia)
+- Headless renderer for exporting UI screenshots
+
+## Screenshots
+
+| Page 1 | Page 16 |
+|---|---|
+| ![Menu page 1](docs/screenshots/menu-01.png) | ![Menu page 16](docs/screenshots/menu-16.png) |
+
+The `=NNN` badge marks an entry that points at the same ROM as an earlier number — the
+original disc really did repeat games under different menu slots.
+
+## Quick start (Windows)
+
+```bat
+git clone https://github.com/dncore/retro-dvd-gameplay.git
+cd retro-dvd-gameplay
+py -3 -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+
+copy config.example.json config.json
+notepad config.json
+python run.py
 ```
-300nes_disc v1.iso
-   ├── NEWROM/*.BIN   → 剥出 NES ROM，建立「DVD 序号 → 官方 ROM」目录
-   ├── CDI_BUM.DAT    → 背景音乐
-   └── SEGMENT/*.DAT  → 菜单页原图（部分可解，见 docs/FORMAT.md）
-```
 
-## 现在能做什么
+Set `disc` to your own `300nes_disc v1.iso` and `roms` to your NES ROM directory.
+Windows core DLLs (fceumm and Nestopia) are already in `cores/`.
 
-- 按原盘的 **G001~G300 顺序**列出 300 个条目（去重后对应 146 款不同游戏）
-- 2×5 网格、翻页、光标高亮，键盘与手柄（SDL GameController）都可操作
-- 启动时播放**原盘的开机动画**（CDI_BUM.DAT 里的 22 秒片头，运行时从 ISO 提取）
-- 循环播放原盘的背景音乐
-- 选中后用**内置 libretro 核心**（fceumm / nestopia，ctypes 直调，不需要 RetroArch）启动游戏，
-  退出自动存档并回到菜单；找不到核心时退回调用外部模拟器
-- 无头渲染模式，可批量导出界面截图
+**ffmpeg is optional but recommended.** It is used to turn the disc's intro and music
+into playable media. Without it the game still runs; the boot animation and menu music
+are skipped.
 
-## 快速开始
+### Linux / macOS
 
 ```bash
-pip install -r requirements.txt      # 只需要 pygame
-
-# 1) 从光盘生成目录（需要 ISO 和相关脚本，见下）
-python3 tools/build_catalog.py "300nes_disc v1.iso" \
-        --roms /path/to/batocera/roms/nes --out data/catalog.json
-python3 tools/clean_titles.py data/catalog.json
-
-# 2) 跑起来
-python3 run.py --roms /path/to/batocera/roms/nes
-
-# 无头渲染几张界面图（不需要显示器）
-python3 run.py --render-frames 4 --render-out ./shots
+python3 -m venv .venv && . .venv/bin/activate
+pip install -r requirements.txt
+cp config.example.json config.json
+# Put a libretro NES core in cores/ (the repo ships Windows DLLs only):
+#   fceumm_libretro.so / fceumm_libretro.dylib
+python run.py
 ```
 
-游戏用内置核心跑：程序会用 ctypes 直接加载 `*_libretro.so/.dll/.dylib`，
-在同一个进程里跑 NES 模拟，不需要装 RetroArch。
+## Controls
 
-**先准备一个核心**（任选其一）：
+### Menu
 
-```bash
-# 方式 A：下载单文件（推荐，约 700 KB）
-mkdir -p cores && cd cores
-curl -LO https://buildbot.libretro.com/nightly/linux/x86_64/latest/fceumm_libretro.so.zip
-unzip fceumm_libretro.so.zip && cd ..
-
-# 方式 B：Debian/Ubuntu
-sudo apt install libretro-nestopia
-
-# 方式 C：Windows 装 RetroArch，自动用它的 cores 目录
-```
-
-程序会依次找 `./cores`、`~/cores`、`/usr/lib/libretro`、
-`~/.config/retroarch/cores`、`C:\RetroArch-Win64\cores`。
-
-找不到核心时会退回调用外部模拟器（`retroarch` → `fceux` → `mesen` → `nestopia`），
-也可以在 `config.json` 里写死：
-
-```json
-{
-  "roms": "/path/to/batocera/roms/nes",
-  "bgm_dat": "/path/to/CDI_BUM.DAT",
-  "emulator": "C:/RetroArch-Win64/retroarch.exe",
-  "args": ["-L", "{core}", "{rom}"],
-  "core": "C:/RetroArch-Win64/cores/fceumm_libretro.dll",
-  "font": null,
-  "page_art_dir": null
-}
-```
-
-## 操作
-
-| 键盘 | 手柄 | 动作 |
+| Action | Keyboard | Gamepad |
 |---|---|---|
-| 方向键 | 十字键 / 摇杆 | 移动光标（上下到头自动翻页） |
-| 回车 / Z / 空格 | A / Y | 启动游戏 |
-| X / ESC | B / X / Select | 返回；在主菜单按两次退出 |
-| Q / E | LB / RB | 上一页 / 下一页 |
-| M | — | 背景音乐开关 |
-| F10 | — | 全屏切换 |
-| F12 | — | 退出 |
+| Move cursor | Arrow keys | D-pad / left stick |
+| Start game | Enter / Z / Space | A / Y |
+| Back (twice at root to quit) | X / Esc | B / X / Select |
+| Previous / next page | Q / E, PgUp / PgDn | LB / RB |
+| Toggle music | M | — |
+| Toggle fullscreen | F10 | — |
+| Quit | F12 | — |
 
-## 目录
+### In game
+
+| Action | Keyboard | Gamepad |
+|---|---|---|
+| D-pad | Arrow keys | D-pad / left stick |
+| NES A | Z / J | A |
+| NES B | X / K | B |
+| Start | Enter | Start |
+| Select | Right Shift | Y |
+| Back to menu (auto-save) | Esc / F12 | Back |
+| Save / load state | F5 / F7 | — |
+
+## Configuration
+
+`config.json` lives next to `run.py` and is **git-ignored** — start from
+`config.example.json`. Every key is optional.
+
+| Key | Meaning |
+|---|---|
+| `disc` | Path to your `300nes_disc v1.iso`. Used for the intro and music. |
+| `roms` | Root directory for the NES ROM set referenced by `data/catalog.json`. |
+| `bgm_dat` | Use an already-extracted `CDI_BUM.DAT` instead of reading the ISO. |
+| `bgm_wav` | Cache path for the transcoded background music. |
+| `boot` | Play the boot animation (`true` by default). |
+| `boot_cache` | Where extracted frames and music are cached. Defaults to `~/.cache/retro-dvd-gameplay/boot`. |
+| `page_art_dir` | Directory of recovered menu pages (`ITEM0001.png` …). `null` = code-drawn menu. |
+| `play_mode` | `auto` / `core` (in-process) / `external`. |
+| `core` | Explicit path to a libretro NES core. |
+| `state_dir` | Where save states are written. |
+| `emulator`, `args` | External emulator command and argument template (`{rom}`, `{core}`). |
+| `font` | Explicit CJK font path; otherwise common system fonts are probed. |
+
+## How it works
 
 ```
-run.py                  入口
-rdvd/
-  menu.py               菜单状态机 + 渲染
-  theme.py              配色与字体查找（自动找系统里的中文字体）
-  inputmap.py           键盘/手柄 → 动作
-  bgm.py                CDI_BUM.DAT → wav → 循环播放
-  launcher.py           外部模拟器探测与启动
-tools/
-  iso9660.py            镜像解析（2352/24，Mode 2 Form 1）
-  segment.py            SEGMENT 页面重建（实验）
-  decode_pages.py       批量导出 31 页菜单图
-  build_catalog.py      生成 data/catalog.json
-  clean_titles.py       清理 No-Intro 标签，生成 display 字段
-data/catalog.json       300 条目目录
-tests/test_menu.py      菜单状态机测试
-docs/FORMAT.md          光盘格式逆向笔记（含所有失败尝试）
+your ISO
+  ├── NEWROM/G001..G300.BIN  →  PRG/CHR extracted, matched against your ROM set
+  ├── CDI_BUM.DAT            →  MPEG-PS peeled → ffmpeg → 499 boot frames + music
+  └── SEGMENT/ITEM*.DAT      →  menu pages (partially recoverable, see below)
 ```
 
-## 已知限制
+- `tools/iso9660.py` reads the non-standard image: 2352-byte sectors, Mode 2 Form 1,
+  user data at offset 24.
+- `tools/build_catalog.py` matches each `GNNN.BIN` to a ROM by hashing the PRG at several
+  offsets, then writes `data/catalog.json`.
+- `tools/clean_titles.py` strips No-Intro region/version/translation tags so the menu shows
+  something close to what the original DVD displayed.
+- `rdvd/boot.py` peels pack/PES headers out of `CDI_BUM.DAT` and asks ffmpeg for the frames.
+- `rdvd/libretro.py` is a minimal `ctypes` frontend for the libretro API.
 
-1. **菜单原图只解出 32/36 个切片** —— 每页右侧约 1/3 画面是竖向拖影，
-   所以默认不把它当背景（`page_art_dir: null`）。细节见 `docs/FORMAT.md`。
-2. **条目名称用的是官方 ROM 标题，不是 DVD 菜单上的原文**。
-   DVD 上的名字是画面像素，无法 OCR（无 tesseract）也没有文本表。
-3. 游戏本体用干净 ROM，不是盘内那份被改过 1 字节的 hack 版。
+Full reverse-engineering notes — including every failed attempt — are in
+[`docs/FORMAT.md`](docs/FORMAT.md) (Chinese).
 
-## 依赖
+### The menu-page problem
 
-- Python 3.9+
-- pygame 2.x
-- ffmpeg（把 BGM 转 wav、解码菜单页）
-- 可选：retroarch + fceumm/mesen 核心，或 fceux/mesen/nestopia
+The original menu pages are 704×576 MPEG-1 frames. Each frame should contain 36 slices;
+only 32 are stored, and the missing ones (18/25/27/35) make the right third of the image
+smear vertically. Six decode-parameter combinations, packet misalignment, audio
+interference, and the VCD/EXT `PSD`/`LOT` tables were all ruled out. **The missing data is
+not on the disc.** The shipped menu is therefore a faithful re-creation of the layout,
+not the original pixels. See `docs/FORMAT.md` §4.
 
-## 许可
+## Known limitations
 
-代码 MIT。**不附带** ISO、ROM 或任何游戏数据。
+1. **The menu background is a re-creation, not the original image** (see above).
+2. **Entry names come from the ROM set**, not from the DVD's bitmap text — there is no
+   text table on the disc and no OCR is performed.
+3. **Game audio is not wired to the mixer yet.** Menu music works; the emulator's audio
+   callback is currently drained and discarded.
+4. The bundled cores are Windows DLLs. Other platforms need their own build.
+5. You must supply the disc image and ROMs; none are included.
+
+## Data and legal
+
+This repository contains **no** ISO, ROM, or extracted disc artwork. `data/catalog.json`
+holds only file names and metadata needed to match your own files. The boot animation,
+music and menu art are extracted at runtime from a disc image **you** provide.
+
+The games, the disc and its artwork remain the property of their respective rights
+holders. Use this project only with material you are legally allowed to use.
+
+## Third-party components
+
+`cores/` contains prebuilt libretro cores, distributed under their own licenses:
+
+- **FCEUmm** — GPL-2.0
+- **Nestopia** — GPL-2.0
+
+See [`cores/README.md`](cores/README.md) for upstream links. The application code itself is
+MIT-licensed and loads these libraries at runtime.
+
+## License
+
+[MIT](LICENSE).
