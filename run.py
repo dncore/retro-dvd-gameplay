@@ -14,6 +14,7 @@ import pygame
 from rdvd import bgm as bgm_mod
 from rdvd import launcher, theme
 from rdvd.boot import Boot
+from rdvd.disc import extract_file
 from rdvd.playscreen import PlayScreen
 from rdvd.inputmap import InputState
 from rdvd.menu import Menu
@@ -115,8 +116,16 @@ def main():
         print("字体: %s" % (menu.fonts.path or "系统默认(可能无中文)"))
         return 0
 
+    # 背景音乐：没有现成的 CDI_BUM.DAT 时，直接从 ISO 里抽一份到缓存
+    bgm_dat = cfg.get("bgm_dat")
+    if not bgm_dat and disc and disc.lower().endswith(".iso") and os.path.exists(disc):
+        cache_dir = cfg.get("boot_cache") or os.path.join(
+            os.path.expanduser("~"), ".cache", "retro-dvd-gameplay", "boot")
+        cand = os.path.join(cache_dir, "CDI_BUM.DAT")
+        if extract_file(disc, "CDI", "CDI_BUM.DAT", cand):
+            bgm_dat = cand
     music = bgm_mod.Bgm(
-        dat_path=cfg.get("bgm_dat") or args.disc,
+        dat_path=bgm_dat,
         cache_path=cfg.get("bgm_wav"),
         enabled=not args.no_audio,
     )
