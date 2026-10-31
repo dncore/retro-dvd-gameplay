@@ -3,6 +3,23 @@
 对象：`300nes_disc v1.iso`（Super Game VCD 300 / `NES_DISK V1`，
 SunPlus/Rolsen 芯片 DVD 播放器专用非标准 VCD）。
 
+## English summary
+
+- The image is a raw **Mode 2 Form 1** disc: 2352-byte sectors, user data at offset 24,
+  2048 usable bytes per sector.
+- `NEWROM/G001.BIN`–`G300.BIN` are NES ROMs behind a 12-byte MIPS trampoline. The jump
+  target (`0x4002xxxx`) encodes the mapper; ROM data starts at `be16(bin[6:8]) + 0x61C0`.
+- `SEGMENT/ITEM0001.DAT`–`ITEM0031.DAT` are 150-sector VCD segments mixing MPEG-1 video
+  (`0x1E1`) and MP3 audio (`0x1E2`). Reassembling only `0x1E1` decodes one 704×576 menu
+  page, but each frame should contain 36 slices and only 32 are stored (18/25/27/35 are
+  missing), so the right third smears vertically. Six decode-parameter combinations,
+  packet misalignment, audio interference and the VCD/EXT `PSD`/`LOT` tables were ruled
+  out: **the missing data is not on the disc**.
+- `CDI_BUM.DAT` is not background music: it is a 22-second MPEG-1 intro (499 frames,
+  352×288), which the app plays on startup.
+- The menu is therefore a code re-creation; recovered pages can be imported with
+  `tools/patch_pages.py`.
+
 ## 1. 镜像层
 
 不是标准 ISO9660：**2352 字节/扇区，Mode 2 Form 1 原始镜像**。

@@ -180,6 +180,20 @@ interference, and the VCD/EXT `PSD`/`LOT` tables were all ruled out. **The missi
 not on the disc.** The shipped menu is therefore a faithful re-creation of the layout,
 not the original pixels. See `docs/FORMAT.md` §4.
 
+### Importing recovered pages
+
+If you capture the original pages (screen recording, real hardware), normalize them into
+`assets/pages/` and point `page_art_dir` at it:
+
+```bash
+pip install pillow
+python tools/patch_pages.py shots/ --out assets/pages --crop 40,20,40,20 --size 704x576
+```
+
+The tool crops, resizes to 704×576, optionally composites a right-side preview
+(`--overlay`, `--overlay-at X,Y,W,H`) and writes a `manifest.json`. `assets/pages/` is
+git-ignored, so disc artwork never enters the repository.
+
 ## Known limitations
 
 1. **The menu background is a re-creation, not the original image** (see above).

@@ -171,6 +171,20 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 分包错位、音频干扰，以及 VCD/EXT 下的 `PSD`/`LOT` 表——**缺失数据确实不在盘上**。
 所以现在菜单是「版式忠实重建」，不是原图像素。细节见 `docs/FORMAT.md` §4。
 
+### 导入恢复出来的原图
+
+如果你拿到了原盘菜单页（录屏、真机截图），先规范成 `assets/pages/`，再把
+`page_art_dir` 指过去：
+
+```bash
+pip install pillow
+python tools/patch_pages.py shots/ --out assets/pages --crop 40,20,40,20 --size 704x576
+```
+
+工具会裁边、缩放到 704×576，可选把右侧预览图贴回去
+（`--overlay`、`--overlay-at X,Y,W,H`），并写出 `manifest.json`。
+`assets/pages/` 已被 git 忽略，光盘美术资源不会进入仓库。
+
 ## 已知限制
 
 1. **菜单底图是重建版式，不是原图**（原因见上）。
