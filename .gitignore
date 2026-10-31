@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+out/
+*.iso
+*.BIN
+*.DAT
+*.m1v
+*.png
+!docs/*.png
