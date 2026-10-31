@@ -27,14 +27,18 @@ CORE_CANDIDATES = [
 
 
 def find_core(explicit=None):
+    """找一个可用的 libretro NES 核心（.so / .dll / .dylib）"""
     if explicit and os.path.exists(explicit):
         return explicit
+    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     roots = [
+        os.path.join(here, "cores"),
+        "~/cores",
         "/usr/lib/libretro", "/usr/local/lib/libretro",
+        "/usr/lib/x86_64-linux-gnu/libretro",
         os.path.expanduser("~/.config/retroarch/cores"),
         os.path.expanduser("~/AppData/Roaming/RetroArch/cores"),
         r"C:\RetroArch-Win64\cores",
-        os.path.join(os.getcwd(), "cores"),
     ]
     for r in roots:
         if not os.path.isdir(r):

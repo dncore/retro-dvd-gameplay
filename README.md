@@ -19,7 +19,8 @@
 - 2×5 网格、翻页、光标高亮，键盘与手柄（SDL GameController）都可操作
 - 启动时播放**原盘的开机动画**（CDI_BUM.DAT 里的 22 秒片头，运行时从 ISO 提取）
 - 循环播放原盘的背景音乐
-- 选中后调用外部 NES 模拟器启动对应 ROM，退出后自动回到菜单
+- 选中后用**内置 libretro 核心**（fceumm / nestopia，ctypes 直调，不需要 RetroArch）启动游戏，
+  退出自动存档并回到菜单；找不到核心时退回调用外部模拟器
 - 无头渲染模式，可批量导出界面截图
 
 ## 快速开始
@@ -39,8 +40,28 @@ python3 run.py --roms /path/to/batocera/roms/nes
 python3 run.py --render-frames 4 --render-out ./shots
 ```
 
-模拟器按 `retroarch`（自动找 libretro 核心）→ `fceux` → `mesen` → `nestopia`
-的顺序自动探测；也可以在 `config.json` 里写死：
+游戏用内置核心跑：程序会用 ctypes 直接加载 `*_libretro.so/.dll/.dylib`，
+在同一个进程里跑 NES 模拟，不需要装 RetroArch。
+
+**先准备一个核心**（任选其一）：
+
+```bash
+# 方式 A：下载单文件（推荐，约 700 KB）
+mkdir -p cores && cd cores
+curl -LO https://buildbot.libretro.com/nightly/linux/x86_64/latest/fceumm_libretro.so.zip
+unzip fceumm_libretro.so.zip && cd ..
+
+# 方式 B：Debian/Ubuntu
+sudo apt install libretro-nestopia
+
+# 方式 C：Windows 装 RetroArch，自动用它的 cores 目录
+```
+
+程序会依次找 `./cores`、`~/cores`、`/usr/lib/libretro`、
+`~/.config/retroarch/cores`、`C:\RetroArch-Win64\cores`。
+
+找不到核心时会退回调用外部模拟器（`retroarch` → `fceux` → `mesen` → `nestopia`），
+也可以在 `config.json` 里写死：
 
 ```json
 {

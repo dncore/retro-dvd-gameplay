@@ -14,6 +14,7 @@ import pygame
 from rdvd import bgm as bgm_mod
 from rdvd import launcher, theme
 from rdvd.boot import Boot
+from rdvd.playscreen import PlayScreen
 from rdvd.inputmap import InputState
 from rdvd.menu import Menu
 
@@ -170,11 +171,26 @@ def main():
                 menu.render(screen)
                 pygame.display.flip()
                 music.pause()
-                ok, msg = launcher.launch(rom, cfg)
-                if not ok:
-                    menu.flash(msg, frames=180)
+
+                core = launcher.find_core(cfg.get("core"))
+                mode = cfg.get("play_mode", "auto")
+                if core and mode in ("auto", "core"):
+                    state_dir = cfg.get("state_dir") or os.path.join(
+                        os.path.expanduser("~"), ".cache",
+                        "retro-dvd-gameplay", "states")
+                    ps = PlayScreen(core, size)
+                    why = ps.play(rom, screen, clock, joy=inp.joy,
+                                  state_dir=state_dir, title=extra.get("display"))
+                    if why.startswith("error"):
+                        menu.flash(why, frames=180)
+                    else:
+                        menu.flash("已返回菜单", frames=90)
                 else:
-                    menu.flash("已返回菜单", frames=90)
+                    ok, msg = launcher.launch(rom, cfg)
+                    if not ok:
+                        menu.flash(msg, frames=180)
+                    else:
+                        menu.flash("已返回菜单", frames=90)
                 music.resume()
 
         menu.tick()
