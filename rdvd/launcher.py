@@ -11,6 +11,8 @@ import os
 import shutil
 import subprocess
 
+from . import paths
+
 DEFAULT_COMBOS = [
     # (可执行名, 参数模板)  {rom} 会被替换
     ("retroarch", ["-L", "{core}", "{rom}"]),
@@ -30,9 +32,10 @@ def find_core(explicit=None):
     """找一个可用的 libretro NES 核心（.so / .dll / .dylib）"""
     if explicit and os.path.exists(explicit):
         return explicit
-    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     roots = [
-        os.path.join(here, "cores"),
+        # 用户自备的核心优先，然后是打包进资源里的
+        paths.app_path("cores"),
+        paths.resource("cores"),
         os.path.expanduser("~/cores"),
         "/usr/lib/libretro", "/usr/local/lib/libretro",
         "/usr/lib/x86_64-linux-gnu/libretro",
@@ -40,9 +43,11 @@ def find_core(explicit=None):
         os.path.expanduser("~/AppData/Roaming/RetroArch/cores"),
         r"C:\RetroArch-Win64\cores",
     ]
+    seen = set()
     for r in roots:
-        if not os.path.isdir(r):
+        if r in seen or not os.path.isdir(r):
             continue
+        seen.add(r)
         for c in CORE_CANDIDATES:
             p = os.path.join(r, c)
             if os.path.exists(p):

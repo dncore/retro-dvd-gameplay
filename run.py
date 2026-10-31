@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """retro-dvd-gameplay 入口
 
-    python3 run.py --catalog data/catalog.json --roms /path/to/nes
-    python3 run.py ... --render-frames 3 --render-out /tmp/shots   # 无头截图
+    python run.py --catalog data/catalog.json --roms /path/to/nes
+    python run.py ... --render-frames 3 --render-out ./shots   # 无头截图
+
+打包成 exe 后，config.json 放在 exe 旁边，数据文件从包内读取。
 """
 import argparse
 import json
@@ -12,22 +14,37 @@ import sys
 import pygame
 
 from rdvd import bgm as bgm_mod
-from rdvd import launcher, theme
+from rdvd import launcher, paths
 from rdvd.boot import Boot
 from rdvd.disc import extract_file
 from rdvd.playscreen import PlayScreen
 from rdvd.inputmap import InputState
 from rdvd.menu import Menu
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+HERE = paths.app_dir()
 
 
 def load_config(path):
-    for p in (path, os.path.join(HERE, "config.json")):
-        if p and os.path.exists(p):
+    for p in paths.config_candidates(path):
+        if os.path.exists(p):
             with open(p, encoding="utf-8") as fh:
                 return json.load(fh)
     return {}
+
+
+def default_catalog():
+    """优先用 exe/仓库旁的 data/catalog.json，否则用打包进资源的副本"""
+    local = paths.app_path("data", "catalog.json")
+    if os.path.exists(local):
+        return local
+    return paths.resource("data", "catalog.json")
+
+
+def _abs(p):
+    """把配置里的相对路径按应用目录解析，保证双击启动时行为一致"""
+    if not p:
+        return p
+    return p if os.path.isabs(p) else paths.app_path(p)
 
 
 def load_catalog(path):
@@ -43,8 +60,7 @@ def resolve_rom(catalog, roms_dir, entry):
 
 
 def media_cache_dir(cfg):
-    return cfg.get("boot_cache") or os.path.join(
-        os.path.expanduser("~"), ".cache", "retro-dvd-gameplay", "boot")
+    return _abs(cfg.get("boot_cache")) or os.path.join(paths.cache_dir(), "boot")
 
 
 def resolve_disc_media(disc, cache_dir):
@@ -84,7 +100,7 @@ def run_render_frames(menu, outdir, count):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--catalog", default=os.path.join(HERE, "data", "catalog.json"))
+    ap.add_argument("--catalog", default=default_catalog())
     ap.add_argument("--roms", default=None, help="NES ROM 根目录（data/catalog.json 里的相对路径基于它）")
     ap.add_argument("--config", default=None)
     ap.add_argument("--disc", default=None, help="光盘镜像（用于取背景音乐）")
@@ -94,10 +110,30 @@ def main():
     ap.add_argument("--render-out", default=os.path.join(HERE, "shots"))
     ap.add_argument("--no-audio", action="store_true")
     ap.add_argument("--no-boot", action="store_true", help="跳过光盘片头动画")
+    ap.add_argument("--check", action="store_true", help="打印资源/核心路径后退出")
     args = ap.parse_args()
 
     cfg = load_config(args.config)
     catalog = load_catalog(args.catalog)
+
+    if args.check:
+        print("frozen:      %s" % paths.is_frozen())
+        print("app_dir:     %s" % paths.app_dir())
+        print("resource:    %s" % paths.resource_dir())
+        print("catalog:     %s (%d entries)" % (args.catalog, len(catalog["entries"])))
+        core = launcher.find_core(_abs(cfg.get("core")))
+        print("core:        %s" % core)
+        if core:
+            try:
+                from rdvd.libretro import LibretroCore
+                c = LibretroCore(core)
+                info = c.system_info()
+                c.close()
+                print("core load:   ok (%s %s)" % (info["name"], info["version"]))
+            except Exception as e:
+                print("core load:   FAILED (%s)" % e)
+        print("disc:        %s" % _abs(cfg.get("disc")))
+        return 0
 
     if args.render_frames:
         os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
@@ -114,18 +150,16 @@ def main():
         screen = pygame.display.set_mode(
             (int(size[0] * args.scale), int(size[1] * args.scale)), flags)
 
-    art_dir = cfg.get("page_art_dir")
-    if art_dir and not os.path.isabs(art_dir):
-        art_dir = os.path.join(HERE, art_dir)
+    art_dir = _abs(cfg.get("page_art_dir"))
 
-    menu = Menu(catalog, font_path=cfg.get("font"), page_art_dir=art_dir, size=size)
+    menu = Menu(catalog, font_path=_abs(cfg.get("font")), page_art_dir=art_dir, size=size)
 
     # 片头动画（原盘 CDI_BUM.DAT）
-    disc = args.disc or cfg.get("disc")
+    disc = _abs(args.disc) if args.disc else _abs(cfg.get("disc"))
     cache_root = media_cache_dir(cfg)
     media_dat = None
     if not args.render_frames:
-        media_dat = cfg.get("bgm_dat") or resolve_disc_media(disc, cache_root)
+        media_dat = _abs(cfg.get("bgm_dat")) or resolve_disc_media(disc, cache_root)
         if (not args.no_boot) and cfg.get("boot", True) and media_dat:
             b = Boot(media_dat, cache_root)
             if b.ok:
@@ -140,7 +174,7 @@ def main():
     # 背景音乐：同一个 CDI_BUM.DAT，转成 wav 后循环
     music = bgm_mod.Bgm(
         dat_path=media_dat,
-        cache_path=cfg.get("bgm_wav"),
+        cache_path=_abs(cfg.get("bgm_wav")),
         enabled=not args.no_audio,
     )
     music.play()
@@ -189,18 +223,17 @@ def main():
                 running = False
                 break
             if kind == "launch":
-                rom = resolve_rom(catalog, args.roms or cfg.get("roms"), extra)
+                rom = resolve_rom(catalog, _abs(args.roms) or _abs(cfg.get("roms")), extra)
                 menu.flash("正在启动 第 %03d 号 …" % extra["num"], frames=30)
                 menu.render(screen)
                 pygame.display.flip()
                 music.pause()
 
-                core = launcher.find_core(cfg.get("core"))
+                core = launcher.find_core(_abs(cfg.get("core")))
                 mode = cfg.get("play_mode", "auto")
                 if core and mode in ("auto", "core"):
-                    state_dir = cfg.get("state_dir") or os.path.join(
-                        os.path.expanduser("~"), ".cache",
-                        "retro-dvd-gameplay", "states")
+                    state_dir = _abs(cfg.get("state_dir")) or os.path.join(
+                        paths.cache_dir(), "states")
                     ps = PlayScreen(core, size)
                     why = ps.play(rom, screen, clock, joy=inp.joy,
                                   state_dir=state_dir, title=extra.get("display"))
@@ -225,5 +258,31 @@ def main():
     return 0
 
 
+def _report_crash():
+    """窗口化 exe 没有控制台，把异常写进 crash.log 并弹一个系统对话框"""
+    import traceback
+    text = "".join(traceback.format_exception(*sys.exc_info()))
+    try:
+        with open(paths.app_path("crash.log"), "a", encoding="utf-8") as fh:
+            fh.write(text + "\n")
+    except OSError:
+        pass
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            ctypes.windll.user32.MessageBoxW(
+                None,
+                "启动失败，详情见 crash.log\n\n" + str(sys.exc_info()[1])[:300],
+                "retro-dvd-gameplay", 0x10)
+        except Exception:
+            pass
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except SystemExit:
+        raise
+    except Exception:
+        _report_crash()
+        raise

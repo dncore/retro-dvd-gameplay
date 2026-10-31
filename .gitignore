@@ -6,6 +6,9 @@ assets/pages/
 *.m1v
 out/
 shots/
+build/
+dist/
+crash.log
 *.pyc
 __pycache__/
 .venv/

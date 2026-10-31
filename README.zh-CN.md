@@ -65,6 +65,22 @@ cp config.example.json config.json
 python run.py
 ```
 
+## 打包 Windows 可执行文件
+
+```powershell
+powershell -ExecutionPolicy Bypass -File packaging\build.ps1 -InstallTools -Clean
+powershell -ExecutionPolicy Bypass -File packaging\smoke_test.ps1
+```
+
+产物在 `dist\retro-dvd-gameplay\`。`config.json` 会复制到 exe 旁边，`data/` 和 `cores/`
+则打进 `_internal\`。PyInstaller 和 Pillow 只在打包时需要，从源码运行不用装。
+
+不启动界面、只检查构建是否正常：
+
+```powershell
+dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
+```
+
 ## 操作
 
 ### 菜单

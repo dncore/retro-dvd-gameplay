@@ -67,6 +67,23 @@ cp config.example.json config.json
 python run.py
 ```
 
+## Building a Windows executable
+
+```powershell
+powershell -ExecutionPolicy Bypass -File packaging\build.ps1 -InstallTools -Clean
+powershell -ExecutionPolicy Bypass -File packaging\smoke_test.ps1
+```
+
+The portable bundle lands in `dist\retro-dvd-gameplay\`. `config.json` is copied next to
+the exe, while `data/` and `cores/` are bundled under `_internal\`. PyInstaller and Pillow
+are dev-only dependencies and are not needed to run from source.
+
+Check a build without starting the UI:
+
+```powershell
+dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
+```
+
 ## Controls
 
 ### Menu
