@@ -6,6 +6,7 @@
 仓库不存放任何光盘内容。
 """
 import os
+import shutil
 import subprocess
 
 import pygame
@@ -48,27 +49,43 @@ class Boot:
         if not dat_path or not os.path.exists(dat_path):
             return
         os.makedirs(cache_dir, exist_ok=True)
-        marker = os.path.join(cache_dir, ".done")
-        if not os.path.exists(marker):
-            m1v = os.path.join(cache_dir, "boot.m1v")
-            if extract_video(dat_path, m1v) is None:
+
+        # 已经有解好的帧就直接用；没有才去调 ffmpeg
+        if not self._load_frames(cache_dir):
+            if not self._decode(dat_path, cache_dir):
                 return
-            subprocess.run(
-                ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
-                 "-f", "mpegvideo", "-i", m1v, "-vsync", "0", "-loglevel", "quiet",
-                 os.path.join(cache_dir, "f%04d.jpg")],
-                check=False, timeout=300, stderr=subprocess.DEVNULL,
-            )
-            try:
-                os.remove(m1v)
-            except OSError:
-                pass
-            open(marker, "w").close()
+            self._load_frames(cache_dir)
+        self.ok = len(self.frames) > 0
+
+    def _load_frames(self, cache_dir):
         self.frames = sorted(
             os.path.join(cache_dir, f) for f in os.listdir(cache_dir)
             if f.startswith("f") and f.endswith(".jpg")
         )
-        self.ok = len(self.frames) > 0
+        return len(self.frames) > 0
+
+    def _decode(self, dat_path, cache_dir):
+        """剥裸流 + ffmpeg 转 JPG 序列；失败时不留下半成品，便于下次重试"""
+        if not shutil.which("ffmpeg"):
+            return False
+        m1v = os.path.join(cache_dir, "boot.m1v")
+        try:
+            if extract_video(dat_path, m1v) is None:
+                return False
+            subprocess.run(
+                ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+                 "-f", "mpegvideo", "-i", m1v,
+                 os.path.join(cache_dir, "f%04d.jpg")],
+                check=False, timeout=300, stderr=subprocess.DEVNULL,
+            )
+        except (OSError, subprocess.SubprocessError):
+            return False
+        finally:
+            try:
+                os.remove(m1v)
+            except OSError:
+                pass
+        return self._load_frames(cache_dir)
 
     def play(self, screen, on_event=None, skip_after=None, clock=None):
         """返回 True 表示播完或被跳过"""

@@ -42,6 +42,25 @@ def resolve_rom(catalog, roms_dir, entry):
     return os.path.join(roms_dir, rel) if roms_dir else rel
 
 
+def media_cache_dir(cfg):
+    return cfg.get("boot_cache") or os.path.join(
+        os.path.expanduser("~"), ".cache", "retro-dvd-gameplay", "boot")
+
+
+def resolve_disc_media(disc, cache_dir):
+    """把 config 里的 disc（可能是 ISO，也可能已经是 DAT）解析成 CDI_BUM.DAT 路径"""
+    if not disc or not os.path.exists(disc):
+        return None
+    low = disc.lower()
+    if low.endswith(".dat"):
+        return disc
+    if low.endswith(".iso"):
+        cand = os.path.join(cache_dir, "CDI_BUM.DAT")
+        if extract_file(disc, "CDI", "CDI_BUM.DAT", cand):
+            return cand
+    return None
+
+
 def run_render_frames(menu, outdir, count):
     """无头渲染：把若干状态截成 PNG，用于验证版式"""
     os.makedirs(outdir, exist_ok=True)
@@ -103,12 +122,14 @@ def main():
 
     # 片头动画（原盘 CDI_BUM.DAT）
     disc = args.disc or cfg.get("disc")
-    if (not args.no_boot) and cfg.get("boot", True) and disc:
-        cache = cfg.get("boot_cache") or os.path.join(
-            os.path.expanduser("~"), ".cache", "retro-dvd-gameplay", "boot")
-        b = Boot(disc, cache)
-        if b.ok and not args.render_frames:
-            b.play(screen, clock=pygame.time.Clock())
+    cache_root = media_cache_dir(cfg)
+    media_dat = None
+    if not args.render_frames:
+        media_dat = cfg.get("bgm_dat") or resolve_disc_media(disc, cache_root)
+        if (not args.no_boot) and cfg.get("boot", True) and media_dat:
+            b = Boot(media_dat, cache_root)
+            if b.ok:
+                b.play(screen, clock=pygame.time.Clock())
 
     if args.render_frames:
         shots = run_render_frames(menu, args.render_out, args.render_frames)
@@ -116,16 +137,9 @@ def main():
         print("字体: %s" % (menu.fonts.path or "系统默认(可能无中文)"))
         return 0
 
-    # 背景音乐：没有现成的 CDI_BUM.DAT 时，直接从 ISO 里抽一份到缓存
-    bgm_dat = cfg.get("bgm_dat")
-    if not bgm_dat and disc and disc.lower().endswith(".iso") and os.path.exists(disc):
-        cache_dir = cfg.get("boot_cache") or os.path.join(
-            os.path.expanduser("~"), ".cache", "retro-dvd-gameplay", "boot")
-        cand = os.path.join(cache_dir, "CDI_BUM.DAT")
-        if extract_file(disc, "CDI", "CDI_BUM.DAT", cand):
-            bgm_dat = cand
+    # 背景音乐：同一个 CDI_BUM.DAT，转成 wav 后循环
     music = bgm_mod.Bgm(
-        dat_path=bgm_dat,
+        dat_path=media_dat,
         cache_path=cfg.get("bgm_wav"),
         enabled=not args.no_audio,
     )
