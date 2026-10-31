@@ -12,6 +12,7 @@
     F7 / 手柄 RB              → 读档
 """
 import array
+import hashlib
 import os
 import tempfile
 
@@ -44,6 +45,14 @@ JOY_BUTTONS = {
 
 AUDIO_CHANNELS = 8          # 每个通道约 23ms，合计约 180ms 缓冲
 AUDIO_CHUNK_FRAMES = 1024   # 44.1kHz 下约 23ms
+
+
+def _state_filename(rom_path):
+    """用「文件名 + 路径短哈希」做存档名，避免不同目录的同名 ROM 互相覆盖"""
+    norm = os.path.normcase(os.path.abspath(rom_path))
+    digest = hashlib.sha1(norm.encode("utf-8", "surrogatepass")).hexdigest()[:10]
+    base = os.path.basename(norm).replace("/", "_")
+    return "%s.%s.state" % (base, digest)
 
 
 def _resample_pcm16(raw, src_rate, dst_rate):
@@ -124,34 +133,27 @@ class PlayScreen:
     def _make_surface(self):
         c = self.core
         w, h = c.width, c.height
-        if w <= 0 or h <= 0:
+        if w <= 0 or h <= 0 or not c.frame:
             return None
-        surf = pygame.Surface((w, h))
-        data = c.frame
         if c.pixel_format == PIXEL_XRGB8888:
-            arr = pygame.image.frombuffer(data, (w, h), "BGRA")
-            return arr
-        # 16bpp：手工转 RGB565
-        buf = bytearray(w * h * 3)
-        if c.pixel_format == PIXEL_RGB565:
-            for i in range(w * h):
-                v = data[i * 2] | (data[i * 2 + 1] << 8)
-                r = (v >> 11) & 0x1F
-                g = (v >> 5) & 0x3F
-                b = v & 0x1F
-                buf[i * 3] = (r << 3) | (r >> 2)
-                buf[i * 3 + 1] = (g << 2) | (g >> 4)
-                buf[i * 3 + 2] = (b << 3) | (b >> 2)
+            return pygame.image.frombuffer(c.frame, (w, h), "BGRA")
+
+        # 直接用原生 16bpp Surface：SDL 的默认掩码正好是 RGB565 / RGB555，
+        # 把裸数据写进 buffer 比逐像素 Python 循环快两个数量级。
+        depth = 16 if c.pixel_format == PIXEL_RGB565 else 15
+        surf = pygame.Surface((w, h), 0, depth)
+        raw = c.frame
+        row = w * 2
+        if len(raw) < row * h:
+            return None
+        buf = surf.get_buffer()
+        pitch = surf.get_pitch()
+        if pitch == row:
+            buf.write(raw[:row * h])
         else:
-            for i in range(w * h):
-                v = data[i * 2] | (data[i * 2 + 1] << 8)
-                r = (v >> 10) & 0x1F
-                g = (v >> 5) & 0x1F
-                b = v & 0x1F
-                buf[i * 3] = (r << 3) | (r >> 2)
-                buf[i * 3 + 1] = (g << 3) | (g >> 2)
-                buf[i * 3 + 2] = (b << 3) | (b >> 2)
-        return pygame.image.frombuffer(bytes(buf), (w, h), "RGB")
+            for y in range(h):
+                buf.write(raw[y * row:(y + 1) * row], y * pitch)
+        return surf
 
     def play(self, rom_path, screen, clock, joy=None, state_dir=None, title="",
              max_frames=None, audio=True):
@@ -170,11 +172,16 @@ class PlayScreen:
 
         if state_dir:
             os.makedirs(state_dir, exist_ok=True)
-            base = os.path.basename(rom_path).replace("/", "_")
-            self.state_path = os.path.join(state_dir, base + ".state")
-            if os.path.exists(self.state_path):
+            self.state_path = os.path.join(state_dir, _state_filename(rom_path))
+            # 兼容旧版按 basename 命名的存档
+            legacy = os.path.join(
+                state_dir, os.path.basename(rom_path).replace("/", "_") + ".state")
+            load_from = self.state_path
+            if not os.path.exists(load_from) and os.path.exists(legacy):
+                load_from = legacy
+            if os.path.exists(load_from):
                 try:
-                    with open(self.state_path, "rb") as fh:
+                    with open(load_from, "rb") as fh:
                         self.core.load_state(fh.read())
                 except Exception:
                     pass
