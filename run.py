@@ -13,6 +13,7 @@ import pygame
 
 from rdvd import bgm as bgm_mod
 from rdvd import launcher, theme
+from rdvd.boot import Boot
 from rdvd.inputmap import InputState
 from rdvd.menu import Menu
 
@@ -71,6 +72,7 @@ def main():
     ap.add_argument("--render-frames", type=int, default=0)
     ap.add_argument("--render-out", default="/tmp/rdvd-shots")
     ap.add_argument("--no-audio", action="store_true")
+    ap.add_argument("--no-boot", action="store_true", help="跳过光盘片头动画")
     args = ap.parse_args()
 
     cfg = load_config(args.config)
@@ -96,6 +98,15 @@ def main():
         art_dir = os.path.join(HERE, art_dir)
 
     menu = Menu(catalog, font_path=cfg.get("font"), page_art_dir=art_dir, size=size)
+
+    # 片头动画（原盘 CDI_BUM.DAT）
+    disc = args.disc or cfg.get("disc")
+    if (not args.no_boot) and cfg.get("boot", True) and disc:
+        cache = cfg.get("boot_cache") or os.path.join(
+            os.path.expanduser("~"), ".cache", "retro-dvd-gameplay", "boot")
+        b = Boot(disc, cache)
+        if b.ok and not args.render_frames:
+            b.play(screen, clock=pygame.time.Clock())
 
     if args.render_frames:
         shots = run_render_frames(menu, args.render_out, args.render_frames)
