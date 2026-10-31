@@ -91,7 +91,7 @@ def main():
     ap.add_argument("--fullscreen", action="store_true")
     ap.add_argument("--scale", type=float, default=1.0)
     ap.add_argument("--render-frames", type=int, default=0)
-    ap.add_argument("--render-out", default="/tmp/rdvd-shots")
+    ap.add_argument("--render-out", default=os.path.join(HERE, "shots"))
     ap.add_argument("--no-audio", action="store_true")
     ap.add_argument("--no-boot", action="store_true", help="跳过光盘片头动画")
     args = ap.parse_args()

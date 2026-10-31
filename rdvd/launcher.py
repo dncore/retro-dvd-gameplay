@@ -33,7 +33,7 @@ def find_core(explicit=None):
     here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     roots = [
         os.path.join(here, "cores"),
-        "~/cores",
+        os.path.expanduser("~/cores"),
         "/usr/lib/libretro", "/usr/local/lib/libretro",
         "/usr/lib/x86_64-linux-gnu/libretro",
         os.path.expanduser("~/.config/retroarch/cores"),

@@ -1,0 +1,15 @@
+{
+  "disc": null,
+  "roms": null,
+  "bgm_dat": null,
+  "bgm_wav": null,
+  "boot": true,
+  "boot_cache": null,
+  "page_art_dir": null,
+  "play_mode": "auto",
+  "core": null,
+  "state_dir": null,
+  "emulator": null,
+  "args": null,
+  "font": null
+}

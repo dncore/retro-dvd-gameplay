@@ -10,3 +10,8 @@ out/
 __pycache__/
 shots/
 .venv/
+
+# local machine paths / credentials
+config.json
+!docs/screenshots/
+!docs/screenshots/*.png

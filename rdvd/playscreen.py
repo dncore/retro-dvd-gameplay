@@ -12,6 +12,7 @@
     F7 / 手柄 RB              → 读档
 """
 import os
+import tempfile
 
 import pygame
 
@@ -93,8 +94,6 @@ class PlayScreen:
             arr = pygame.image.frombuffer(data, (w, h), "BGRA")
             return arr
         # 16bpp：手工转 RGB565
-        rgb = pygame.Surface((w, h))
-        px = pygame.PixelArray(rgb) if False else None
         buf = bytearray(w * h * 3)
         if c.pixel_format == PIXEL_RGB565:
             for i in range(w * h):
@@ -124,7 +123,7 @@ class PlayScreen:
         """
         self.core = LibretroCore(self.core_path,
                                  system_dir=os.path.dirname(self.core_path),
-                                 save_dir=state_dir or "/tmp")
+                                 save_dir=state_dir or tempfile.gettempdir())
         try:
             av = self.core.load_game(rom_path)
         except Exception as e:
