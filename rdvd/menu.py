@@ -220,7 +220,7 @@ class Menu:
             surf.blit(num, (r.x + 12, r.centery - num.get_height() // 2))
 
             title = e.get("display") or e["title"]
-            maxw = r.width - 80
+            maxw = r.width - 80 - (48 if e.get("dup_of") else 0)
             if f.size(title)[0] > maxw:
                 while title and f.size(title + "…")[0] > maxw:
                     title = title[:-1]
@@ -229,9 +229,9 @@ class Menu:
             surf.blit(t, (r.x + 66, r.centery - t.get_height() // 2))
 
             if e.get("dup_of"):
-                tag = fnum.render("= %03d" % e["dup_of"], True,
+                tag = fnum.render("=%03d" % e["dup_of"], True,
                                   theme.CURSOR_TEXT if selected else theme.TEXT_DIM)
-                surf.blit(tag, tag.get_rect(bottomright=(r.right - 10, r.bottom - 6)))
+                surf.blit(tag, (r.right - tag.get_width() - 10, r.y + 5))
 
     def _draw_bottom(self, surf, w, h):
         bar = pygame.Rect(0, h - 52, w, 52)

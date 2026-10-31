@@ -151,7 +151,7 @@ def main():
         'entries': entries,
     }
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
-    with open(args.out, 'w', encoding='utf-8') as fh:
+    with open(args.out, 'w', encoding='utf-8', newline='\n') as fh:
         json.dump(data, fh, ensure_ascii=False, indent=1)
     print('写入 %s：%d 条，唯一 ROM %d，未识别 %d' % (
         args.out, len(entries), len(seen), unmatched))
