@@ -236,7 +236,8 @@ def main():
                         paths.cache_dir(), "states")
                     ps = PlayScreen(core, size)
                     why = ps.play(rom, screen, clock, joy=inp.joy,
-                                  state_dir=state_dir, title=extra.get("display"))
+                                  state_dir=state_dir, title=extra.get("display"),
+                                  audio=not args.no_audio)
                     if why.startswith("error"):
                         menu.flash(why, frames=180)
                     else:

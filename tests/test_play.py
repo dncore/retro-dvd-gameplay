@@ -97,6 +97,57 @@ class TestPlayIntegration(unittest.TestCase):
         files = [f for f in os.listdir(d) if f.endswith(".state")]
         self.assertTrue(files, "没有写出存档")
 
+    def test_core_produces_audio(self):
+        if not self.core:
+            self.skipTest("没有 libretro 核心")
+        if not self.catalog:
+            self.skipTest("没有 catalog")
+        entry, rom = self._first_playable()
+        if not rom:
+            self.skipTest("没有可用 ROM")
+        from rdvd.libretro import LibretroCore
+        core = LibretroCore(self.core)
+        try:
+            core.load_game(rom)
+            for _ in range(4):
+                core.run_frame()
+            data = core.take_audio()
+        finally:
+            core.close()
+        self.assertGreater(len(data), 0, "核心没有输出音频")
+        self.assertEqual(len(data) % 4, 0, "PCM 不是交错的 16-bit 立体声")
+
+
+    def test_play_pumps_audio_into_mixer(self):
+        if not self.core:
+            self.skipTest("没有 libretro 核心")
+        if not self.catalog:
+            self.skipTest("没有 catalog")
+        entry, rom = self._first_playable()
+        if not rom:
+            self.skipTest("没有可用 ROM")
+        pygame.display.set_mode((704, 576))
+        screen = pygame.display.get_surface()
+        ps = PlayScreen(self.core)
+        ps.play(rom, screen, pygame.time.Clock(), state_dir=None, max_frames=30)
+        self.assertGreater(ps.audio_queued, 0, "音频没有进入混音器")
+
+
+class TestResample(unittest.TestCase):
+    def test_resample_keeps_stereo_frame_alignment(self):
+        import array
+
+        from rdvd.playscreen import _resample_pcm16
+        raw = array.array("h", [0, 1000] * 100).tobytes()
+        out = _resample_pcm16(raw, 48000, 44100)
+        self.assertEqual(len(out) % 4, 0)
+        self.assertLess(len(out), len(raw))
+
+    def test_resample_noop_when_rates_match(self):
+        from rdvd.playscreen import _resample_pcm16
+        raw = b"\x00\x01\x02\x03" * 8
+        self.assertIs(_resample_pcm16(raw, 44100, 44100), raw)
+
 
 if __name__ == "__main__":
     unittest.main()

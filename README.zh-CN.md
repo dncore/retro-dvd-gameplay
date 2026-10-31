@@ -22,6 +22,8 @@
 - 菜单循环播放原盘**背景音乐**
 - **内置 libretro 宿主**（`rdvd/libretro.py`，`ctypes` 直调）：fceumm / Nestopia
   在同一个进程里跑，不需要装 RetroArch；退出自动存档
+- **游戏音频**接进和菜单音乐同一个 `pygame.mixer`（16-bit 立体声，核心采样率不同时
+  自动线性重采样）
 - 找不到核心时可退回外部模拟器（RetroArch / FCEUX / Mesen / Nestopia）
 - 无头渲染，可批量导出界面截图
 
@@ -156,9 +158,8 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 
 1. **菜单底图是重建版式，不是原图**（原因见上）。
 2. **条目名来自 ROM 库**，不是 DVD 画面上的原文——盘上没有文本表，也没做 OCR。
-3. **游戏音频还没接到混音器**。菜单音乐正常；模拟器音频回调目前是收下后丢弃。
-4. 仓库里的核心是 Windows DLL，其他平台需要自备。
-5. 光盘镜像和 ROM 需要你自己提供，仓库里不含。
+3. 仓库里的核心是 Windows DLL，其他平台需要自备。
+4. 光盘镜像和 ROM 需要你自己提供，仓库里不含。
 
 ## 数据与授权
 

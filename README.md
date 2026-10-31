@@ -23,6 +23,8 @@ the disc's own layout and boot animation, a recreated menu, and an in-process li
 - The disc's **background music**, looping in the menu
 - **Built-in libretro host** (`rdvd/libretro.py`, `ctypes`): fceumm or Nestopia runs in-process,
   no RetroArch installation required; automatic save state on exit
+- **Game audio** mixed through the same `pygame.mixer` as the menu music (16-bit stereo,
+  linearly resampled when the core's rate differs from the mixer's)
 - Optional fallback to an external emulator (RetroArch, FCEUX, Mesen, Nestopia)
 - Headless renderer for exporting UI screenshots
 
@@ -165,10 +167,8 @@ not the original pixels. See `docs/FORMAT.md` §4.
 1. **The menu background is a re-creation, not the original image** (see above).
 2. **Entry names come from the ROM set**, not from the DVD's bitmap text — there is no
    text table on the disc and no OCR is performed.
-3. **Game audio is not wired to the mixer yet.** Menu music works; the emulator's audio
-   callback is currently drained and discarded.
-4. The bundled cores are Windows DLLs. Other platforms need their own build.
-5. You must supply the disc image and ROMs; none are included.
+3. The bundled cores are Windows DLLs. Other platforms need their own build.
+4. You must supply the disc image and ROMs; none are included.
 
 ## Data and legal
 

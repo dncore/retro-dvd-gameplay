@@ -6,6 +6,7 @@
 """
 import ctypes
 import os
+import struct
 
 # ---- libretro 常量 ----
 DEVICE_JOYPAD = 1
@@ -103,9 +104,12 @@ class LibretroCore:
         self.height = 0
         self.pitch = 0
         self.fps = 60.0
+        self.sample_rate = 44100.0
         self.loaded = False
         self._buttons = set()
         self._keep = []              # 防止回调被 GC
+        self._audio = bytearray()    # interleaved stereo int16
+        self._audio_max = int(self.sample_rate * 4 * 5)   # 最多缓存 5 秒
 
         self._video_cb = VIDEO_CB(self._on_video)
         self._audio_cb = AUDIO_CB(self._on_audio)
@@ -157,10 +161,27 @@ class LibretroCore:
         self.width, self.height, self.pitch = width, height, pitch
 
     def _on_audio(self, left, right):
-        pass
+        self._audio += struct.pack("<hh", left, right)
+        self._trim_audio()
 
     def _on_audio_batch(self, data, frames):
+        if data and frames:
+            # libretro 的 batch 是交错立体声 int16，frames 是采样帧数
+            self._audio += ctypes.string_at(data, frames * 4)
+            self._trim_audio()
         return frames
+
+    def _trim_audio(self):
+        if len(self._audio) > self._audio_max:
+            del self._audio[:len(self._audio) - self._audio_max]
+
+    def take_audio(self):
+        """取走并清空回调攒下的 PCM（stereo, int16, 小端）"""
+        if not self._audio:
+            return b""
+        out = bytes(self._audio)
+        self._audio.clear()
+        return out
 
     def _on_poll(self):
         pass
@@ -214,6 +235,8 @@ class LibretroCore:
         av = RetroSystemAVInfo()
         self.lib.retro_get_system_av_info(ctypes.byref(av))
         self.fps = av.timing.fps or 60.0
+        self.sample_rate = av.timing.sample_rate or 44100.0
+        self._audio_max = int(self.sample_rate * 4 * 5)
         self.base_w = av.geometry.base_width
         self.base_h = av.geometry.base_height
         self.lib.retro_set_controller_port_device(0, DEVICE_JOYPAD)
