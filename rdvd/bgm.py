@@ -25,8 +25,8 @@ class Bgm:
         try:
             subprocess.run(
                 ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
-                 "-i", dat, "-vn", "-ac", "2", "-ar", "44100", cache],
-                check=False, timeout=120,
+                 "-i", dat, "-vn", "-ac", "2", "-ar", "44100", "-loglevel", "quiet", cache],
+                check=False, timeout=120, stderr=subprocess.DEVNULL,
             )
         except Exception:
             return None
