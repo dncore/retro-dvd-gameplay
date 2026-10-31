@@ -83,6 +83,10 @@ powershell -ExecutionPolicy Bypass -File packaging\smoke_test.ps1
 产物在 `dist\retro-dvd-gameplay\`。`config.json` 会复制到 exe 旁边，`data/` 和 `cores/`
 则打进 `_internal\`。PyInstaller 和 Pillow 只在打包时需要，从源码运行不用装。
 
+```bash
+pip install -r requirements-dev.txt   # 测试、菜单页工具、打包
+```
+
 不启动界面、只检查构建是否正常：
 
 ```powershell

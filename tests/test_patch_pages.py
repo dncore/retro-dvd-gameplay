@@ -5,7 +5,10 @@ import os
 import tempfile
 import unittest
 
-from PIL import Image
+try:
+    from PIL import Image
+except ImportError:  # pragma: no cover - minimal installs
+    raise unittest.SkipTest("Pillow is not installed")
 
 from tools.patch_pages import patch_pages
 

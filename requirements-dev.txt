@@ -1,0 +1,5 @@
+-r requirements.txt
+
+# Tooling and packaging only (not needed to run from source)
+pillow>=10
+pyinstaller>=6

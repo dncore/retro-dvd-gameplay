@@ -86,6 +86,10 @@ The portable bundle lands in `dist\retro-dvd-gameplay\`. `config.json` is copied
 the exe, while `data/` and `cores/` are bundled under `_internal\`. PyInstaller and Pillow
 are dev-only dependencies and are not needed to run from source.
 
+```bash
+pip install -r requirements-dev.txt   # tests, menu-page tooling, packaging
+```
+
 Check a build without starting the UI:
 
 ```powershell
