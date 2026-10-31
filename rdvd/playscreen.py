@@ -18,29 +18,20 @@ import tempfile
 
 import pygame
 
+from .bindings import Bindings, joy_token, key_token
 from .libretro import (ID_JOYPAD_A, ID_JOYPAD_B, ID_JOYPAD_DOWN, ID_JOYPAD_LEFT,
                        ID_JOYPAD_RIGHT, ID_JOYPAD_SELECT, ID_JOYPAD_START,
                        ID_JOYPAD_UP, PIXEL_RGB565, PIXEL_XRGB8888, LibretroCore)
 
-KEY_BUTTONS = {
-    pygame.K_UP: ID_JOYPAD_UP,
-    pygame.K_DOWN: ID_JOYPAD_DOWN,
-    pygame.K_LEFT: ID_JOYPAD_LEFT,
-    pygame.K_RIGHT: ID_JOYPAD_RIGHT,
-    pygame.K_z: ID_JOYPAD_A,
-    pygame.K_j: ID_JOYPAD_A,
-    pygame.K_x: ID_JOYPAD_B,
-    pygame.K_k: ID_JOYPAD_B,
-    pygame.K_RETURN: ID_JOYPAD_START,
-    pygame.K_RSHIFT: ID_JOYPAD_SELECT,
-}
-
-JOY_BUTTONS = {
-    0: ID_JOYPAD_A,
-    1: ID_JOYPAD_B,
-    2: ID_JOYPAD_B,
-    3: ID_JOYPAD_SELECT,
-    9: ID_JOYPAD_START,
+ACTION_IDS = {
+    "UP": ID_JOYPAD_UP,
+    "DOWN": ID_JOYPAD_DOWN,
+    "LEFT": ID_JOYPAD_LEFT,
+    "RIGHT": ID_JOYPAD_RIGHT,
+    "A": ID_JOYPAD_A,
+    "B": ID_JOYPAD_B,
+    "START": ID_JOYPAD_START,
+    "SELECT": ID_JOYPAD_SELECT,
 }
 
 AUDIO_CHANNELS = 8          # 每个通道约 23ms，合计约 180ms 缓冲
@@ -82,7 +73,7 @@ def _resample_pcm16(raw, src_rate, dst_rate):
     return out.tobytes()
 
 
-def _joy_buttons(joy):
+def _joy_buttons(joy, bindings):
     out = set()
     if not joy:
         return out
@@ -107,19 +98,23 @@ def _joy_buttons(joy):
                 out.add(ID_JOYPAD_LEFT)
             elif ax > 0.55:
                 out.add(ID_JOYPAD_RIGHT)
-        for b, joy_id in JOY_BUTTONS.items():
-            if b < joy.get_numbuttons() and joy.get_button(b):
-                out.add(joy_id)
+        for b in range(joy.get_numbuttons()):
+            if not joy.get_button(b):
+                continue
+            act = bindings.game_action(joy_token(b))
+            if act in ACTION_IDS:
+                out.add(ACTION_IDS[act])
     except pygame.error:
         pass
     return out
 
 
 class PlayScreen:
-    def __init__(self, core_path, window_size=(704, 576), scale=2):
+    def __init__(self, core_path, window_size=(704, 576), scale=2, bindings=None):
         self.core_path = core_path
         self.window_size = window_size
         self.scale = scale
+        self.bindings = bindings or Bindings()
         self.core = None
         self.state_path = None
         self.audio_ok = False
@@ -213,8 +208,12 @@ class PlayScreen:
                 elif ev.type == pygame.JOYBUTTONDOWN and ev.button == 8:
                     running = False
 
-            buttons = {KEY_BUTTONS[k] for k in keys if k in KEY_BUTTONS}
-            buttons |= _joy_buttons(joy)
+            buttons = set()
+            for k in keys:
+                act = self.bindings.game_action(key_token(k))
+                if act in ACTION_IDS:
+                    buttons.add(ACTION_IDS[act])
+            buttons |= _joy_buttons(joy, self.bindings)
             self.core.set_buttons(buttons)
 
             if not running:

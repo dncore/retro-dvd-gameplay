@@ -237,8 +237,8 @@ class Menu:
         bar = pygame.Rect(0, h - 52, w, 52)
         pygame.draw.rect(surf, theme.BAR_BG, bar)
         pygame.draw.line(surf, theme.BAR_LINE, (0, bar.top), (w, bar.top), 2)
-        f = self.fonts.get(19)
-        hints = "方向键 选择    回车/Z 开始    X/ESC 返回    Q/E 翻页    M 音乐"
+        f = self.fonts.get(18)
+        hints = "方向键 选择  回车 开始  X 返回  Q/E 翻页  M 音乐  F2 按键"
         t = f.render(hints, True, theme.TEXT)
         surf.blit(t, t.get_rect(midleft=(32, bar.centery)))
 

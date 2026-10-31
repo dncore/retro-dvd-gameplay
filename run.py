@@ -15,11 +15,13 @@ import pygame
 
 from rdvd import bgm as bgm_mod
 from rdvd import launcher, paths
+from rdvd.bindings import Bindings, save_bindings
 from rdvd.boot import Boot
 from rdvd.disc import extract_file
 from rdvd.playscreen import PlayScreen
 from rdvd.inputmap import InputState
 from rdvd.menu import Menu
+from rdvd.rebind import RebindScreen
 
 HERE = paths.app_dir()
 
@@ -115,6 +117,8 @@ def main():
 
     cfg = load_config(args.config)
     catalog = load_catalog(args.catalog)
+    config_path = args.config or paths.app_path("config.json")
+    bindings = Bindings(cfg.get("bindings"))
 
     if args.check:
         print("frozen:      %s" % paths.is_frozen())
@@ -153,6 +157,7 @@ def main():
     art_dir = _abs(cfg.get("page_art_dir"))
 
     menu = Menu(catalog, font_path=_abs(cfg.get("font")), page_art_dir=art_dir, size=size)
+    rebind = RebindScreen(bindings, menu.fonts, size)
 
     # 片头动画（原盘 CDI_BUM.DAT）
     disc = _abs(args.disc) if args.disc else _abs(cfg.get("disc"))
@@ -179,7 +184,7 @@ def main():
     )
     music.play()
 
-    inp = InputState()
+    inp = InputState(bindings)
     clock = pygame.time.Clock()
     running = True
     last_axis = None
@@ -187,6 +192,31 @@ def main():
 
     while running:
         events = pygame.event.get()
+
+        # F2 打开按键设置；打开期间只把事件交给重绑界面
+        if not rebind.open:
+            for ev in events:
+                if ev.type == pygame.KEYDOWN and ev.key == pygame.K_F2:
+                    rebind.show()
+                    break
+        if rebind.open:
+            for ev in events:
+                if rebind.handle_event(ev) == "close":
+                    if rebind.dirty:
+                        try:
+                            save_bindings(config_path, bindings)
+                            menu.flash("按键设置已保存")
+                        except OSError as exc:
+                            menu.flash("保存失败: %s" % exc, frames=180)
+                    rebind.dirty = False
+                    break
+            if rebind.open:
+                rebind.render(screen)
+                pygame.display.flip()
+                clock.tick(60)
+                continue
+            events = []
+
         actions = inp.poll_events(events)
         for a in ("UP", "DOWN", "LEFT", "RIGHT"):
             if a in actions:
@@ -234,7 +264,7 @@ def main():
                 if core and mode in ("auto", "core"):
                     state_dir = _abs(cfg.get("state_dir")) or os.path.join(
                         paths.cache_dir(), "states")
-                    ps = PlayScreen(core, size)
+                    ps = PlayScreen(core, size, bindings=bindings)
                     why = ps.play(rom, screen, clock, joy=inp.joy,
                                   state_dir=state_dir, title=extra.get("display"),
                                   audio=not args.no_audio)

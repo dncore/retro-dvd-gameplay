@@ -104,6 +104,7 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | Previous / next page | Q / E, PgUp / PgDn | LB / RB |
 | Toggle music | M | — |
 | Toggle fullscreen | F10 | — |
+| Remap controls | F2 | — |
 | Quit | F12 | — |
 
 ### In game
@@ -117,6 +118,16 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | Select | Right Shift | Y |
 | Back to menu (auto-save) | Esc / F12 | Back |
 | Save / load state | F5 / F7 | — |
+
+### Remapping
+
+Press **F2** in the menu to open the binding screen. Pick an action, press Enter, then
+press a key or a gamepad button. `Delete` restores one action, `R` restores the whole page,
+`Esc` returns. Bindings are written to `config.json` next to the executable.
+
+![Remapping screen](docs/screenshots/rebind.png)
+
+Gamepads are hot-pluggable: connect or disconnect one at any time.
 
 ## Configuration
 
@@ -137,6 +148,7 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | `state_dir` | Where save states are written. |
 | `emulator`, `args` | External emulator command and argument template (`{rom}`, `{core}`). |
 | `font` | Explicit CJK font path; otherwise common system fonts are probed. |
+| `bindings` | Key/button map maintained by the F2 screen. Tokens are `key:<code>` and `joy:<index>`; you can also edit them by hand. |
 
 ## How it works
 

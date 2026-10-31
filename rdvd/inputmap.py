@@ -1,47 +1,17 @@
 # -*- coding: utf-8 -*-
-"""输入抽象：键盘 + 手柄 -> 动作
+"""输入抽象：键盘 + 手柄 -> 菜单动作
 
 动作:
     UP / DOWN / LEFT / RIGHT
     CONFIRM / BACK
     PAGE_PREV / PAGE_NEXT
-    TOGGLE_MUSIC / QUIT
+    TOGGLE_MUSIC / TOGGLE_FULLSCREEN
+
+具体按键来自 Bindings（可在游戏内重绑）。
 """
 import pygame
 
-# 键盘默认绑定
-KEYMAP = {
-    pygame.K_UP: "UP",
-    pygame.K_DOWN: "DOWN",
-    pygame.K_LEFT: "LEFT",
-    pygame.K_RIGHT: "RIGHT",
-    pygame.K_RETURN: "CONFIRM",
-    pygame.K_KP_ENTER: "CONFIRM",
-    pygame.K_z: "CONFIRM",
-    pygame.K_SPACE: "CONFIRM",
-    pygame.K_ESCAPE: "BACK",
-    pygame.K_x: "BACK",
-    pygame.K_BACKSPACE: "BACK",
-    pygame.K_PAGEUP: "PAGE_PREV",
-    pygame.K_PAGEDOWN: "PAGE_NEXT",
-    pygame.K_q: "PAGE_PREV",
-    pygame.K_e: "PAGE_NEXT",
-    pygame.K_m: "TOGGLE_MUSIC",
-    pygame.K_F10: "TOGGLE_FULLSCREEN",
-    pygame.K_F12: "QUIT",
-}
-
-# 手柄按钮（SDL GameController 标准布局）
-BUTTONMAP = {
-    0: "CONFIRM",       # A / 叉
-    1: "BACK",          # B / 圈
-    2: "BACK",          # X
-    3: "CONFIRM",       # Y
-    4: "PAGE_PREV",     # LB
-    5: "PAGE_NEXT",     # RB
-    9: "START",         # Start
-    8: "BACK",          # Back/Select
-}
+from .bindings import Bindings, joy_token, key_token
 
 HATMAP = {
     (0, 1): "UP",
@@ -54,18 +24,26 @@ AXIS_DEADZONE = 0.55
 
 
 class InputState:
-    def __init__(self):
+    def __init__(self, bindings=None):
         pygame.joystick.init()
+        self.bindings = bindings or Bindings()
         self.joy = None
         self._hat_cooldown = 0
         self.reload()
 
     def reload(self):
-        if pygame.joystick.get_count() > 0:
-            self.joy = pygame.joystick.Joystick(0)
-            self.joy.init()
-        else:
+        if self.joy:
+            try:
+                self.joy.quit()
+            except pygame.error:
+                pass
             self.joy = None
+        if pygame.joystick.get_count() > 0:
+            try:
+                self.joy = pygame.joystick.Joystick(0)
+                self.joy.init()
+            except pygame.error:
+                self.joy = None
 
     @property
     def joy_name(self):
@@ -78,16 +56,34 @@ class InputState:
             if ev.type == pygame.QUIT:
                 actions.append("QUIT")
             elif ev.type == pygame.KEYDOWN:
-                act = KEYMAP.get(ev.key)
+                act = self.bindings.menu_action(key_token(ev.key))
                 if act:
                     actions.append(act)
             elif ev.type == pygame.JOYBUTTONDOWN:
-                act = BUTTONMAP.get(ev.button)
+                act = self.bindings.menu_action(joy_token(ev.button))
                 if act:
                     actions.append(act)
             elif ev.type == pygame.JOYDEVICEADDED:
-                self.reload()
+                if not self.joy:
+                    self.reload()
+            elif ev.type == pygame.JOYDEVICEREMOVED:
+                self._handle_removed(ev)
         return actions
+
+    def _handle_removed(self, ev):
+        current = None
+        if self.joy:
+            try:
+                current = self.joy.get_instance_id()
+            except pygame.error:
+                current = None
+        if current is not None and getattr(ev, "instance_id", None) == current:
+            try:
+                self.joy.quit()
+            except pygame.error:
+                pass
+            self.joy = None
+        self.reload()
 
     def poll_axes(self):
         """摇杆/十字键的持续输入，返回至多一个方向动作"""

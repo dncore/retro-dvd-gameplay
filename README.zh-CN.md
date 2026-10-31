@@ -101,6 +101,7 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | 上一页 / 下一页 | Q / E、PgUp / PgDn | LB / RB |
 | 背景音乐开关 | M | — |
 | 全屏切换 | F10 | — |
+| 按键设置 | F2 | — |
 | 退出 | F12 | — |
 
 ### 游戏中
@@ -114,6 +115,15 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | Select | 右 Shift | Y |
 | 回菜单（自动存档） | Esc / F12 | Back |
 | 存档 / 读档 | F5 / F7 | — |
+
+### 按键设置
+
+在菜单按 **F2** 打开按键设置。选中动作后按回车，再按下要绑定的键或手柄按钮即可。
+`Delete` 恢复当前项，`R` 恢复整页，`Esc` 返回。绑定会写进 exe 旁边的 `config.json`。
+
+![按键设置](docs/screenshots/rebind.png)
+
+手柄支持热插拔：随时插上或拔掉都可以。
 
 ## 配置
 
@@ -134,6 +144,7 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | `state_dir` | 存档目录。 |
 | `emulator`、`args` | 外部模拟器命令与参数模板（`{rom}`、`{core}`）。 |
 | `font` | 显式中文字体路径；不填则自动探测系统字体。 |
+| `bindings` | 由 F2 界面维护的按键绑定。token 为 `key:<键码>` / `joy:<按钮号>`，也可以手改。 |
 
 ## 工作原理
 
