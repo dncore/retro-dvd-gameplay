@@ -204,6 +204,20 @@ The tool crops, resizes to 704×576, optionally composites a right-side preview
 (`--overlay`, `--overlay-at X,Y,W,H`) and writes a `manifest.json`. `assets/pages/` is
 git-ignored, so disc artwork never enters the repository.
 
+### OCR from a recording
+
+The disc stores one still per page, so the fully settled menu text only exists in a
+real-machine recording. `tools/ocr_menu_video.py` waits for the transition to settle,
+then extracts and OCRs the stable frames:
+
+```bash
+python tools/ocr_menu_video.py menu.mp4 --out out/menu --crop 80,100,420,80 --ocr
+```
+
+It uses `pytesseract` when available, otherwise the built-in Windows `zh-Hans-CN` OCR
+(`tools/win_ocr.ps1`). `stable.json` lists each frame's timestamp and parsed
+`N. 名称` entries.
+
 ## Known limitations
 
 1. **The menu background is a re-creation, not the original image** (see above).

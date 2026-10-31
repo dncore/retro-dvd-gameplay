@@ -9,16 +9,24 @@ SunPlus/Rolsen 芯片 DVD 播放器专用非标准 VCD）。
   2048 usable bytes per sector.
 - `NEWROM/G001.BIN`–`G300.BIN` are NES ROMs behind a 12-byte MIPS trampoline. The jump
   target (`0x4002xxxx`) encodes the mapper; ROM data starts at `be16(bin[6:8]) + 0x61C0`.
-- `SEGMENT/ITEM0001.DAT`–`ITEM0031.DAT` are 150-sector VCD segments mixing MPEG-1 video
-  (`0x1E1`) and MP3 audio (`0x1E2`). Reassembling only `0x1E1` decodes one 704×576 menu
-  page, but each frame should contain 36 slices and only 32 are stored (18/25/27/35 are
-  missing), so the right third smears vertically. Six decode-parameter combinations,
-  packet misalignment, audio interference and the VCD/EXT `PSD`/`LOT` tables were ruled
-  out: **the missing data is not on the disc**.
+- `SEGMENT/ITEM0001.DAT`–`ITEM0031.DAT` are 150-sector VCD segments holding two MPEG-1
+  video streams: `0x1E1` (352×288, blank) and `0x1E2` (704×576, the menu page).
+  Every ITEM contains exactly one I-frame (one sequence header, one GOP, one picture;
+  several end with the `B7` sequence-end code), so there is no later frame to wait for.
+  `0x1E2` decodes to the menu background, but only 31–34 of 36 slices are present and
+  the right side smears vertically. Six decode-parameter combinations, packet
+  misalignment, audio interference and the VCD/EXT `PSD`/`LOT` tables were ruled out.
+- The complete menu text is drawn by the player's OSD, not stored on the disc; recover
+  it from a real-machine recording with `tools/ocr_menu_video.py`.
 - `CDI_BUM.DAT` is not background music: it is a 22-second MPEG-1 intro (499 frames,
   352×288), which the app plays on startup.
+- Each `ITEM*.DAT` contains exactly one I-frame (verified across all 31 files: one
+  sequence header, one GOP, one picture; several end with the `B7` sequence-end code).
+  There is no later frame to wait for: the full menu text is drawn by the player's OSD,
+  not stored on the disc.
 - The menu is therefore a code re-creation; recovered pages can be imported with
-  `tools/patch_pages.py`.
+  `tools/patch_pages.py`, and menu recordings can be OCR'd with
+  `tools/ocr_menu_video.py`.
 
 ## 1. 镜像层
 
@@ -78,42 +86,47 @@ rom_start = be16(bin[6:8]) + 0x61C0
 
 每个 ITEM 恰好 **307,200 字节 = 150 扇区 × 2048**，是 VCD 的一个 Segment。
 
-内部是 MPEG-PS，但**混入了两种 PES 流**：
+内部是 MPEG-PS，带**两条视频流**（不是视频 + 音频）：
 
-| 流 ID | 数量 | 用途 |
-|---|---|---|
-| `0x1E1` | 16 | 视频（MPEG-1） |
-| `0x1E2` | 54 | 音频（MP3） |
+| PID | 包数 | 分辨率 | 内容 |
+|---|---|---|---|
+| `0x1E1` | 17 | 352 × 288 | 纯灰 I-frame（空画面） |
+| `0x1E2` | 53 | 704 × 576 | 菜单页 I-frame |
 
-扇区布局：**每 2048 字节扇区 = 12 字节 pack 头 + 6 字节 PES 头 + 2030 字节负载**，
-但有 79 个扇区**没有 pack 头**（属于上一个包的续接）。
+扇区布局：**12 字节 pack 头 + 6 字节 PES 头 + 2030 字节负载**。每个 ITEM 有
+**79 个无 pack 头的续接扇区**，全部跟在最后一个 E1 包后面（内容基本是 `FF` 填充）。
 
-```
-扇区 N:  00 00 01 BA | 8 字节 | 00 00 01 E1 | 09 02 | 负载 2030 字节
-```
-
-注意 `09 02` = 2306，**大于扇区容量**，说明这个长度字段不可信（所有 E1 包都是
-同一个值 0x0902），实际每包只装 2030 字节。
+第一个 E2 包在 PES 头后还有 12 字节 pack 头（`60 76 31 …`），其余 E2 包以
+`FF 0F` 开头；解码时剥掉这 2 个字节。
 
 ### 序列头
 
-视频流第一个字节之后就是标准序列头：
+```
+E1: 00 00 01 B3  16 01 20 83 …   → 352 × 288
+E2: 00 00 01 B3  2C 02 40 83 …   → 704 × 576
+```
 
-```
-00 00 01 B3  16 01 20 83 ...
-             └─ 352 × 288（PAL VCD half-D1）
-```
+### 每段只有一帧
+
+逐个统计 31 个 ITEM：**B3 = 1，B8 = 1，picture = 1**；部分以 `B7`（sequence end）
+结束。也就是说每段只有一张 I-frame，**不存在“渐变播到一半、后面还有帧”的情况**。
+
+E2 的 slice 数在 31–34/36 之间，缺 slice 的位置随页面不同；ffmpeg 解出的画面右侧
+有明显竖向拖影，并伴随 `ac-tex damaged` / `skipped MB`。
 
 ### 当前解码结果
 
-按「只取 0x1E1 负载」重组裸流（32,480 字节），`ffmpeg -f mpegvideo` 能解出
-**一帧 352×288**，画面是经典的黄色菜单底色 + 底部残缺的文字，但大量
-`ac-tex damaged` / `skipped MB`。
+只取 E2 的 53 个包（约 107 KB）重组，`ffmpeg -f mpegvideo` 可解出一帧 704×576：
 
-按「含无包头扇区、跳过 E2」重组（194 KB）反而更差。
+```
+python tools/decode_pages.py <iso> --outdir out/pages
+```
 
-**未解决**：为什么 I-frame 数据不完整。怀疑还有一批视频数据藏在
-无 pack 头的扇区里，被 E2 包切断；或者长度字段的真实含义不是 PES 长度。
+E1 单独解是均匀灰色（939 字节的 PNG），没有可利用的内容。
+
+因此「完整菜单文字」不在盘上：盘上只有一张带渐变/拖影的底图，**文字由播放器的
+OSD 叠加绘制**。要拿到完整文字，只能从真机录屏里等画面稳定后取帧，用
+`tools/ocr_menu_video.py` 做 OCR。
 
 ### 试过但失败的方案
 
@@ -122,7 +135,8 @@ rom_start = be16(bin[6:8]) + 0x61C0
 | 把 `0x1E1` 改成 `0x1E0` 交给 ffmpeg | `unknown codec` |
 | 每包剥 8 / 12 / 16 字节头 | 全是同一张全灰图 |
 | 按 PES 长度 2306 连续切分 | 越切越乱（包实际按 2048 对齐） |
-| 整段 306 KB 直接解 | 解出 704×576 但内容错乱 |
+| 把 79 个续接扇区拼回 E1 | E1 变 194 KB，仍只有 1 帧 / 8 slice，尾部是 `FF` 填充 |
+| 按帧差找“后续稳定帧” | 31 段都只有 1 个 picture，没有后续帧 |
 
 ## 5. 300 → 146
 

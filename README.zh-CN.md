@@ -195,6 +195,19 @@ python tools/patch_pages.py shots/ --out assets/pages --crop 40,20,40,20 --size 
 （`--overlay`、`--overlay-at X,Y,W,H`），并写出 `manifest.json`。
 `assets/pages/` 已被 git 忽略，光盘美术资源不会进入仓库。
 
+### 从录像 OCR 菜单名
+
+盘上每页只有一张静帧，完整文字只存在于真机画面里。`tools/ocr_menu_video.py` 会等
+渐变结束、画面稳定后再取帧并 OCR：
+
+```bash
+python tools/ocr_menu_video.py menu.mp4 --out out/menu --crop 80,100,420,80 --ocr
+```
+
+有 `pytesseract` 就用它，否则在 Windows 上调用系统自带的 `zh-Hans-CN` OCR
+（`tools/win_ocr.ps1`）。`stable.json` 会记录每帧的时间点和解析出的
+`序号. 名称`。
+
 ## 已知限制
 
 1. **菜单底图是重建版式，不是原图**（原因见上）。
