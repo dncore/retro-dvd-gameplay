@@ -1,17 +1,18 @@
+# Generated / disc-derived data (never commit)
 assets/pages/
 *.BIN
 *.DAT
-!docs/*.png
 *.iso
 *.m1v
 out/
-*.png
+shots/
 *.pyc
 __pycache__/
-shots/
 .venv/
 
-# local machine paths / credentials
+# Local machine paths
 config.json
-!docs/screenshots/
-!docs/screenshots/*.png
+
+# Images are ignored except the documentation screenshots
+*.png
+!docs/**/*.png
