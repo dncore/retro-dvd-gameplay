@@ -6,6 +6,7 @@
 import json
 import os
 import sys
+import tempfile
 import unittest
 
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
@@ -58,12 +59,15 @@ class TestPlayIntegration(unittest.TestCase):
     def test_menu_confirm_yields_playable_rom(self):
         if not self.catalog:
             self.skipTest("没有 catalog")
+        roms = self.cfg.get("roms")
+        if not roms:
+            self.skipTest("没有配置 ROM 目录（config.json）")
         m = Menu(self.catalog, page_art_dir=None)
         res = m.handle("CONFIRM")
         self.assertIsNotNone(res)
         kind, entry = res
         self.assertEqual(kind, "launch")
-        path = os.path.join(self.cfg.get("roms", ""), entry["rom"])
+        path = os.path.join(roms, entry["rom"])
         self.assertTrue(os.path.exists(path), path)
 
     def test_core_runs_rom(self):
@@ -78,7 +82,8 @@ class TestPlayIntegration(unittest.TestCase):
         screen = pygame.display.get_surface()
         ps = PlayScreen(self.core)
         why = ps.play(rom, screen, pygame.time.Clock(), joy=None,
-                      state_dir="/tmp/rdvd-states", max_frames=30)
+                      state_dir=tempfile.mkdtemp(prefix="rdvd-states-"),
+                      max_frames=30)
         self.assertEqual(why, "back")
 
     def test_state_file_written(self):
@@ -89,10 +94,10 @@ class TestPlayIntegration(unittest.TestCase):
         entry, rom = self._first_playable()
         if not rom:
             self.skipTest("没有可用 ROM")
-        d = "/tmp/rdvd-states-test"
         pygame.display.set_mode((704, 576))
         screen = pygame.display.get_surface()
         ps = PlayScreen(self.core)
+        d = tempfile.mkdtemp(prefix="rdvd-states-")
         ps.play(rom, screen, pygame.time.Clock(), state_dir=d, max_frames=10)
         files = [f for f in os.listdir(d) if f.endswith(".state")]
         self.assertTrue(files, "没有写出存档")

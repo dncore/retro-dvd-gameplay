@@ -5,6 +5,12 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/dncore/retro-dvd-gameplay/actions/workflows/tests.yml">
+    <img src="https://github.com/dncore/retro-dvd-gameplay/actions/workflows/tests.yml/badge.svg" alt="tests">
+  </a>
+</p>
+
+<p align="center">
   <img src="docs/screenshots/menu-01.png" width="720" alt="The 300-in-1 menu">
 </p>
 
