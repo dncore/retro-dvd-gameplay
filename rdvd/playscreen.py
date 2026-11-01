@@ -131,7 +131,9 @@ class PlayScreen:
         if w <= 0 or h <= 0 or not c.frame:
             return None
         if c.pixel_format == PIXEL_XRGB8888:
-            return pygame.image.frombuffer(c.frame, (w, h), "BGRA")
+            # XRGB8888 的 X 字节是 0；直接按 BGRA 建面会被当成全透明，
+            # 游戏画面就永远盖不住菜单。convert() 转成显示格式后丢弃 alpha。
+            return pygame.image.frombuffer(c.frame, (w, h), "BGRA").convert()
 
         # 直接用原生 16bpp Surface：SDL 的默认掩码正好是 RGB565 / RGB555，
         # 把裸数据写进 buffer 比逐像素 Python 循环快两个数量级。

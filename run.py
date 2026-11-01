@@ -261,7 +261,11 @@ def main():
         # 摇杆持续输入：带首次延迟 + 自动重复
         axis = inp.poll_axes()
         if axis:
-            if axis != last_axis:
+            if axis in actions:
+                # 这一帧键盘已经处理过同方向，别再叠加一次摇杆移动
+                last_axis = axis
+                axis_repeat = 12
+            elif axis != last_axis:
                 actions.append(axis)
                 last_axis = axis
                 axis_repeat = 12
