@@ -15,6 +15,9 @@ import os
 import sys
 import zipfile
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 
 def hash_rom(path):
     """返回 (md5, size, 文件名)；zip 取内部第一个 ROM"""

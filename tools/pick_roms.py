@@ -19,6 +19,10 @@ try:
 except ImportError:  # 直接 python tools/pick_roms.py 时
     from rom_checksums import hash_rom
 
+# Windows CI 的控制台可能是 cp1252，中文 print 会 UnicodeEncodeError
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 ROM_EXTS = (".nes", ".fds", ".unf", ".zip")
 
 

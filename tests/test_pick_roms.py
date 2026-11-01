@@ -69,13 +69,15 @@ class TestPickRoms(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             src, checks, catalog = self._setup(tmp)
             out = os.path.join(tmp, "roms")
-            before = open(catalog, encoding="utf-8").read()
+            with open(catalog, encoding="utf-8") as fh:
+                before = fh.read()
 
             main(["--source", src, "--out", out, "--catalog", catalog,
                   "--checksums", checks, "--dry-run"])
 
             self.assertFalse(os.path.exists(out))
-            self.assertEqual(open(catalog, encoding="utf-8").read(), before)
+            with open(catalog, encoding="utf-8") as fh:
+                self.assertEqual(fh.read(), before)
 
 
 if __name__ == "__main__":
