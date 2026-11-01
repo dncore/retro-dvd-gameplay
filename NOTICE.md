@@ -2,15 +2,17 @@
 
 ## Menu artwork
 
-The per-page menu artwork is **not** included in this repository. It is prepared locally
-from the 30 reconstructed menu pages published by
+`assets/menu_pages/01.jpg` … `30.jpg` are the text-free per-page backgrounds. They are
+derived from the 30 reconstructed menu pages published by
 [VCD300-CHS-Games-Simulator](https://github.com/MattUan/VCD300-CHS-Games-Simulator)
 (GPL-2.0 for its code; the menu artwork belongs to the original disc's rights holders).
-`tools/prepare_menu_pages.py` only strips the re-drawn text; `assets/pages/` is
-git-ignored.
+`tools/prepare_menu_pages.py` only strips the re-drawn text.
 
-Screenshots under `docs/screenshots/` may show this artwork for identification and
-preservation commentary; they are not covered by the MIT license.
+These images are included for preservation and identification; they are **not** covered
+by the MIT license. A real-machine capture in `assets/pages/` (git-ignored) overrides
+them.
+
+Screenshots under `docs/screenshots/` may show the same artwork for documentation.
 
 ## English titles
 

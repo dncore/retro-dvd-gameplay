@@ -16,11 +16,17 @@ ROOT = os.path.abspath(os.path.join(SPECPATH, ".."))
 
 datas = [
     (os.path.join(ROOT, "data", "catalog.json"), "data"),
+    (os.path.join(ROOT, "data", "tieba_names.json"), "data"),
     (os.path.join(ROOT, "config.example.json"), "."),
     (os.path.join(ROOT, "README.md"), "."),
     (os.path.join(ROOT, "README.zh-CN.md"), "."),
+    (os.path.join(ROOT, "NOTICE.md"), "."),
     (os.path.join(ROOT, "LICENSE"), "."),
 ]
+
+pages_dir = os.path.join(ROOT, "assets", "menu_pages")
+if os.path.isdir(pages_dir):
+    datas.append((pages_dir, "assets/menu_pages"))
 
 cores_dir = os.path.join(ROOT, "cores")
 if os.path.isdir(cores_dir):

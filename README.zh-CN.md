@@ -189,19 +189,19 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 
 ### 逐页菜单背景（DVD 风格）
 
-默认菜单是单列 10 条、16px 宋体，背景用原盘每页的卡通画。画源是
+30 张逐页背景已内置在 `assets/menu_pages/01.jpg` … `30.jpg`（704×576，已去掉重绘
+文字）。画源是
 [VCD300-CHS-Games-Simulator](https://github.com/MattUan/VCD300-CHS-Games-Simulator)
-发布的 30 张重绘页（`menus/01.png` … `30.png`）；`tools/prepare_menu_pages.py`
-会把重绘的文字区抹掉，只留背景：
+发布的重绘页；菜单用原盘量出来的 16px 宋体重排 300 条中文名。
+
+如果拿到真机截图，可以把 `assets/pages/NN.png` 放在程序目录覆盖内置页（已被 git
+忽略）。两者都没有时，回退到 `assets/menu_bg.png` 或代码画的黄底箭头。
+
+从参考项目的 `menus/` 目录重新生成无字页：
 
 ```bash
 python tools/prepare_menu_pages.py --src menus --out assets/pages
 ```
-
-`assets/pages/` 已被 git 忽略，美术资源不会进入仓库。没有这些图时，菜单回退到
-`assets/menu_bg.png`（`tools/make_menu_bg.py` 从 ITEM 页生成）或代码画的黄底箭头。
-
-旧版 `tools/patch_pages.py` + `page_art_dir` 仍可用于 `"menu_style": "grid"`。
 
 ### 从录像 OCR 菜单名
 

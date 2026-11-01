@@ -176,7 +176,9 @@ class Menu:
             return self._page_cache[page_no]
         img = None
         for p in (paths.app_path("assets", "pages", "%02d.png" % page_no),
-                  paths.resource("assets", "pages", "%02d.png" % page_no)):
+                  paths.resource("assets", "pages", "%02d.png" % page_no),
+                  paths.app_path("assets", "menu_pages", "%02d.jpg" % page_no),
+                  paths.resource("assets", "menu_pages", "%02d.jpg" % page_no)):
             if os.path.exists(p):
                 try:
                     img = pygame.image.load(p).convert()
