@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.join(HERE, ".."))
 import pygame  # noqa: E402
 
 from rdvd import launcher  # noqa: E402
-from rdvd.menu import Menu  # noqa: E402
+from rdvd.menu import Menu, PER_PAGE  # noqa: E402
 from rdvd.playscreen import PlayScreen  # noqa: E402
 
 ROOT = os.path.join(HERE, "..")
@@ -62,13 +62,21 @@ class TestPlayIntegration(unittest.TestCase):
         roms = self.cfg.get("roms")
         if not roms:
             self.skipTest("没有配置 ROM 目录（config.json）")
+        entry, path = self._first_playable()
+        if not path:
+            self.skipTest("ROM 目录里没有可用文件")
+
+        idx = self.catalog["entries"].index(entry)
         m = Menu(self.catalog, page_art_dir=None)
+        m.select_page(idx // PER_PAGE)
+        m.cursor = idx % PER_PAGE
+
         res = m.handle("CONFIRM")
         self.assertIsNotNone(res)
-        kind, entry = res
+        kind, got = res
         self.assertEqual(kind, "launch")
-        path = os.path.join(roms, entry["rom"])
-        self.assertTrue(os.path.exists(path), path)
+        self.assertEqual(got["num"], entry["num"])
+        self.assertTrue(os.path.exists(os.path.join(roms, got["rom"])))
 
     def test_core_runs_rom(self):
         if not self.core:
