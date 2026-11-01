@@ -178,7 +178,7 @@ def main():
         os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
         os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
-    pygame.mixer.pre_init(44100, -16, 2, 4096)
+    pygame.mixer.pre_init(48000, -16, 2, 4096)
     pygame.init()
     pygame.display.set_caption("retro-dvd-gameplay")
 

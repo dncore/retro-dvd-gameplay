@@ -16,7 +16,10 @@
 import array
 import hashlib
 import os
+import queue
 import tempfile
+import threading
+import time
 
 import pygame
 
@@ -38,8 +41,8 @@ ACTION_IDS = {
     "SELECT": ID_JOYPAD_SELECT,
 }
 
-AUDIO_CHANNELS = 8          # 每个通道约 46ms，合计约 370ms 缓冲
-AUDIO_CHUNK_FRAMES = 2048   # 44.1kHz 下约 46ms
+AUDIO_CHANNELS = 6          # 每块约 85ms，合计约 510ms 缓冲
+AUDIO_CHUNK_FRAMES = 4096   # 48kHz 下约 85ms
 FILTER_NAMES = ("清晰", "平滑", "扫描线")
 
 
@@ -132,11 +135,17 @@ class PlayScreen:
         self.audio_pending = bytearray()
         self._audio_keep = []
         self.audio_queued = 0
+        self.audio_thread = None
+        self.audio_stop = None
+        self.audio_queue = None
+        self.audio_channel = None
         self.filter_mode = PlayScreen._filter_mode
         self.speed = PlayScreen._speed
         self.osd_text = ""
         self.osd_timer = 0
+        self.hint_timer = 0
         self.osd_font = None
+        self.hint_font = None
         self._scan_cache = None
         self._scan_size = None
 
@@ -205,6 +214,7 @@ class PlayScreen:
         w, h = screen.get_size()
         running = True
         reason = "back"
+        self.hint_timer = 360
 
         while running:
             for ev in pygame.event.get():
@@ -259,6 +269,7 @@ class PlayScreen:
             surf = self._make_surface()
             if surf:
                 self._draw_frame(screen, surf)
+                self._draw_hint(screen)
                 self._draw_osd(screen)
                 pygame.display.flip()
             clock.tick(max(1, int(round(fps * self.speed))))
@@ -301,6 +312,25 @@ class PlayScreen:
         screen.blit(text, (x + 8, y + 4))
         self.osd_timer -= 1
 
+    def _draw_hint(self, screen):
+        if self.hint_timer <= 0:
+            return
+        if self.hint_font is None:
+            path = theme.find_simsun()
+            try:
+                self.hint_font = (pygame.font.Font(path, 16) if path
+                                  else pygame.font.Font(None, 16))
+            except OSError:
+                self.hint_font = pygame.font.Font(None, 16)
+        text = "F3 滤镜   F4/F6 速度   F5/F7 存档/读档   Esc 返回"
+        surf = self.hint_font.render(text, True, (255, 255, 255))
+        bg = pygame.Surface((screen.get_width(), surf.get_height() + 8),
+                            pygame.SRCALPHA)
+        bg.fill((0, 0, 0, 150))
+        screen.blit(bg, (0, 0))
+        screen.blit(surf, ((screen.get_width() - surf.get_width()) // 2, 4))
+        self.hint_timer -= 1
+
     def _draw_frame(self, screen, surf):
         w, h = screen.get_size()
         if self.filter_mode == 1:
@@ -319,16 +349,22 @@ class PlayScreen:
 
     # ---------- 音频 ----------
     def _init_audio(self, sample_rate):
+        self._stop_audio()
         self.audio_ok = False
-        self.audio_channels = []
         self.audio_pending = bytearray()
         self._audio_keep = []
         self.audio_queued = 0
         self.audio_rate = int(round(sample_rate or 44100))
         try:
-            if not pygame.mixer.get_init():
+            got = pygame.mixer.get_init()
+            if got and int(got[0]) != self.audio_rate:
+                # 核心是 48k 而混音器是 44.1k 时每块都要重采样，容易卡；
+                # 按核心采样率重建混音器，做到零重采样。
+                pygame.mixer.quit()
+                got = None
+            if not got:
                 pygame.mixer.init(frequency=self.audio_rate, size=-16,
-                                  channels=2, buffer=1024)
+                                  channels=2, buffer=4096)
             got = pygame.mixer.get_init()
             if not got:
                 return
@@ -337,58 +373,77 @@ class PlayScreen:
                 # 混音器格式不是 16-bit stereo 时不硬接，避免播放噪音
                 return
             self.mixer_rate = int(freq)
-            pygame.mixer.set_num_channels(AUDIO_CHANNELS)
-            self.audio_channels = [pygame.mixer.Channel(i)
-                                   for i in range(AUDIO_CHANNELS)]
+            pygame.mixer.set_num_channels(max(8, AUDIO_CHANNELS))
+            self.audio_channel = pygame.mixer.Channel(0)
+            self.audio_queue = queue.Queue(maxsize=64)
+            self.audio_stop = threading.Event()
+            self.audio_thread = threading.Thread(target=self._audio_loop, daemon=True)
+            self.audio_thread.start()
             self.audio_ok = True
         except pygame.error:
             self.audio_ok = False
+
+    def _audio_loop(self):
+        """独立线程持续喂块：在播一块 + 预排队一块，避免主循环抖动断音"""
+        pending = bytearray()
+        chunk_bytes = AUDIO_CHUNK_FRAMES * 4
+        ch = self.audio_channel
+        while not self.audio_stop.is_set():
+            try:
+                pending += self.audio_queue.get(timeout=0.05)
+            except queue.Empty:
+                pass
+            while len(pending) >= chunk_bytes and not self.audio_stop.is_set():
+                data = bytes(pending[:chunk_bytes])
+                del pending[:chunk_bytes]
+                if self.speed != 1.0:
+                    continue
+                if self.mixer_rate != self.audio_rate:
+                    data = _resample_pcm16(data, self.audio_rate, self.mixer_rate)
+                try:
+                    snd = pygame.mixer.Sound(buffer=data)
+                except pygame.error:
+                    continue
+                while (not self.audio_stop.is_set() and ch.get_busy()
+                       and ch.get_queue() is not None):
+                    time.sleep(0.002)
+                if self.audio_stop.is_set():
+                    break
+                if ch.get_busy():
+                    ch.queue(snd)
+                else:
+                    ch.play(snd)
+                self.audio_queued += 1
+                self._audio_keep.append(snd)
+                if len(self._audio_keep) > 12:
+                    del self._audio_keep[:6]
+            time.sleep(0.001)
 
     def _pump_audio(self):
         if not (self.audio_ok and self.core):
             return
         raw = self.core.take_audio()
-        if self.speed != 1.0:
-            # 变速时核心产出的采样数和混音器不一致，先静音避免欠采样卡顿
-            self.audio_pending.clear()
+        if not raw or self.speed != 1.0:
             return
-        if raw:
-            self.audio_pending += raw
-        chunk_bytes = AUDIO_CHUNK_FRAMES * 4
-        # 掉帧时不要越积越多，只保留最近约 8 个块，保证音画同步
-        if len(self.audio_pending) > chunk_bytes * 8:
-            del self.audio_pending[:len(self.audio_pending) - chunk_bytes * 2]
-        while len(self.audio_pending) >= chunk_bytes:
-            data = bytes(self.audio_pending[:chunk_bytes])
-            del self.audio_pending[:chunk_bytes]
-            if self.mixer_rate != self.audio_rate:
-                data = _resample_pcm16(data, self.audio_rate, self.mixer_rate)
-            try:
-                snd = pygame.mixer.Sound(buffer=data)
-            except pygame.error:
-                self.audio_ok = False
-                return
-            if not self._play_chunk(snd):
-                break
-
-    def _play_chunk(self, snd):
-        for ch in self.audio_channels:
-            if not ch.get_busy():
-                ch.play(snd)
-                self._audio_keep.append(snd)
-                self.audio_queued += 1
-                if len(self._audio_keep) > AUDIO_CHANNELS * 3:
-                    del self._audio_keep[:AUDIO_CHANNELS]
-                return True
-        return False
+        try:
+            self.audio_queue.put_nowait(raw)
+        except queue.Full:
+            pass
 
     def _stop_audio(self):
-        for ch in self.audio_channels:
+        if getattr(self, "audio_stop", None):
+            self.audio_stop.set()
+        th = getattr(self, "audio_thread", None)
+        if th and th.is_alive():
+            th.join(timeout=0.5)
+        ch = getattr(self, "audio_channel", None)
+        if ch:
             try:
                 ch.stop()
             except pygame.error:
                 pass
-        self.audio_channels = []
+        self.audio_channel = None
+        self.audio_thread = None
         self.audio_pending = bytearray()
         self.audio_ok = False
 
