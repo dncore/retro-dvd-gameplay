@@ -219,7 +219,7 @@ class Menu:
             num = fnum.render("%03d" % e["num"], True, numc)
             surf.blit(num, (r.x + 12, r.centery - num.get_height() // 2))
 
-            title = e.get("display") or e["title"]
+            title = e.get("dvd_name") or e.get("display") or e["title"]
             maxw = r.width - 80 - (48 if e.get("dup_of") else 0)
             if f.size(title)[0] > maxw:
                 while title and f.size(title + "…")[0] > maxw:

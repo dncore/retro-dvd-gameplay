@@ -13,7 +13,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "1942"
+   "display": "1942",
+   "dvd_name": "1942"
   },
   {
    "num": 2,
@@ -24,7 +25,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "1944"
+   "display": "1944",
+   "dvd_name": "1943"
   },
   {
    "num": 3,
@@ -35,7 +37,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Kiddy Sun in Fantasia"
+   "display": "Kiddy Sun in Fantasia",
+   "dvd_name": "冒险岛"
   },
   {
    "num": 4,
@@ -46,7 +49,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Battle City - Super Tank II"
+   "display": "Battle City - Super Tank II",
+   "dvd_name": "坦克"
   },
   {
    "num": 5,
@@ -57,7 +61,8 @@
    "prg": 32768,
    "chr": 16384,
    "bin_size": 98304,
-   "display": "兵蜂1"
+   "display": "兵蜂1",
+   "dvd_name": "兵蜂"
   },
   {
    "num": 6,
@@ -68,7 +73,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "炸弹人"
+   "display": "炸弹人",
+   "dvd_name": "炸弹超人"
   },
   {
    "num": 7,
@@ -79,7 +85,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 98304,
-   "display": "Mighty Bomb Jack"
+   "display": "Mighty Bomb Jack",
+   "dvd_name": "炸弹杰克"
   },
   {
    "num": 8,
@@ -90,7 +97,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "Shufflepuck Cafe"
+   "display": "Shufflepuck Cafe",
+   "dvd_name": "咖啡店"
   },
   {
    "num": 9,
@@ -101,7 +109,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "马戏团"
+   "display": "马戏团",
+   "dvd_name": "马戏团"
   },
   {
    "num": 10,
@@ -112,7 +121,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "Contra"
+   "display": "Contra",
+   "dvd_name": "魂斗罗"
   },
   {
    "num": 11,
@@ -123,7 +133,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Thexder"
+   "display": "Thexder",
+   "dvd_name": "太空战士"
   },
   {
    "num": 12,
@@ -134,7 +145,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "玛莉医生"
+   "display": "玛莉医生",
+   "dvd_name": "玛丽医生"
   },
   {
    "num": 13,
@@ -145,7 +157,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Fire Dragon"
+   "display": "Fire Dragon",
+   "dvd_name": "火龙"
   },
   {
    "num": 14,
@@ -156,7 +169,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Zunou Senkan Galg"
+   "display": "Zunou Senkan Galg",
+   "dvd_name": "超级雷电"
   },
   {
    "num": 15,
@@ -167,7 +181,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Magic Jewelry"
+   "display": "Magic Jewelry",
+   "dvd_name": "钻石方块"
   },
   {
    "num": 16,
@@ -178,7 +193,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Super Mario Bros."
+   "display": "Super Mario Bros.",
+   "dvd_name": "超级玛丽"
   },
   {
    "num": 17,
@@ -189,7 +205,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "猪小弟"
+   "display": "猪小弟",
+   "dvd_name": "猪小弟"
   },
   {
    "num": 18,
@@ -200,7 +217,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "彩虹岛"
+   "display": "彩虹岛",
+   "dvd_name": "彩虹岛"
   },
   {
    "num": 19,
@@ -212,7 +230,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 4,
-   "display": "Battle City - Super Tank II"
+   "display": "Battle City - Super Tank II",
+   "dvd_name": "坦克2"
   },
   {
    "num": 20,
@@ -223,7 +242,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 106496,
-   "display": "俄罗斯方块"
+   "display": "俄罗斯方块",
+   "dvd_name": "俄罗斯方块"
   },
   {
    "num": 21,
@@ -234,7 +254,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "火凤凰"
+   "display": "火凤凰",
+   "dvd_name": "橄榄球"
   },
   {
    "num": 22,
@@ -245,7 +266,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Super Arabian"
+   "display": "Super Arabian",
+   "dvd_name": "辛巴达"
   },
   {
    "num": 23,
@@ -256,7 +278,8 @@
    "prg": 32768,
    "chr": 16384,
    "bin_size": 106496,
-   "display": "Argus"
+   "display": "Argus",
+   "dvd_name": "百眼巨神"
   },
   {
    "num": 24,
@@ -267,7 +290,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "弹珠台"
+   "display": "弹珠台",
+   "dvd_name": "打砖块"
   },
   {
    "num": 25,
@@ -278,7 +302,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "企鹅先生-冒险之旅"
+   "display": "企鹅先生-冒险之旅",
+   "dvd_name": "爱心企鹅"
   },
   {
    "num": 26,
@@ -289,7 +314,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "打气球"
+   "display": "打气球",
+   "dvd_name": "打气球"
   },
   {
    "num": 27,
@@ -300,7 +326,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "BurgerTime"
+   "display": "BurgerTime",
+   "dvd_name": "汉堡时间"
   },
   {
    "num": 28,
@@ -311,7 +338,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "B-Wings"
+   "display": "B-Wings",
+   "dvd_name": "B计划"
   },
   {
    "num": 29,
@@ -322,7 +350,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Route-16 Turbo"
+   "display": "Route-16 Turbo",
+   "dvd_name": "迷魂车"
   },
   {
    "num": 30,
@@ -333,7 +362,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Gomoku Narabe Renju"
+   "display": "Gomoku Narabe Renju",
+   "dvd_name": "五子棋"
   },
   {
    "num": 31,
@@ -344,7 +374,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Clu Clu Land"
+   "display": "Clu Clu Land",
+   "dvd_name": "拼图"
   },
   {
    "num": 32,
@@ -355,7 +386,8 @@
    "prg": 32768,
    "chr": 16384,
    "bin_size": 98304,
-   "display": "Kantaro the Pyro's Journey across the Toukaido"
+   "display": "Kantaro the Pyro's Journey across the Toukaido",
+   "dvd_name": "战场"
   },
   {
    "num": 33,
@@ -366,7 +398,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "挖掘"
+   "display": "挖掘",
+   "dvd_name": "挖掘者"
   },
   {
    "num": 34,
@@ -377,7 +410,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Donkey Kong"
+   "display": "Donkey Kong",
+   "dvd_name": "金刚1代"
   },
   {
    "num": 35,
@@ -388,7 +422,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Donkey Kong Jr."
+   "display": "Donkey Kong Jr.",
+   "dvd_name": "金刚2代"
   },
   {
    "num": 36,
@@ -399,7 +434,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "大金刚3"
+   "display": "大金刚3",
+   "dvd_name": "金刚3代"
   },
   {
    "num": 37,
@@ -410,7 +446,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "nba篮球"
+   "display": "nba篮球",
+   "dvd_name": "篮球"
   },
   {
    "num": 38,
@@ -421,7 +458,8 @@
    "prg": 262144,
    "chr": 0,
    "bin_size": 188416,
-   "display": "Spelunker II - A Hero's Challenge"
+   "display": "Spelunker II - A Hero's Challenge",
+   "dvd_name": "龙战士"
   },
   {
    "num": 39,
@@ -432,7 +470,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "小偷抢银行"
+   "display": "小偷抢银行",
+   "dvd_name": "电梯"
   },
   {
    "num": 40,
@@ -444,7 +483,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 21,
-   "display": "火凤凰"
+   "display": "火凤凰",
+   "dvd_name": "火凤凰"
   },
   {
    "num": 41,
@@ -455,7 +495,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "救火英雄"
+   "display": "救火英雄",
+   "dvd_name": "救火队员"
   },
   {
    "num": 42,
@@ -466,7 +507,8 @@
    "prg": 32768,
    "chr": 16384,
    "bin_size": 98304,
-   "display": "变形战机Z"
+   "display": "变形战机Z",
+   "dvd_name": "机器人战争"
   },
   {
    "num": 43,
@@ -477,7 +519,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "前线大作战"
+   "display": "前线大作战",
+   "dvd_name": "前线"
   },
   {
    "num": 44,
@@ -488,7 +531,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "大蜜蜂"
+   "display": "大蜜蜂",
+   "dvd_name": "小蜜蜂"
   },
   {
    "num": 45,
@@ -499,7 +543,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Golf"
+   "display": "Golf",
+   "dvd_name": "高尔夫球"
   },
   {
    "num": 46,
@@ -510,7 +555,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "七宝奇谋2"
+   "display": "七宝奇谋2",
+   "dvd_name": "七宝奇谋2"
   },
   {
    "num": 47,
@@ -521,7 +567,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "沙罗曼蛇1"
+   "display": "沙罗曼蛇1",
+   "dvd_name": "沙罗曼蛇"
   },
   {
    "num": 48,
@@ -532,7 +579,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "绿色兵团"
+   "display": "绿色兵团",
+   "dvd_name": "绿色兵团"
   },
   {
    "num": 49,
@@ -543,7 +591,8 @@
    "prg": 32768,
    "chr": 16384,
    "bin_size": 98304,
-   "display": "飞狼"
+   "display": "飞狼",
+   "dvd_name": "飞狼"
   },
   {
    "num": 50,
@@ -554,7 +603,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Raid on Bungeling Bay"
+   "display": "Raid on Bungeling Bay",
+   "dvd_name": "直升机"
   },
   {
    "num": 51,
@@ -565,7 +615,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Hogan's Alley"
+   "display": "Hogan's Alley",
+   "dvd_name": "射击靶场"
   },
   {
    "num": 52,
@@ -576,7 +627,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "敲冰块"
+   "display": "敲冰块",
+   "dvd_name": "雪人"
   },
   {
    "num": 53,
@@ -587,7 +639,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Ice Hockey"
+   "display": "Ice Hockey",
+   "dvd_name": "曲棍球"
   },
   {
    "num": 54,
@@ -598,7 +651,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "Jackal"
+   "display": "Jackal",
+   "dvd_name": "赤色要塞"
   },
   {
    "num": 55,
@@ -609,7 +663,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Modern Shogi - Naito 9-Dan Shogi Secret"
+   "display": "Modern Shogi - Naito 9-Dan Shogi Secret",
+   "dvd_name": "将棋"
   },
   {
    "num": 56,
@@ -620,7 +675,8 @@
    "prg": 32768,
    "chr": 16384,
    "bin_size": 106496,
-   "display": "影子传说"
+   "display": "影子传说",
+   "dvd_name": "影子传说"
   },
   {
    "num": 57,
@@ -631,7 +687,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Karateka"
+   "display": "Karateka",
+   "dvd_name": "南北拳"
   },
   {
    "num": 58,
@@ -642,7 +699,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Ikki"
+   "display": "Ikki",
+   "dvd_name": "忍者"
   },
   {
    "num": 59,
@@ -653,7 +711,8 @@
    "prg": 131072,
    "chr": 131072,
    "bin_size": 98304,
-   "display": "足球2in1"
+   "display": "足球2in1",
+   "dvd_name": "功夫小子"
   },
   {
    "num": 60,
@@ -664,7 +723,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "小美人鱼"
+   "display": "小美人鱼",
+   "dvd_name": "美人鱼"
   },
   {
    "num": 61,
@@ -675,7 +735,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "挖金"
+   "display": "挖金",
+   "dvd_name": "淘金者"
   },
   {
    "num": 62,
@@ -686,7 +747,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "暴走淘金者2"
+   "display": "暴走淘金者2",
+   "dvd_name": "淘金者2"
   },
   {
    "num": 63,
@@ -697,7 +759,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Lot Lot"
+   "display": "Lot Lot",
+   "dvd_name": "溜溜球"
   },
   {
    "num": 64,
@@ -708,7 +771,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Lunar Ball"
+   "display": "Lunar Ball",
+   "dvd_name": "桌球"
   },
   {
    "num": 65,
@@ -719,7 +783,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Magmax"
+   "display": "Magmax",
+   "dvd_name": "金刚组合"
   },
   {
    "num": 66,
@@ -730,7 +795,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Zhong Guo Mahjong"
+   "display": "Zhong Guo Mahjong",
+   "dvd_name": "4人麻将"
   },
   {
    "num": 67,
@@ -741,7 +807,8 @@
    "prg": 32768,
    "chr": 16384,
    "bin_size": 106496,
-   "display": "Taiwan Mahjong - Tai Wan Ma Que 16"
+   "display": "Taiwan Mahjong - Tai Wan Ma Que 16",
+   "dvd_name": "台湾麻将"
   },
   {
    "num": 68,
@@ -752,7 +819,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "快乐猫"
+   "display": "快乐猫",
+   "dvd_name": "猫捉老鼠"
   },
   {
    "num": 69,
@@ -763,7 +831,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "超级玛利水管工人"
+   "display": "超级玛利水管工人",
+   "dvd_name": "水管玛丽"
   },
   {
    "num": 70,
@@ -774,7 +843,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "杀虫大战"
+   "display": "杀虫大战",
+   "dvd_name": "迷你昆虫"
   },
   {
    "num": 71,
@@ -785,7 +855,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "Batsu & Terry"
+   "display": "Batsu & Terry",
+   "dvd_name": "战斗营"
   },
   {
    "num": 72,
@@ -796,7 +867,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Ninja - Jajamaru in the Castle of Evil"
+   "display": "Ninja - Jajamaru in the Castle of Evil",
+   "dvd_name": "忍者2"
   },
   {
    "num": 73,
@@ -807,7 +879,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "爱的小屋"
+   "display": "爱的小屋",
+   "dvd_name": "爱的小屋"
   },
   {
    "num": 74,
@@ -818,7 +891,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Demo Vision"
+   "display": "Demo Vision",
+   "dvd_name": "黑白棋"
   },
   {
    "num": 75,
@@ -829,7 +903,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "吃豆子"
+   "display": "吃豆子",
+   "dvd_name": "小精灵"
   },
   {
    "num": 76,
@@ -840,7 +915,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Pac-Land"
+   "display": "Pac-Land",
+   "dvd_name": "第八连"
   },
   {
    "num": 77,
@@ -851,7 +927,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Antarctic Adventure"
+   "display": "Antarctic Adventure",
+   "dvd_name": "南极冒险"
   },
   {
    "num": 78,
@@ -862,7 +939,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "World of Card Games, The"
+   "display": "World of Card Games, The",
+   "dvd_name": "扑克集锦"
   },
   {
    "num": 79,
@@ -873,7 +951,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Dog Town"
+   "display": "Dog Town",
+   "dvd_name": "动物小镇"
   },
   {
    "num": 80,
@@ -884,7 +963,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Popeye"
+   "display": "Popeye",
+   "dvd_name": "大力水手"
   },
   {
    "num": 81,
@@ -895,7 +975,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 98304,
-   "display": "公路赛车"
+   "display": "公路赛车",
+   "dvd_name": "火箭人"
   },
   {
    "num": 82,
@@ -906,7 +987,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "洛克人1"
+   "display": "洛克人1",
+   "dvd_name": "洛克人"
   },
   {
    "num": 83,
@@ -917,7 +999,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Astro Robo Sasa"
+   "display": "Astro Robo Sasa",
+   "dvd_name": "四度空间"
   },
   {
    "num": 84,
@@ -928,7 +1011,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Star Luster"
+   "display": "Star Luster",
+   "dvd_name": "太空毁灭者"
   },
   {
    "num": 85,
@@ -939,7 +1023,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "Masked Ninja, The - Akakage"
+   "display": "Masked Ninja, The - Akakage",
+   "dvd_name": "忍者赤影"
   },
   {
    "num": 86,
@@ -950,7 +1035,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "花式撞球"
+   "display": "花式撞球",
+   "dvd_name": "世界桌球赛"
   },
   {
    "num": 87,
@@ -961,7 +1047,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "红巾特工队汉化版"
+   "display": "红巾特工队汉化版",
+   "dvd_name": "红巾特工队"
   },
   {
    "num": 88,
@@ -972,7 +1059,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Sqoon"
+   "display": "Sqoon",
+   "dvd_name": "潜水艇"
   },
   {
    "num": 89,
@@ -983,7 +1071,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "荒野大镖客"
+   "display": "荒野大镖客",
+   "dvd_name": "枪战"
   },
   {
    "num": 90,
@@ -995,7 +1084,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 21,
-   "display": "火凤凰"
+   "display": "火凤凰",
+   "dvd_name": "小蜜蜂2"
   },
   {
    "num": 91,
@@ -1006,7 +1096,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Spelunker"
+   "display": "Spelunker",
+   "dvd_name": "探勘洞穴者"
   },
   {
    "num": 92,
@@ -1017,7 +1108,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "星际战机"
+   "display": "星际战机",
+   "dvd_name": "雷鸟号"
   },
   {
    "num": 93,
@@ -1028,7 +1120,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Star Gate"
+   "display": "Star Gate",
+   "dvd_name": "星际卫士"
   },
   {
    "num": 94,
@@ -1039,7 +1132,8 @@
    "prg": 32768,
    "chr": 16384,
    "bin_size": 106496,
-   "display": "雷鸟2"
+   "display": "雷鸟2",
+   "dvd_name": "星际战士"
   },
   {
    "num": 95,
@@ -1050,7 +1144,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "Blades of Steel"
+   "display": "Blades of Steel",
+   "dvd_name": "曲棍球2"
   },
   {
    "num": 96,
@@ -1061,7 +1156,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "网球"
+   "display": "网球",
+   "dvd_name": "网球"
   },
   {
    "num": 97,
@@ -1072,7 +1168,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "神鹰战机"
+   "display": "神鹰战机",
+   "dvd_name": "飞机射击"
   },
   {
    "num": 98,
@@ -1083,7 +1180,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Wrecking Crew"
+   "display": "Wrecking Crew",
+   "dvd_name": "玛丽射击"
   },
   {
    "num": 99,
@@ -1094,7 +1192,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Kinnikuman - Muscle Tag Match"
+   "display": "Kinnikuman - Muscle Tag Match",
+   "dvd_name": "摔跤"
   },
   {
    "num": 100,
@@ -1105,7 +1204,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Xevious"
+   "display": "Xevious",
+   "dvd_name": "铁板阵"
   },
   {
    "num": 101,
@@ -1116,7 +1216,8 @@
    "prg": 32768,
    "chr": 16384,
    "bin_size": 98304,
-   "display": "Super Dyna'mix Badminton"
+   "display": "Super Dyna'mix Badminton",
+   "dvd_name": "羽毛球"
   },
   {
    "num": 102,
@@ -1127,7 +1228,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "菩故须苛战争"
+   "display": "菩故须苛战争",
+   "dvd_name": "王者之剑"
   },
   {
    "num": 103,
@@ -1138,7 +1240,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 98304,
-   "display": "Space Hunter"
+   "display": "Space Hunter",
+   "dvd_name": "佣兵"
   },
   {
    "num": 104,
@@ -1149,7 +1252,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Flappy"
+   "display": "Flappy",
+   "dvd_name": "智慧方块1"
   },
   {
    "num": 105,
@@ -1160,7 +1264,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Geimos"
+   "display": "Geimos",
+   "dvd_name": "火凤凰"
   },
   {
    "num": 106,
@@ -1171,7 +1276,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Penguin-kun Wars"
+   "display": "Penguin-kun Wars",
+   "dvd_name": "溜溜球2"
   },
   {
    "num": 107,
@@ -1182,7 +1288,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Seicross"
+   "display": "Seicross",
+   "dvd_name": "机车大战"
   },
   {
    "num": 108,
@@ -1194,7 +1301,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 21,
-   "display": "火凤凰"
+   "display": "火凤凰",
+   "dvd_name": "巧巧弹"
   },
   {
    "num": 109,
@@ -1205,7 +1313,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Joust"
+   "display": "Joust",
+   "dvd_name": "飞鸟骑士"
   },
   {
    "num": 110,
@@ -1216,7 +1325,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Super Dimensional Fortress - Macross"
+   "display": "Super Dimensional Fortress - Macross",
+   "dvd_name": "超时空要塞"
   },
   {
    "num": 111,
@@ -1227,7 +1337,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Mahjong"
+   "display": "Mahjong",
+   "dvd_name": "二人麻将"
   },
   {
    "num": 112,
@@ -1238,7 +1349,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Igo Shinan"
+   "display": "Igo Shinan",
+   "dvd_name": "围棋指南"
   },
   {
    "num": 113,
@@ -1249,7 +1361,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Tag Team Wrestling"
+   "display": "Tag Team Wrestling",
+   "dvd_name": "摔跤"
   },
   {
    "num": 114,
@@ -1260,7 +1373,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "中国象棋"
+   "display": "中国象棋",
+   "dvd_name": "中国象棋"
   },
   {
    "num": 115,
@@ -1271,7 +1385,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Hidden Chinese Chess - An Qi"
+   "display": "Hidden Chinese Chess - An Qi",
+   "dvd_name": "暗棋"
   },
   {
    "num": 116,
@@ -1282,7 +1397,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Baseball"
+   "display": "Baseball",
+   "dvd_name": "棒球"
   },
   {
    "num": 117,
@@ -1293,7 +1409,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Cadillac"
+   "display": "Cadillac",
+   "dvd_name": "扑克牌方块"
   },
   {
    "num": 118,
@@ -1304,7 +1421,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Hotterman's Underground Exploration"
+   "display": "Hotterman's Underground Exploration",
+   "dvd_name": "太空战舰"
   },
   {
    "num": 119,
@@ -1315,7 +1433,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Kero Kero Keroppi's Big Adventure 1"
+   "display": "Kero Kero Keroppi's Big Adventure 1",
+   "dvd_name": "青蛙冒险"
   },
   {
    "num": 120,
@@ -1326,7 +1445,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "King's Knight"
+   "display": "King's Knight",
+   "dvd_name": "圣骑士"
   },
   {
    "num": 121,
@@ -1337,7 +1457,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Mr. Moai"
+   "display": "Mr. Moai",
+   "dvd_name": "智慧桥"
   },
   {
    "num": 122,
@@ -1348,7 +1469,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Puss in Boots - Around the World in 80 Days"
+   "display": "Puss in Boots - Around the World in 80 Days",
+   "dvd_name": "环游世界80天"
   },
   {
    "num": 123,
@@ -1359,7 +1481,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Puzznic"
+   "display": "Puzznic",
+   "dvd_name": "智慧方块2"
   },
   {
    "num": 124,
@@ -1370,7 +1493,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Quarth"
+   "display": "Quarth",
+   "dvd_name": "射击方块"
   },
   {
    "num": 125,
@@ -1381,7 +1505,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "新人类"
+   "display": "新人类",
+   "dvd_name": "新人类"
   },
   {
    "num": 126,
@@ -1392,7 +1517,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Sumo Wrestling!"
+   "display": "Sumo Wrestling!",
+   "dvd_name": "相扑"
   },
   {
    "num": 127,
@@ -1403,7 +1529,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Railroad Baron"
+   "display": "Railroad Baron",
+   "dvd_name": "铁道王"
   },
   {
    "num": 128,
@@ -1414,7 +1541,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "George Tokoro’s Offense and Defense"
+   "display": "George Tokoro’s Offense and Defense",
+   "dvd_name": "侦探员"
   },
   {
    "num": 129,
@@ -1425,7 +1553,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Mickey Mousecapade"
+   "display": "Mickey Mousecapade",
+   "dvd_name": "米老鼠"
   },
   {
    "num": 130,
@@ -1436,7 +1565,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "4 Wheel Drive Battle"
+   "display": "4 Wheel Drive Battle",
+   "dvd_name": "机动车四驱车"
   },
   {
    "num": 131,
@@ -1447,7 +1577,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "ASO - Armored Scrum Object"
+   "display": "ASO - Armored Scrum Object",
+   "dvd_name": "装甲英雄"
   },
   {
    "num": 132,
@@ -1458,7 +1589,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "Ninja-kun - Ashura no Shou"
+   "display": "Ninja-kun - Ashura no Shou",
+   "dvd_name": "忍者阿修罗之章"
   },
   {
    "num": 133,
@@ -1469,7 +1601,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "Commando"
+   "display": "Commando",
+   "dvd_name": "战场之狼"
   },
   {
    "num": 134,
@@ -1480,7 +1613,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Bump 'n' Jump"
+   "display": "Bump 'n' Jump",
+   "dvd_name": "碰碰赛车手"
   },
   {
    "num": 135,
@@ -1491,7 +1625,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Championship Bowling"
+   "display": "Championship Bowling",
+   "dvd_name": "冠军保龄球"
   },
   {
    "num": 136,
@@ -1502,7 +1637,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Cosmo Genesis"
+   "display": "Cosmo Genesis",
+   "dvd_name": "失落的世界"
   },
   {
    "num": 137,
@@ -1513,7 +1649,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Karate Champ"
+   "display": "Karate Champ",
+   "dvd_name": "空手道精武门"
   },
   {
    "num": 138,
@@ -1524,7 +1661,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Shui Guo Li"
+   "display": "Shui Guo Li",
+   "dvd_name": "快乐水果机"
   },
   {
    "num": 139,
@@ -1535,7 +1673,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Meikyuu Kumikyoku - Milon no Daibouken"
+   "display": "Meikyuu Kumikyoku - Milon no Daibouken",
+   "dvd_name": "迷宫组曲"
   },
   {
    "num": 140,
@@ -1546,7 +1685,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "Metal Gear"
+   "display": "Metal Gear",
+   "dvd_name": "金齿轮战士"
   },
   {
    "num": 141,
@@ -1557,7 +1697,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "Space Harrier"
+   "display": "Space Harrier",
+   "dvd_name": "太空传说"
   },
   {
    "num": 142,
@@ -1568,7 +1709,8 @@
    "prg": 131072,
    "chr": 0,
    "bin_size": 188416,
-   "display": "Jimmy Connors Tennis"
+   "display": "Jimmy Connors Tennis",
+   "dvd_name": "网球大满贯赛"
   },
   {
    "num": 143,
@@ -1579,7 +1721,8 @@
    "prg": 32768,
    "chr": 32768,
    "bin_size": 122880,
-   "display": "Tiger-Heli"
+   "display": "Tiger-Heli",
+   "dvd_name": "虎形直升机"
   },
   {
    "num": 144,
@@ -1590,7 +1733,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 96256,
-   "display": "Pyramid"
+   "display": "Pyramid",
+   "dvd_name": "金字塔方块"
   },
   {
    "num": 145,
@@ -1601,7 +1745,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Brush Roller"
+   "display": "Brush Roller",
+   "dvd_name": "油漆精灵"
   },
   {
    "num": 146,
@@ -1612,7 +1757,8 @@
    "prg": 16384,
    "chr": 8192,
    "bin_size": 96256,
-   "display": "Donkey Kong Jr. Math"
+   "display": "Donkey Kong Jr. Math",
+   "dvd_name": "金刚数学"
   },
   {
    "num": 147,
@@ -1623,7 +1769,8 @@
    "prg": 65536,
    "chr": 16384,
    "bin_size": 96256,
-   "display": "西游记"
+   "display": "西游记",
+   "dvd_name": "西游记"
   },
   {
    "num": 148,
@@ -1634,7 +1781,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 96256,
-   "display": "Chou Fuyuu Yousai Exed Exes"
+   "display": "Chou Fuyuu Yousai Exed Exes",
+   "dvd_name": "决战X世纪"
   },
   {
    "num": 149,
@@ -1645,7 +1793,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 96256,
-   "display": "Volleyball"
+   "display": "Volleyball",
+   "dvd_name": "排球"
   },
   {
    "num": 150,
@@ -1656,7 +1805,8 @@
    "prg": 32768,
    "chr": 8192,
    "bin_size": 98304,
-   "display": "Volguard II"
+   "display": "Volguard II",
+   "dvd_name": "地球战士"
   },
   {
    "num": 151,
@@ -1668,7 +1818,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 145,
-   "display": "Brush Roller"
+   "display": "Brush Roller",
+   "dvd_name": "油漆精灵"
   },
   {
    "num": 152,
@@ -1680,7 +1831,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 68,
-   "display": "快乐猫"
+   "display": "快乐猫",
+   "dvd_name": "猫捉老鼠"
   },
   {
    "num": 153,
@@ -1692,7 +1844,8 @@
    "chr": 16384,
    "bin_size": 98304,
    "dup_of": 42,
-   "display": "变形战机Z"
+   "display": "变形战机Z",
+   "dvd_name": "机器人战争"
   },
   {
    "num": 154,
@@ -1704,7 +1857,8 @@
    "chr": 16384,
    "bin_size": 98304,
    "dup_of": 5,
-   "display": "兵蜂1"
+   "display": "兵蜂1",
+   "dvd_name": "兵蜂"
   },
   {
    "num": 155,
@@ -1716,7 +1870,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 3,
-   "display": "Kiddy Sun in Fantasia"
+   "display": "Kiddy Sun in Fantasia",
+   "dvd_name": "冒险岛"
   },
   {
    "num": 156,
@@ -1728,7 +1883,8 @@
    "chr": 16384,
    "bin_size": 106496,
    "dup_of": 23,
-   "display": "Argus"
+   "display": "Argus",
+   "dvd_name": "百眼巨神"
   },
   {
    "num": 157,
@@ -1740,7 +1896,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 140,
-   "display": "Metal Gear"
+   "display": "Metal Gear",
+   "dvd_name": "金齿轮战士"
   },
   {
    "num": 158,
@@ -1752,7 +1909,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 111,
-   "display": "Mahjong"
+   "display": "Mahjong",
+   "dvd_name": "二人麻将"
   },
   {
    "num": 159,
@@ -1764,7 +1922,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 126,
-   "display": "Sumo Wrestling!"
+   "display": "Sumo Wrestling!",
+   "dvd_name": "相扑"
   },
   {
    "num": 160,
@@ -1776,7 +1935,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 117,
-   "display": "Cadillac"
+   "display": "Cadillac",
+   "dvd_name": "扑克牌方块"
   },
   {
    "num": 161,
@@ -1788,7 +1948,8 @@
    "chr": 16384,
    "bin_size": 96256,
    "dup_of": 147,
-   "display": "西游记"
+   "display": "西游记",
+   "dvd_name": "西游记"
   },
   {
    "num": 162,
@@ -1800,7 +1961,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 131,
-   "display": "ASO - Armored Scrum Object"
+   "display": "ASO - Armored Scrum Object",
+   "dvd_name": "装甲英雄"
   },
   {
    "num": 163,
@@ -1812,7 +1974,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 26,
-   "display": "打气球"
+   "display": "打气球",
+   "dvd_name": "打气球"
   },
   {
    "num": 164,
@@ -1824,7 +1987,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 50,
-   "display": "Raid on Bungeling Bay"
+   "display": "Raid on Bungeling Bay",
+   "dvd_name": "直升机"
   },
   {
    "num": 165,
@@ -1836,7 +2000,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 139,
-   "display": "Meikyuu Kumikyoku - Milon no Daibouken"
+   "display": "Meikyuu Kumikyoku - Milon no Daibouken",
+   "dvd_name": "迷宫组曲"
   },
   {
    "num": 166,
@@ -1848,7 +2013,8 @@
    "chr": 8192,
    "bin_size": 96256,
    "dup_of": 146,
-   "display": "Donkey Kong Jr. Math"
+   "display": "Donkey Kong Jr. Math",
+   "dvd_name": "金刚数学"
   },
   {
    "num": 167,
@@ -1860,7 +2026,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 28,
-   "display": "B-Wings"
+   "display": "B-Wings",
+   "dvd_name": "B计划"
   },
   {
    "num": 168,
@@ -1872,7 +2039,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 104,
-   "display": "Flappy"
+   "display": "Flappy",
+   "dvd_name": "智慧方块1"
   },
   {
    "num": 169,
@@ -1884,7 +2052,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 150,
-   "display": "Volguard II"
+   "display": "Volguard II",
+   "dvd_name": "地球战士"
   },
   {
    "num": 170,
@@ -1896,7 +2065,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 51,
-   "display": "Hogan's Alley"
+   "display": "Hogan's Alley",
+   "dvd_name": "射击靶场"
   },
   {
    "num": 171,
@@ -1908,7 +2078,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 38,
-   "display": "Spelunker II - A Hero's Challenge"
+   "display": "Spelunker II - A Hero's Challenge",
+   "dvd_name": "龙战士"
   },
   {
    "num": 172,
@@ -1920,7 +2091,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 137,
-   "display": "Karate Champ"
+   "display": "Karate Champ",
+   "dvd_name": "空手道精武门"
   },
   {
    "num": 173,
@@ -1932,7 +2104,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 6,
-   "display": "炸弹人"
+   "display": "炸弹人",
+   "dvd_name": "炸弹超人"
   },
   {
    "num": 174,
@@ -1944,7 +2117,8 @@
    "chr": 16384,
    "bin_size": 98304,
    "dup_of": 101,
-   "display": "Super Dyna'mix Badminton"
+   "display": "Super Dyna'mix Badminton",
+   "dvd_name": "羽毛球"
   },
   {
    "num": 175,
@@ -1956,7 +2130,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 132,
-   "display": "Ninja-kun - Ashura no Shou"
+   "display": "Ninja-kun - Ashura no Shou",
+   "dvd_name": "忍者阿修罗之章"
   },
   {
    "num": 176,
@@ -1968,7 +2143,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 36,
-   "display": "大金刚3"
+   "display": "大金刚3",
+   "dvd_name": "金刚3代"
   },
   {
    "num": 177,
@@ -1980,7 +2156,8 @@
    "chr": 16384,
    "bin_size": 106496,
    "dup_of": 94,
-   "display": "雷鸟2"
+   "display": "雷鸟2",
+   "dvd_name": "星际战士"
   },
   {
    "num": 178,
@@ -1992,7 +2169,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 70,
-   "display": "杀虫大战"
+   "display": "杀虫大战",
+   "dvd_name": "迷你昆虫"
   },
   {
    "num": 179,
@@ -2004,7 +2182,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 112,
-   "display": "Igo Shinan"
+   "display": "Igo Shinan",
+   "dvd_name": "围棋指南"
   },
   {
    "num": 180,
@@ -2016,7 +2195,8 @@
    "chr": 32768,
    "bin_size": 98304,
    "dup_of": 81,
-   "display": "公路赛车"
+   "display": "公路赛车",
+   "dvd_name": "火箭车"
   },
   {
    "num": 181,
@@ -2028,7 +2208,8 @@
    "chr": 16384,
    "bin_size": 98304,
    "dup_of": 49,
-   "display": "飞狼"
+   "display": "飞狼",
+   "dvd_name": "飞狼"
   },
   {
    "num": 182,
@@ -2040,7 +2221,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 134,
-   "display": "Bump 'n' Jump"
+   "display": "Bump 'n' Jump",
+   "dvd_name": "碰碰赛车手"
   },
   {
    "num": 183,
@@ -2052,7 +2234,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 15,
-   "display": "Magic Jewelry"
+   "display": "Magic Jewelry",
+   "dvd_name": "钻石方块"
   },
   {
    "num": 184,
@@ -2064,7 +2247,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 21,
-   "display": "火凤凰"
+   "display": "火凤凰",
+   "dvd_name": "小蜜蜂2"
   },
   {
    "num": 185,
@@ -2076,7 +2260,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 118,
-   "display": "Hotterman's Underground Exploration"
+   "display": "Hotterman's Underground Exploration",
+   "dvd_name": "太空船战"
   },
   {
    "num": 186,
@@ -2088,7 +2273,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 14,
-   "display": "Zunou Senkan Galg"
+   "display": "Zunou Senkan Galg",
+   "dvd_name": "超级雷电"
   },
   {
    "num": 187,
@@ -2100,7 +2286,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 18,
-   "display": "彩虹岛"
+   "display": "彩虹岛",
+   "dvd_name": "彩虹岛"
   },
   {
    "num": 188,
@@ -2112,7 +2299,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 8,
-   "display": "Shufflepuck Cafe"
+   "display": "Shufflepuck Cafe",
+   "dvd_name": "咖啡店"
   },
   {
    "num": 189,
@@ -2124,7 +2312,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 27,
-   "display": "BurgerTime"
+   "display": "BurgerTime",
+   "dvd_name": "汉堡时间"
   },
   {
    "num": 190,
@@ -2136,7 +2325,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 54,
-   "display": "Jackal"
+   "display": "Jackal",
+   "dvd_name": "赤色要塞"
   },
   {
    "num": 191,
@@ -2148,7 +2338,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 65,
-   "display": "Magmax"
+   "display": "Magmax",
+   "dvd_name": "金刚组合"
   },
   {
    "num": 192,
@@ -2160,7 +2351,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 72,
-   "display": "Ninja - Jajamaru in the Castle of Evil"
+   "display": "Ninja - Jajamaru in the Castle of Evil",
+   "dvd_name": "忍者2"
   },
   {
    "num": 193,
@@ -2172,7 +2364,8 @@
    "chr": 131072,
    "bin_size": 98304,
    "dup_of": 59,
-   "display": "足球2in1"
+   "display": "足球2in1",
+   "dvd_name": "功夫小子"
   },
   {
    "num": 194,
@@ -2184,7 +2377,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 86,
-   "display": "花式撞球"
+   "display": "花式撞球",
+   "dvd_name": "世界桌球赛"
   },
   {
    "num": 195,
@@ -2196,7 +2390,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 61,
-   "display": "挖金"
+   "display": "挖金",
+   "dvd_name": "淘金者"
   },
   {
    "num": 196,
@@ -2208,7 +2403,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 119,
-   "display": "Kero Kero Keroppi's Big Adventure 1"
+   "display": "Kero Kero Keroppi's Big Adventure 1",
+   "dvd_name": "青蛙冒险"
   },
   {
    "num": 197,
@@ -2220,7 +2416,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 87,
-   "display": "红巾特工队汉化版"
+   "display": "红巾特工队汉化版",
+   "dvd_name": "红巾特工队"
   },
   {
    "num": 198,
@@ -2232,7 +2429,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 74,
-   "display": "Demo Vision"
+   "display": "Demo Vision",
+   "dvd_name": "黑白棋"
   },
   {
    "num": 199,
@@ -2244,7 +2442,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 9,
-   "display": "马戏团"
+   "display": "马戏团",
+   "dvd_name": "马戏团"
   },
   {
    "num": 200,
@@ -2256,7 +2455,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 123,
-   "display": "Puzznic"
+   "display": "Puzznic",
+   "dvd_name": "智慧方块2"
   },
   {
    "num": 201,
@@ -2268,7 +2468,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 107,
-   "display": "Seicross"
+   "display": "Seicross",
+   "dvd_name": "机车大战"
   },
   {
    "num": 202,
@@ -2280,7 +2481,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 71,
-   "display": "Batsu & Terry"
+   "display": "Batsu & Terry",
+   "dvd_name": "战斗营"
   },
   {
    "num": 203,
@@ -2292,7 +2494,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 4,
-   "display": "Battle City - Super Tank II"
+   "display": "Battle City - Super Tank II",
+   "dvd_name": "坦克2"
   },
   {
    "num": 204,
@@ -2304,7 +2507,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 31,
-   "display": "Clu Clu Land"
+   "display": "Clu Clu Land",
+   "dvd_name": "拼图"
   },
   {
    "num": 205,
@@ -2316,7 +2520,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 80,
-   "display": "Popeye"
+   "display": "Popeye",
+   "dvd_name": "大力水手"
   },
   {
    "num": 206,
@@ -2328,7 +2533,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 93,
-   "display": "Star Gate"
+   "display": "Star Gate",
+   "dvd_name": "星际卫士"
   },
   {
    "num": 207,
@@ -2340,7 +2546,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 21,
-   "display": "火凤凰"
+   "display": "火凤凰",
+   "dvd_name": "巧巧弹"
   },
   {
    "num": 208,
@@ -2352,7 +2559,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 55,
-   "display": "Modern Shogi - Naito 9-Dan Shogi Secret"
+   "display": "Modern Shogi - Naito 9-Dan Shogi Secret",
+   "dvd_name": "将棋"
   },
   {
    "num": 209,
@@ -2364,7 +2572,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 10,
-   "display": "Contra"
+   "display": "Contra",
+   "dvd_name": "魂斗罗"
   },
   {
    "num": 210,
@@ -2376,7 +2585,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 57,
-   "display": "Karateka"
+   "display": "Karateka",
+   "dvd_name": "南北拳"
   },
   {
    "num": 211,
@@ -2388,7 +2598,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 121,
-   "display": "Mr. Moai"
+   "display": "Mr. Moai",
+   "dvd_name": "智慧桥"
   },
   {
    "num": 212,
@@ -2400,7 +2611,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 44,
-   "display": "大蜜蜂"
+   "display": "大蜜蜂",
+   "dvd_name": "小蜜蜂"
   },
   {
    "num": 213,
@@ -2412,7 +2624,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 113,
-   "display": "Tag Team Wrestling"
+   "display": "Tag Team Wrestling",
+   "dvd_name": "摔跤"
   },
   {
    "num": 214,
@@ -2424,7 +2637,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 52,
-   "display": "敲冰块"
+   "display": "敲冰块",
+   "dvd_name": "雪人"
   },
   {
    "num": 215,
@@ -2436,7 +2650,8 @@
    "chr": 32768,
    "bin_size": 98304,
    "dup_of": 7,
-   "display": "Mighty Bomb Jack"
+   "display": "Mighty Bomb Jack",
+   "dvd_name": "炸弹扑克"
   },
   {
    "num": 216,
@@ -2448,7 +2663,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 76,
-   "display": "Pac-Land"
+   "display": "Pac-Land",
+   "dvd_name": "第八连"
   },
   {
    "num": 217,
@@ -2460,7 +2676,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 98,
-   "display": "Wrecking Crew"
+   "display": "Wrecking Crew",
+   "dvd_name": "玛丽砖块"
   },
   {
    "num": 218,
@@ -2472,7 +2689,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 37,
-   "display": "nba篮球"
+   "display": "nba篮球",
+   "dvd_name": "篮球"
   },
   {
    "num": 219,
@@ -2484,7 +2702,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 4,
-   "display": "Battle City - Super Tank II"
+   "display": "Battle City - Super Tank II",
+   "dvd_name": "坦克"
   },
   {
    "num": 220,
@@ -2496,7 +2715,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 116,
-   "display": "Baseball"
+   "display": "Baseball",
+   "dvd_name": "棒球"
   },
   {
    "num": 221,
@@ -2508,7 +2728,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 62,
-   "display": "暴走淘金者2"
+   "display": "暴走淘金者2",
+   "dvd_name": "淘金者2"
   },
   {
    "num": 222,
@@ -2520,7 +2741,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 89,
-   "display": "荒野大镖客"
+   "display": "荒野大镖客",
+   "dvd_name": "枪战"
   },
   {
    "num": 223,
@@ -2532,7 +2754,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 39,
-   "display": "小偷抢银行"
+   "display": "小偷抢银行",
+   "dvd_name": "电梯"
   },
   {
    "num": 224,
@@ -2544,7 +2767,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 43,
-   "display": "前线大作战"
+   "display": "前线大作战",
+   "dvd_name": "前线"
   },
   {
    "num": 225,
@@ -2556,7 +2780,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 45,
-   "display": "Golf"
+   "display": "Golf",
+   "dvd_name": "高尔夫球"
   },
   {
    "num": 226,
@@ -2568,7 +2793,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 77,
-   "display": "Antarctic Adventure"
+   "display": "Antarctic Adventure",
+   "dvd_name": "南极冒险"
   },
   {
    "num": 227,
@@ -2580,7 +2806,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 102,
-   "display": "菩故须苛战争"
+   "display": "菩故须苛战争",
+   "dvd_name": "王者之剑"
   },
   {
    "num": 228,
@@ -2592,7 +2819,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 66,
-   "display": "Zhong Guo Mahjong"
+   "display": "Zhong Guo Mahjong",
+   "dvd_name": "四人麻将"
   },
   {
    "num": 229,
@@ -2604,7 +2832,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 99,
-   "display": "Kinnikuman - Muscle Tag Match"
+   "display": "Kinnikuman - Muscle Tag Match",
+   "dvd_name": "摔跤"
   },
   {
    "num": 230,
@@ -2616,7 +2845,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 127,
-   "display": "Railroad Baron"
+   "display": "Railroad Baron",
+   "dvd_name": "铁道王"
   },
   {
    "num": 231,
@@ -2628,7 +2858,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 105,
-   "display": "Geimos"
+   "display": "Geimos",
+   "dvd_name": "火凤凰2"
   },
   {
    "num": 232,
@@ -2640,7 +2871,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 120,
-   "display": "King's Knight"
+   "display": "King's Knight",
+   "dvd_name": "圣骑士"
   },
   {
    "num": 233,
@@ -2652,7 +2884,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 130,
-   "display": "4 Wheel Drive Battle"
+   "display": "4 Wheel Drive Battle",
+   "dvd_name": "机动四驱车"
   },
   {
    "num": 234,
@@ -2664,7 +2897,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 114,
-   "display": "中国象棋"
+   "display": "中国象棋",
+   "dvd_name": "中国象棋"
   },
   {
    "num": 235,
@@ -2676,7 +2910,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 58,
-   "display": "Ikki"
+   "display": "Ikki",
+   "dvd_name": "忍者"
   },
   {
    "num": 236,
@@ -2688,7 +2923,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 1,
-   "display": "1942"
+   "display": "1942",
+   "dvd_name": "1942"
   },
   {
    "num": 237,
@@ -2700,7 +2936,8 @@
    "chr": 8192,
    "bin_size": 96256,
    "dup_of": 144,
-   "display": "Pyramid"
+   "display": "Pyramid",
+   "dvd_name": "金字塔方块"
   },
   {
    "num": 238,
@@ -2712,7 +2949,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 110,
-   "display": "Super Dimensional Fortress - Macross"
+   "display": "Super Dimensional Fortress - Macross",
+   "dvd_name": "超时空要塞"
   },
   {
    "num": 239,
@@ -2724,7 +2962,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 141,
-   "display": "Space Harrier"
+   "display": "Space Harrier",
+   "dvd_name": "太空传说"
   },
   {
    "num": 240,
@@ -2736,7 +2975,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 29,
-   "display": "Route-16 Turbo"
+   "display": "Route-16 Turbo",
+   "dvd_name": "迷魂车"
   },
   {
    "num": 241,
@@ -2748,7 +2988,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 24,
-   "display": "弹珠台"
+   "display": "弹珠台",
+   "dvd_name": "打砖块"
   },
   {
    "num": 242,
@@ -2760,7 +3001,8 @@
    "chr": 32768,
    "bin_size": 98304,
    "dup_of": 103,
-   "display": "Space Hunter"
+   "display": "Space Hunter",
+   "dvd_name": "佣兵"
   },
   {
    "num": 243,
@@ -2772,7 +3014,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 63,
-   "display": "Lot Lot"
+   "display": "Lot Lot",
+   "dvd_name": "溜溜球"
   },
   {
    "num": 244,
@@ -2784,7 +3027,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 21,
-   "display": "火凤凰"
+   "display": "火凤凰",
+   "dvd_name": "火凤凰"
   },
   {
    "num": 245,
@@ -2796,7 +3040,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 136,
-   "display": "Cosmo Genesis"
+   "display": "Cosmo Genesis",
+   "dvd_name": "失落的世界"
   },
   {
    "num": 246,
@@ -2808,7 +3053,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 142,
-   "display": "Jimmy Connors Tennis"
+   "display": "Jimmy Connors Tennis",
+   "dvd_name": "网球大满贯赛"
   },
   {
    "num": 247,
@@ -2820,7 +3066,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 46,
-   "display": "七宝奇谋2"
+   "display": "七宝奇谋2",
+   "dvd_name": "七宝奇谋2"
   },
   {
    "num": 248,
@@ -2832,7 +3079,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 85,
-   "display": "Masked Ninja, The - Akakage"
+   "display": "Masked Ninja, The - Akakage",
+   "dvd_name": "忍者赤影"
   },
   {
    "num": 249,
@@ -2844,7 +3092,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 21,
-   "display": "火凤凰"
+   "display": "火凤凰",
+   "dvd_name": "橄榄球"
   },
   {
    "num": 250,
@@ -2856,7 +3105,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 60,
-   "display": "小美人鱼"
+   "display": "小美人鱼",
+   "dvd_name": "美人鱼"
   },
   {
    "num": 251,
@@ -2868,7 +3118,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 96,
-   "display": "网球"
+   "display": "网球",
+   "dvd_name": "网球"
   },
   {
    "num": 252,
@@ -2880,7 +3131,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 30,
-   "display": "Gomoku Narabe Renju"
+   "display": "Gomoku Narabe Renju",
+   "dvd_name": "五子棋"
   },
   {
    "num": 253,
@@ -2892,7 +3144,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 143,
-   "display": "Tiger-Heli"
+   "display": "Tiger-Heli",
+   "dvd_name": "虎形直升机"
   },
   {
    "num": 254,
@@ -2904,7 +3157,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 128,
-   "display": "George Tokoro’s Offense and Defense"
+   "display": "George Tokoro’s Offense and Defense",
+   "dvd_name": "侦探员"
   },
   {
    "num": 255,
@@ -2916,7 +3170,8 @@
    "chr": 32768,
    "bin_size": 106496,
    "dup_of": 20,
-   "display": "俄罗斯方块"
+   "display": "俄罗斯方块",
+   "dvd_name": "俄罗斯方块"
   },
   {
    "num": 256,
@@ -2928,7 +3183,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 82,
-   "display": "洛克人1"
+   "display": "洛克人1",
+   "dvd_name": "洛克人"
   },
   {
    "num": 257,
@@ -2940,7 +3196,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 83,
-   "display": "Astro Robo Sasa"
+   "display": "Astro Robo Sasa",
+   "dvd_name": "四度空间"
   },
   {
    "num": 258,
@@ -2952,7 +3209,8 @@
    "chr": 8192,
    "bin_size": 96256,
    "dup_of": 149,
-   "display": "Volleyball"
+   "display": "Volleyball",
+   "dvd_name": "排球"
   },
   {
    "num": 259,
@@ -2964,7 +3222,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 92,
-   "display": "星际战机"
+   "display": "星际战机",
+   "dvd_name": "雷鸟号"
   },
   {
    "num": 260,
@@ -2976,7 +3235,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 69,
-   "display": "超级玛利水管工人"
+   "display": "超级玛利水管工人",
+   "dvd_name": "水管玛丽"
   },
   {
    "num": 261,
@@ -2988,7 +3248,8 @@
    "chr": 16384,
    "bin_size": 106496,
    "dup_of": 67,
-   "display": "Taiwan Mahjong - Tai Wan Ma Que 16"
+   "display": "Taiwan Mahjong - Tai Wan Ma Que 16",
+   "dvd_name": "台湾麻将"
   },
   {
    "num": 262,
@@ -3000,7 +3261,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 33,
-   "display": "挖掘"
+   "display": "挖掘",
+   "dvd_name": "挖掘者"
   },
   {
    "num": 263,
@@ -3012,7 +3274,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 95,
-   "display": "Blades of Steel"
+   "display": "Blades of Steel",
+   "dvd_name": "曲棍球2"
   },
   {
    "num": 264,
@@ -3024,7 +3287,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 129,
-   "display": "Mickey Mousecapade"
+   "display": "Mickey Mousecapade",
+   "dvd_name": "米老鼠"
   },
   {
    "num": 265,
@@ -3036,7 +3300,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 73,
-   "display": "爱的小屋"
+   "display": "爱的小屋",
+   "dvd_name": "爱的小屋"
   },
   {
    "num": 266,
@@ -3048,7 +3313,8 @@
    "chr": 8192,
    "bin_size": 96256,
    "dup_of": 148,
-   "display": "Chou Fuyuu Yousai Exed Exes"
+   "display": "Chou Fuyuu Yousai Exed Exes",
+   "dvd_name": "决战X世代"
   },
   {
    "num": 267,
@@ -3060,7 +3326,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 35,
-   "display": "Donkey Kong Jr."
+   "display": "Donkey Kong Jr.",
+   "dvd_name": "金刚2代"
   },
   {
    "num": 268,
@@ -3072,7 +3339,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 64,
-   "display": "Lunar Ball"
+   "display": "Lunar Ball",
+   "dvd_name": "桌球"
   },
   {
    "num": 269,
@@ -3084,7 +3352,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 138,
-   "display": "Shui Guo Li"
+   "display": "Shui Guo Li",
+   "dvd_name": "快乐水果机"
   },
   {
    "num": 270,
@@ -3096,7 +3365,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 47,
-   "display": "沙罗曼蛇1"
+   "display": "沙罗曼蛇1",
+   "dvd_name": "沙罗曼蛇"
   },
   {
    "num": 271,
@@ -3108,7 +3378,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 78,
-   "display": "World of Card Games, The"
+   "display": "World of Card Games, The",
+   "dvd_name": "扑克集锦"
   },
   {
    "num": 272,
@@ -3120,7 +3391,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 122,
-   "display": "Puss in Boots - Around the World in 80 Days"
+   "display": "Puss in Boots - Around the World in 80 Days",
+   "dvd_name": "环游世界80天"
   },
   {
    "num": 273,
@@ -3132,7 +3404,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 124,
-   "display": "Quarth"
+   "display": "Quarth",
+   "dvd_name": "射击方块"
   },
   {
    "num": 274,
@@ -3144,7 +3417,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 84,
-   "display": "Star Luster"
+   "display": "Star Luster",
+   "dvd_name": "太空毁灭者"
   },
   {
    "num": 275,
@@ -3156,7 +3430,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 34,
-   "display": "Donkey Kong"
+   "display": "Donkey Kong",
+   "dvd_name": "金刚1代"
   },
   {
    "num": 276,
@@ -3168,7 +3443,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 48,
-   "display": "绿色兵团"
+   "display": "绿色兵团",
+   "dvd_name": "绿色兵团"
   },
   {
    "num": 277,
@@ -3180,7 +3456,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 100,
-   "display": "Xevious"
+   "display": "Xevious",
+   "dvd_name": "铁板阵"
   },
   {
    "num": 278,
@@ -3192,7 +3469,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 88,
-   "display": "Sqoon"
+   "display": "Sqoon",
+   "dvd_name": "潜水艇"
   },
   {
    "num": 279,
@@ -3204,7 +3482,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 109,
-   "display": "Joust"
+   "display": "Joust",
+   "dvd_name": "飞鸟骑士"
   },
   {
    "num": 280,
@@ -3216,7 +3495,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 17,
-   "display": "猪小弟"
+   "display": "猪小弟",
+   "dvd_name": "猪小弟"
   },
   {
    "num": 281,
@@ -3228,7 +3508,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 41,
-   "display": "救火英雄"
+   "display": "救火英雄",
+   "dvd_name": "救火队员"
   },
   {
    "num": 282,
@@ -3240,7 +3521,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 135,
-   "display": "Championship Bowling"
+   "display": "Championship Bowling",
+   "dvd_name": "冠军保龄球"
   },
   {
    "num": 283,
@@ -3252,7 +3534,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 97,
-   "display": "神鹰战机"
+   "display": "神鹰战机",
+   "dvd_name": "飞机射击"
   },
   {
    "num": 284,
@@ -3264,7 +3547,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 79,
-   "display": "Dog Town"
+   "display": "Dog Town",
+   "dvd_name": "动物小镇"
   },
   {
    "num": 285,
@@ -3276,7 +3560,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 2,
-   "display": "1944"
+   "display": "1944",
+   "dvd_name": "1943"
   },
   {
    "num": 286,
@@ -3288,7 +3573,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 12,
-   "display": "玛莉医生"
+   "display": "玛莉医生",
+   "dvd_name": "玛丽医生"
   },
   {
    "num": 287,
@@ -3300,7 +3586,8 @@
    "chr": 0,
    "bin_size": 188416,
    "dup_of": 133,
-   "display": "Commando"
+   "display": "Commando",
+   "dvd_name": "战场之狼"
   },
   {
    "num": 288,
@@ -3312,7 +3599,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 13,
-   "display": "Fire Dragon"
+   "display": "Fire Dragon",
+   "dvd_name": "火龙"
   },
   {
    "num": 289,
@@ -3324,7 +3612,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 25,
-   "display": "企鹅先生-冒险之旅"
+   "display": "企鹅先生-冒险之旅",
+   "dvd_name": "爱心企鹅"
   },
   {
    "num": 290,
@@ -3336,7 +3625,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 53,
-   "display": "Ice Hockey"
+   "display": "Ice Hockey",
+   "dvd_name": "曲棍球"
   },
   {
    "num": 291,
@@ -3348,7 +3638,8 @@
    "chr": 32768,
    "bin_size": 122880,
    "dup_of": 125,
-   "display": "新人类"
+   "display": "新人类",
+   "dvd_name": "新人类"
   },
   {
    "num": 292,
@@ -3360,7 +3651,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 16,
-   "display": "Super Mario Bros."
+   "display": "Super Mario Bros.",
+   "dvd_name": "超级玛丽"
   },
   {
    "num": 293,
@@ -3372,7 +3664,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 91,
-   "display": "Spelunker"
+   "display": "Spelunker",
+   "dvd_name": "探勘洞穴者"
   },
   {
    "num": 294,
@@ -3384,7 +3677,8 @@
    "chr": 16384,
    "bin_size": 106496,
    "dup_of": 56,
-   "display": "影子传说"
+   "display": "影子传说",
+   "dvd_name": "影子传说"
   },
   {
    "num": 295,
@@ -3396,7 +3690,8 @@
    "chr": 16384,
    "bin_size": 98304,
    "dup_of": 32,
-   "display": "Kantaro the Pyro's Journey across the Toukaido"
+   "display": "Kantaro the Pyro's Journey across the Toukaido",
+   "dvd_name": "战场"
   },
   {
    "num": 296,
@@ -3408,7 +3703,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 22,
-   "display": "Super Arabian"
+   "display": "Super Arabian",
+   "dvd_name": "辛巴达"
   },
   {
    "num": 297,
@@ -3420,7 +3716,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 11,
-   "display": "Thexder"
+   "display": "Thexder",
+   "dvd_name": "太空战士"
   },
   {
    "num": 298,
@@ -3432,7 +3729,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 75,
-   "display": "吃豆子"
+   "display": "吃豆子",
+   "dvd_name": "小精灵"
   },
   {
    "num": 299,
@@ -3444,7 +3742,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 115,
-   "display": "Hidden Chinese Chess - An Qi"
+   "display": "Hidden Chinese Chess - An Qi",
+   "dvd_name": "暗棋"
   },
   {
    "num": 300,
@@ -3456,7 +3755,8 @@
    "chr": 8192,
    "bin_size": 98304,
    "dup_of": 106,
-   "display": "Penguin-kun Wars"
+   "display": "Penguin-kun Wars",
+   "dvd_name": "溜溜球2"
   }
  ]
 }

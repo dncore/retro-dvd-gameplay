@@ -30,6 +30,8 @@ the disc's own layout and boot animation, a recreated menu, and an in-process li
 ## Features
 
 - All **300 entries** in the disc's original `G001`–`G300` order (146 unique games after de-duplication)
+- **Chinese menu names for all 300 slots**, transcribed from the original menu list (obvious
+  typos corrected); the catalog keeps the English ROM titles as a fallback
 - **2×5 grid**, paging, cursor highlight; keyboard and SDL gamepad both work
 - The disc's **22-second boot animation** (`CDI_BUM.DAT`), extracted from your own image at runtime
 - The disc's **background music**, looping in the menu
