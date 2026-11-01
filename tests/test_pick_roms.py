@@ -57,6 +57,8 @@ class TestPickRoms(unittest.TestCase):
             self.assertFalse(os.path.exists(os.path.join(out, "G004.nes")))
             with open(os.path.join(out, "G001.nes"), "rb") as fh:
                 self.assertEqual(fh.read(), A)
+            with open(os.path.join(out, "G002.nes"), "rb") as fh:
+                self.assertEqual(fh.read(), B)
 
             with open(catalog, encoding="utf-8") as fh:
                 entries = json.load(fh)["entries"]

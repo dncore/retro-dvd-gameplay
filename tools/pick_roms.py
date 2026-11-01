@@ -11,8 +11,8 @@ import argparse
 import csv
 import json
 import os
-import shutil
 import sys
+import zipfile
 
 try:
     from tools.rom_checksums import hash_rom
@@ -40,6 +40,17 @@ def load_checksums(path):
             if md5 and slots:
                 out[md5] = slots
     return out
+
+
+def read_rom(path):
+    """返回真正的 ROM 字节；zip 取内部第一个 .nes/.fds"""
+    if path.lower().endswith(".zip"):
+        with zipfile.ZipFile(path) as zf:
+            names = [n for n in zf.namelist()
+                     if n.lower().endswith((".nes", ".fds", ".unf"))]
+            return zf.read(names[0]) if names else None
+    with open(path, "rb") as fh:
+        return fh.read()
 
 
 def iter_rom_files(root):
@@ -80,7 +91,11 @@ def main(argv=None):
         for slot, src in sorted(found.items()):
             dst = os.path.join(args.out, "G%03d.nes" % slot)
             if os.path.abspath(src) != os.path.abspath(dst):
-                shutil.copyfile(src, dst)
+                data = read_rom(src)
+                if data is None:
+                    continue
+                with open(dst, "wb") as fh:
+                    fh.write(data)
 
         with open(args.catalog, encoding="utf-8") as fh:
             data = json.load(fh)
