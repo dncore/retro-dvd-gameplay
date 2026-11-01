@@ -11,6 +11,8 @@ metadata and display names; the bytes are read from files **you** provide.
 
 `data/roms.csv` contains only MD5 checksums, sizes, slot numbers and game names, for
 verifying ROMs you already own. It contains no ROM bytes and no download locations.
+No-Intro DAT files are metadata as well; use them with dumps you are legally allowed to
+have, not as a source of ROMs.
 
 `assets/menu_pages/01.jpg` … `30.jpg` are reconstructed menu backgrounds included for
 preservation and identification. They are **not** covered by the MIT license; rights

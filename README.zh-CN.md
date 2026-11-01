@@ -83,6 +83,42 @@ cp config.example.json config.json
 python run.py
 ```
 
+## 使用 No-Intro 命名/校验
+
+No-Intro 发布的是 **DAT**（名称 + 校验值），不是 ROM。若你已经合法拥有 dump，用 DAT
+校验和改名是标准做法；本项目不提供、也不推荐 ROM 下载源。
+
+`data/roms.csv` 是这张盘所需 146 款唯一 ROM（300 个槽位）的校验清单。从本地收藏里
+挑出来并统一命名：
+
+```bash
+python tools/pick_roms.py --source "D:\No-Intro\NES" --out roms
+```
+
+工具会哈希 `.nes` 和 `.zip` 里的内部 ROM，按 MD5 精确匹配，为每个槽位复制成
+`roms/G001.nes` … `G300.nes`，改写 `data/catalog.json`，未匹配的槽位置 `null`。
+然后把 `config.json` 的 `roms` 指到输出目录。
+
+### Agent 提示词
+
+如果想让 AI agent 来做匹配，直接贴这段：
+
+```text
+你在 Windows 上配置 retro-dvd-gameplay。
+只操作仓库和用户提供的 ROM 目录，绝不下 ROM/ISO/BIOS/密钥。
+
+1. 读 data/roms.csv（md5,size,slots,rom_name,menu_name）。
+2. 递归扫描 ROM 目录；.zip 取内部第一个 .nes/.fds 的字节，.nes/.fds/.unf 直接哈希。
+3. 只按 MD5 精确匹配；对每一行，把命中的 ROM 复制成 roms/G%03d.nes，
+   覆盖 slots 里的每个槽位（重复槽位用同一份字节）。
+4. 改写 data/catalog.json：命中的条目 rom 设为 "G%03d.nes"，未命中的设为 null；
+   保留其它字段，尤其 dvd_name。不要按文件名匹配，也不要把 ROM 改到别的游戏名下。
+5. 打印缺失槽位；不要伪造文件。
+6. 把 config.json 的 roms 指向 roms/ 的绝对路径，并报告数量。
+```
+
+优先用脚本：它是确定性的，不会猜。
+
 ## 打包 Windows 可执行文件
 
 ```powershell

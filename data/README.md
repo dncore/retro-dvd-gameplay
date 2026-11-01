@@ -6,6 +6,8 @@
   It contains only checksums and names, **no ROM bytes and no download links**. Use it to
   verify a collection you already own, or regenerate it against your own paths:
   `python tools/rom_checksums.py --roms <dir> --out data/roms.csv`.
+  To pick matches out of a local collection and rename them to `roms/G001.nes`:
+  `python tools/pick_roms.py --source <dir> --out roms`.
 - `dvd_names_tieba.txt` / `tieba_names.json` — the 300 Chinese menu names, transcribed
   by a Baidu Tieba user from the disc's menu:
   <https://tieba.baidu.com/p/2179922897>. Obvious hand-typing errors were corrected

@@ -85,6 +85,51 @@ cp config.example.json config.json
 python run.py
 ```
 
+## Using a No-Intro set
+
+No-Intro distributes **DAT files** (names + checksums), not ROMs. If you already have
+legally obtained dumps, the DAT is the standard way to verify and name them. This
+project does not provide or recommend ROM download sources.
+
+`data/roms.csv` is the checksum list for the 146 unique ROMs this disc needs (300
+slots). To pick them from a local collection and lay them out as `roms/G001.nes` …
+`G300.nes`:
+
+```bash
+python tools/pick_roms.py --source "D:\No-Intro\NES" --out roms
+```
+
+The tool hashes `.nes` files and the inner ROM of `.zip` archives, matches MD5 exactly,
+copies each match for every slot, rewrites `data/catalog.json`, and sets unmatched
+slots to `null`. Then point `config.json` at the output:
+
+```json
+{"roms": "C:/path/to/retro-dvd-gameplay/roms"}
+```
+
+### Agent prompt
+
+If you prefer an AI agent to do the matching, paste this:
+
+```text
+You are setting up retro-dvd-gameplay on Windows.
+Work only inside the repository and the user-supplied ROM directory.
+Never download ROMs, ISO, BIOS or keys.
+
+1. Read data/roms.csv (columns: md5,size,slots,rom_name,menu_name).
+2. Recursively scan the ROM directory. For .zip, hash the first .nes/.fds inside;
+   for .nes/.fds/.unf, hash the file itself.
+3. Match MD5 exactly. For every row, copy the matched ROM to roms/G%03d.nes for
+   each slot in "slots" (duplicate slots get the same bytes).
+4. Rewrite data/catalog.json: matched entries get "rom": "G%03d.nes"; unmatched
+   entries get "rom": null. Preserve every other field, especially "dvd_name".
+   Never rename a ROM to a different game and never match by filename.
+5. Print the missing slots. Do not invent files.
+6. Set config.json "roms" to the absolute path of roms/ and report the count.
+```
+
+Prefer the script when possible: it is deterministic and does not guess.
+
 ## Building a Windows executable
 
 ```powershell
