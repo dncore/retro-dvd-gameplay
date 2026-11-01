@@ -10,6 +10,8 @@
     ESC / 手柄 Back           → 退出回菜单（同时存档）
     F5 / 手柄 LB              → 立即存档
     F7 / 手柄 RB              → 读档
+    F3                        → 滤镜：清晰 / 平滑 / 扫描线
+    F4 / F6                   → 减速 / 加速（非 1x 静音）
 """
 import array
 import hashlib
@@ -17,6 +19,8 @@ import os
 import tempfile
 
 import pygame
+
+from . import theme
 
 from .bindings import Bindings, joy_token, key_token
 from .libretro import (ID_JOYPAD_A, ID_JOYPAD_B, ID_JOYPAD_DOWN, ID_JOYPAD_LEFT,
@@ -34,8 +38,9 @@ ACTION_IDS = {
     "SELECT": ID_JOYPAD_SELECT,
 }
 
-AUDIO_CHANNELS = 8          # 每个通道约 23ms，合计约 180ms 缓冲
-AUDIO_CHUNK_FRAMES = 1024   # 44.1kHz 下约 23ms
+AUDIO_CHANNELS = 8          # 每个通道约 46ms，合计约 370ms 缓冲
+AUDIO_CHUNK_FRAMES = 2048   # 44.1kHz 下约 46ms
+FILTER_NAMES = ("清晰", "平滑", "扫描线")
 
 
 def _state_filename(rom_path):
@@ -110,6 +115,9 @@ def _joy_buttons(joy, bindings):
 
 
 class PlayScreen:
+    _filter_mode = 0
+    _speed = 1.0
+
     def __init__(self, core_path, window_size=(704, 576), scale=2, bindings=None):
         self.core_path = core_path
         self.window_size = window_size
@@ -124,6 +132,13 @@ class PlayScreen:
         self.audio_pending = bytearray()
         self._audio_keep = []
         self.audio_queued = 0
+        self.filter_mode = PlayScreen._filter_mode
+        self.speed = PlayScreen._speed
+        self.osd_text = ""
+        self.osd_timer = 0
+        self.osd_font = None
+        self._scan_cache = None
+        self._scan_size = None
 
     def _make_surface(self):
         c = self.core
@@ -200,15 +215,34 @@ class PlayScreen:
                     if ev.key in (pygame.K_ESCAPE, pygame.K_F12):
                         running = False
                     elif ev.key == pygame.K_F5:
-                        self._save()
+                        self._osd("已存档" if self._save() else "存档失败")
                     elif ev.key == pygame.K_F7:
-                        self._load()
+                        self._osd("已读档" if self._load() else "没有存档")
+                    elif ev.key == pygame.K_F3:
+                        self.filter_mode = (self.filter_mode + 1) % len(FILTER_NAMES)
+                        PlayScreen._filter_mode = self.filter_mode
+                        self._osd("滤镜: %s" % FILTER_NAMES[self.filter_mode])
+                    elif ev.key == pygame.K_F4:
+                        self.speed = max(0.5, round(self.speed - 0.25, 2))
+                        PlayScreen._speed = self.speed
+                        self._osd("速度: %.2fx%s" % (
+                            self.speed, "" if self.speed == 1.0 else "（静音）"))
+                    elif ev.key == pygame.K_F6:
+                        self.speed = min(2.0, round(self.speed + 0.25, 2))
+                        PlayScreen._speed = self.speed
+                        self._osd("速度: %.2fx%s" % (
+                            self.speed, "" if self.speed == 1.0 else "（静音）"))
                     else:
                         keys.add(ev.key)
                 elif ev.type == pygame.KEYUP:
                     keys.discard(ev.key)
-                elif ev.type == pygame.JOYBUTTONDOWN and ev.button == 8:
-                    running = False
+                elif ev.type == pygame.JOYBUTTONDOWN:
+                    if ev.button == 8:
+                        running = False
+                    elif ev.button == 4:
+                        self._osd("已存档" if self._save() else "存档失败")
+                    elif ev.button == 5:
+                        self._osd("已读档" if self._load() else "没有存档")
 
             buttons = set()
             for k in keys:
@@ -224,10 +258,10 @@ class PlayScreen:
             self._pump_audio()
             surf = self._make_surface()
             if surf:
-                scaled = pygame.transform.scale(surf, (w, h))
-                screen.blit(scaled, (0, 0))
+                self._draw_frame(screen, surf)
+                self._draw_osd(screen)
                 pygame.display.flip()
-            clock.tick(fps)
+            clock.tick(max(1, int(round(fps * self.speed))))
             if max_frames is not None:
                 max_frames -= 1
                 if max_frames <= 0:
@@ -238,6 +272,50 @@ class PlayScreen:
         self.core.close()
         self.core = None
         return reason
+
+    # ---------- 画面/OSD ----------
+    def _font(self):
+        if self.osd_font is None:
+            path = theme.find_simsun()
+            try:
+                self.osd_font = (pygame.font.Font(path, 20) if path
+                                 else pygame.font.Font(None, 20))
+            except OSError:
+                self.osd_font = pygame.font.Font(None, 20)
+        return self.osd_font
+
+    def _osd(self, text, frames=90):
+        self.osd_text = text
+        self.osd_timer = frames
+
+    def _draw_osd(self, screen):
+        if self.osd_timer <= 0 or not self.osd_text:
+            return
+        text = self._font().render(self.osd_text, True, (255, 255, 255))
+        bg = pygame.Surface((text.get_width() + 16, text.get_height() + 8),
+                            pygame.SRCALPHA)
+        bg.fill((0, 0, 0, 170))
+        x = 12
+        y = screen.get_height() - bg.get_height() - 12
+        screen.blit(bg, (x, y))
+        screen.blit(text, (x + 8, y + 4))
+        self.osd_timer -= 1
+
+    def _draw_frame(self, screen, surf):
+        w, h = screen.get_size()
+        if self.filter_mode == 1:
+            scaled = pygame.transform.smoothscale(surf, (w, h))
+        else:
+            scaled = pygame.transform.scale(surf, (w, h))
+        screen.blit(scaled, (0, 0))
+        if self.filter_mode == 2:
+            if self._scan_cache is None or self._scan_size != (w, h):
+                ov = pygame.Surface((w, h), pygame.SRCALPHA)
+                for y in range(0, h, 3):
+                    pygame.draw.line(ov, (0, 0, 0, 90), (0, y), (w, y))
+                self._scan_cache = ov
+                self._scan_size = (w, h)
+            screen.blit(self._scan_cache, (0, 0))
 
     # ---------- 音频 ----------
     def _init_audio(self, sample_rate):
@@ -270,6 +348,10 @@ class PlayScreen:
         if not (self.audio_ok and self.core):
             return
         raw = self.core.take_audio()
+        if self.speed != 1.0:
+            # 变速时核心产出的采样数和混音器不一致，先静音避免欠采样卡顿
+            self.audio_pending.clear()
+            return
         if raw:
             self.audio_pending += raw
         chunk_bytes = AUDIO_CHUNK_FRAMES * 4
@@ -312,20 +394,23 @@ class PlayScreen:
 
     def _save(self):
         if not (self.core and self.state_path):
-            return
+            return False
         try:
             st = self.core.save_state()
             if st:
                 with open(self.state_path, "wb") as fh:
                     fh.write(st)
+                return True
         except Exception:
             pass
+        return False
 
     def _load(self):
         if not (self.core and self.state_path and os.path.exists(self.state_path)):
-            return
+            return False
         try:
             with open(self.state_path, "rb") as fh:
                 self.core.load_state(fh.read())
+            return True
         except Exception:
-            pass
+            return False

@@ -164,7 +164,9 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | Start | 回车 | Start |
 | Select | 右 Shift | Y |
 | 回菜单（自动存档） | Esc / F12 | Back |
-| 存档 / 读档 | F5 / F7 | — |
+| 存档 / 读档 | F5 / F7 | LB / RB |
+| 滤镜：清晰 / 平滑 / 扫描线 | F3 | — |
+| 减速 / 加速（非 1x 静音） | F4 / F6 | — |
 
 ### 按键设置
 

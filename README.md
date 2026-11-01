@@ -176,7 +176,9 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | Start | Enter | Start |
 | Select | Right Shift | Y |
 | Back to menu (auto-save) | Esc / F12 | Back |
-| Save / load state | F5 / F7 | — |
+| Save / load state | F5 / F7 | LB / RB |
+| Filter: sharp / smooth / scanlines | F3 | — |
+| Speed down / up (non-1x is muted) | F4 / F6 | — |
 
 ### Remapping
 

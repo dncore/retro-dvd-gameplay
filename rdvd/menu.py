@@ -52,7 +52,42 @@ class Menu:
         if self.index >= self.total:
             self.cursor = max(0, self.total - 1 - self.page * PER_PAGE)
 
+    def _move_list(self, d):
+        """DVD 单列模式：上下一次一格，左右翻页"""
+        count = min(PER_PAGE, self.total - self.page * PER_PAGE)
+        if d == "UP":
+            if self.cursor > 0:
+                self.cursor -= 1
+                return True
+            if self.page > 0:
+                self.page -= 1
+                self.cursor = min(PER_PAGE, self.total - self.page * PER_PAGE) - 1
+                return True
+            return False
+        if d == "DOWN":
+            if self.cursor < count - 1:
+                self.cursor += 1
+                return True
+            if self.page < self.pages - 1:
+                self.page += 1
+                self.cursor = 0
+                return True
+            return False
+        if d == "LEFT":
+            if self.page > 0:
+                self.select_page(self.page - 1)
+                return True
+            return False
+        if d == "RIGHT":
+            if self.page < self.pages - 1:
+                self.select_page(self.page + 1)
+                return True
+            return False
+        return False
+
     def move(self, d):
+        if self.style == "dvd":
+            return self._move_list(d)
         """在 2×5 网格内移动光标"""
         c = self.cursor
         row, col = divmod(c, COLS)

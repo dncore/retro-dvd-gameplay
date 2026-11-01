@@ -44,7 +44,7 @@ class TestMenu(unittest.TestCase):
         pygame.quit()
 
     def setUp(self):
-        self.m = Menu(make_catalog(), page_art_dir=None)
+        self.m = Menu(make_catalog(), page_art_dir=None, style="grid")
 
     def test_page_count(self):
         self.assertEqual(self.m.pages, 30)
@@ -132,6 +132,45 @@ class TestMenu(unittest.TestCase):
             self.m.render(surf)
         self.m.flash("测试消息")
         self.m.render(surf)
+
+
+class TestDvdMenu(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        pygame.init()
+
+    @classmethod
+    def tearDownClass(cls):
+        pygame.quit()
+
+    def setUp(self):
+        self.m = Menu(make_catalog(), page_art_dir=None, style="dvd")
+
+    def test_down_moves_one_entry(self):
+        self.m.handle("DOWN")
+        self.assertEqual(self.m.cursor, 1)
+        self.assertEqual(self.m.index, 1)
+        self.assertEqual(self.m.current["num"], 2)
+
+    def test_down_ten_times_reaches_next_page(self):
+        for _ in range(10):
+            self.m.handle("DOWN")
+        self.assertEqual(self.m.page, 1)
+        self.assertEqual(self.m.cursor, 0)
+        self.assertEqual(self.m.current["num"], 11)
+
+    def test_up_from_page_top_goes_previous_page_bottom(self):
+        self.m.select_page(1)
+        self.m.cursor = 0
+        self.m.handle("UP")
+        self.assertEqual(self.m.page, 0)
+        self.assertEqual(self.m.current["num"], 10)
+
+    def test_left_right_change_page(self):
+        self.m.handle("RIGHT")
+        self.assertEqual(self.m.page, 1)
+        self.m.handle("LEFT")
+        self.assertEqual(self.m.page, 0)
 
 
 if __name__ == "__main__":
