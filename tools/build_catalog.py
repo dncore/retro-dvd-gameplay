@@ -143,6 +143,18 @@ def main():
             seen[e['rom']] = e['num']
 
     entries.sort(key=lambda e: e['num'])
+
+    # 合并社区转录的中文菜单名，重建目录时不丢失 dvd_name
+    names_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              '..', 'data', 'tieba_names.json')
+    if os.path.exists(names_path):
+        with open(names_path, encoding='utf-8') as fh:
+            dvd_names = json.load(fh)
+        for e in entries:
+            name = dvd_names.get(str(e['num']))
+            if name:
+                e['dvd_name'] = name
+
     data = {
         'source': os.path.basename(args.iso),
         'total': len(entries),
