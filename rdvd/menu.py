@@ -223,6 +223,11 @@ class Menu:
         self._page_cache[page_no] = img
         return img
 
+    def label(self, entry):
+        """列表显示真实 ROM 名（display），碟面标签只作回退"""
+        return (entry.get("display") or entry.get("dvd_name")
+                or entry.get("title") or "")
+
     def _render_dvd(self, surf):
         w, h = self.size
         art = self._page_bg()
@@ -257,7 +262,7 @@ class Menu:
             num = f.render("%d." % (i + 1), True, color)
             surf.blit(num, (92, y))
 
-            title = e.get("dvd_name") or e.get("display") or e["title"]
+            title = self.label(e)
             maxw = 246
             if f.size(title)[0] > maxw:
                 while title and f.size(title + "…")[0] > maxw:
@@ -369,7 +374,7 @@ class Menu:
             num = fnum.render("%03d" % e["num"], True, numc)
             surf.blit(num, (r.x + 12, r.centery - num.get_height() // 2))
 
-            title = e.get("dvd_name") or e.get("display") or e["title"]
+            title = self.label(e)
             maxw = r.width - 80 - (48 if e.get("dup_of") else 0)
             if f.size(title)[0] > maxw:
                 while title and f.size(title + "…")[0] > maxw:

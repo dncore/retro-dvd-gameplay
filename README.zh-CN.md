@@ -93,6 +93,7 @@ No-Intro 发布的是 **DAT**（名称 + 校验值），不是 ROM。若你已�
 
 ```bash
 python tools/pick_roms.py --source "D:\No-Intro\NES" --out roms
+python tools/sync_display_titles.py
 ```
 
 工具会哈希 `.nes` 和 `.zip` 里的内部 ROM，按 MD5 精确匹配，为每个槽位复制成

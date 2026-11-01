@@ -97,6 +97,7 @@ slots). To pick them from a local collection and lay them out as `roms/G001.nes`
 
 ```bash
 python tools/pick_roms.py --source "D:\No-Intro\NES" --out roms
+python tools/sync_display_titles.py
 ```
 
 The tool hashes `.nes` files and the inner ROM of `.zip` archives, matches MD5 exactly,
