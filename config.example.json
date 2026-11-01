@@ -12,5 +12,6 @@
   "emulator": null,
   "args": null,
   "font": null,
-  "menu_style": "dvd"
+  "menu_style": "dvd",
+  "bgm": false
 }

@@ -216,15 +216,19 @@ def main():
     music = bgm_mod.Bgm(
         dat_path=media_dat,
         cache_path=_abs(cfg.get("bgm_wav")),
-        enabled=not args.no_audio,
+        enabled=(not args.no_audio) and cfg.get("bgm", True),
     )
     music.play()
 
     inp = InputState(bindings)
+    if inp.joy:
+        menu.flash("手柄: %s" % inp.joy_name, frames=180)
     clock = pygame.time.Clock()
     running = True
     last_axis = None
     axis_repeat = 0
+    last_dir_action = None
+    last_dir_ms = 0
 
     while running:
         events = pygame.event.get()
@@ -276,6 +280,21 @@ def main():
                     axis_repeat = 4
         else:
             last_axis = None
+
+        # 同一方向 120ms 内只处理一次，避免键盘+摇杆或重复事件跳两格
+        now = pygame.time.get_ticks()
+        seen_dirs = set()
+        filtered = []
+        for a in actions:
+            if a in ("UP", "DOWN", "LEFT", "RIGHT"):
+                if a in seen_dirs:
+                    continue
+                seen_dirs.add(a)
+                if a == last_dir_action and now - last_dir_ms < 120:
+                    continue
+                last_dir_action, last_dir_ms = a, now
+            filtered.append(a)
+        actions = filtered
 
         for a in actions:
             if a == "TOGGLE_MUSIC":

@@ -48,7 +48,8 @@ DEFAULT_MENU = {
     "CONFIRM": [key_token(pygame.K_RETURN), key_token(pygame.K_KP_ENTER),
                 key_token(pygame.K_z), key_token(pygame.K_SPACE), joy_token(0), joy_token(3)],
     "BACK": [key_token(pygame.K_ESCAPE), key_token(pygame.K_x),
-             key_token(pygame.K_BACKSPACE), joy_token(1), joy_token(2), joy_token(8)],
+             key_token(pygame.K_BACKSPACE), joy_token(1), joy_token(2),
+             joy_token(8), joy_token(6)],
     "PAGE_PREV": [key_token(pygame.K_PAGEUP), key_token(pygame.K_q), joy_token(4)],
     "PAGE_NEXT": [key_token(pygame.K_PAGEDOWN), key_token(pygame.K_e), joy_token(5)],
     "TOGGLE_MUSIC": [key_token(pygame.K_m)],
@@ -62,8 +63,8 @@ DEFAULT_GAME = {
     "RIGHT": [key_token(pygame.K_RIGHT)],
     "A": [key_token(pygame.K_z), key_token(pygame.K_j), joy_token(0)],
     "B": [key_token(pygame.K_x), key_token(pygame.K_k), joy_token(1), joy_token(2)],
-    "START": [key_token(pygame.K_RETURN), joy_token(9)],
-    "SELECT": [key_token(pygame.K_RSHIFT), joy_token(3)],
+    "START": [key_token(pygame.K_RETURN), joy_token(9), joy_token(7)],
+    "SELECT": [key_token(pygame.K_RSHIFT), joy_token(3), joy_token(6)],
 }
 
 DEFAULTS = {"menu": DEFAULT_MENU, "game": DEFAULT_GAME}

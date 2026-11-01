@@ -2,6 +2,7 @@
 """输入层测试：绑定查表、手柄热插拔（用假手柄，不需要真设备）"""
 import os
 import unittest
+from unittest import mock
 
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
@@ -51,7 +52,8 @@ class TestInputState(unittest.TestCase):
         fake = FakeJoy(7)
         inp.joy = fake
         ev = pygame.event.Event(pygame.JOYDEVICEREMOVED, instance_id=7)
-        inp._handle_removed(ev)
+        with mock.patch("pygame.joystick.get_count", return_value=0):
+            inp._handle_removed(ev)
         self.assertTrue(fake.quit_called)
         self.assertIsNone(inp.joy)
 
