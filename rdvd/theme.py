@@ -47,6 +47,17 @@ def find_cjk_font(extra=None):
     return None
 
 
+def find_simsun():
+    """原盘用的是宋体点阵，优先找 SimSun / 宋体"""
+    for p in (r"C:\Windows\Fonts\simsun.ttc",
+              r"C:\Windows\Fonts\simsun.ttf",
+              "/usr/share/fonts/truetype/arphic/uming.ttc",
+              "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc"):
+        if os.path.exists(p):
+            return p
+    return None
+
+
 class Fonts:
     def __init__(self, size=26, path=None):
         self.path = find_cjk_font(path)

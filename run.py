@@ -156,7 +156,8 @@ def main():
 
     art_dir = _abs(cfg.get("page_art_dir"))
 
-    menu = Menu(catalog, font_path=_abs(cfg.get("font")), page_art_dir=art_dir, size=size)
+    menu = Menu(catalog, font_path=_abs(cfg.get("font")), page_art_dir=art_dir,
+                size=size, style=cfg.get("menu_style", "dvd"))
     rebind = RebindScreen(bindings, menu.fonts, size)
 
     # 片头动画（原盘 CDI_BUM.DAT）

@@ -11,5 +11,6 @@
   "state_dir": null,
   "emulator": null,
   "args": null,
-  "font": null
+  "font": null,
+  "menu_style": "dvd"
 }

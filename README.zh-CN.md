@@ -31,7 +31,9 @@
 - 按原盘 **G001–G300 顺序**列出全部 **300 个条目**（去重后 146 款唯一游戏）
 - 全部 300 个条目的**中文菜单名**，按原盘菜单列表转录（明显错字已修正）；
   catalog 仍保留英文 ROM 名作为回退
-- **2×5 网格**、翻页、光标高亮；键盘与 SDL 手柄都可操作
+- **DVD 风格菜单**：单列 10 条、16px 宋体、橙色选中条，背后是逐页原盘画；
+  键盘与 SDL 手柄都可操作
+- 旧版 **2×5 网格** 可通过 `"menu_style": "grid"` 切回
 - 启动时播放原盘 **22 秒开机动画**（`CDI_BUM.DAT`，运行时从你自己的镜像提取）
 - 菜单循环播放原盘**背景音乐**
 - **内置 libretro 宿主**（`rdvd/libretro.py`，`ctypes` 直调）：fceumm / Nestopia
@@ -150,7 +152,8 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | `bgm_wav` | 背景音乐转码后的缓存路径。 |
 | `boot` | 是否播放开机动画（默认 `true`）。 |
 | `boot_cache` | 片头帧与音乐的缓存目录，默认 `~/.cache/retro-dvd-gameplay/boot`。 |
-| `page_art_dir` | 已恢复的菜单页目录（`ITEM0001.png` …）。`null` = 用代码画的菜单。 |
+| `page_art_dir` | 旧版网格专用：已恢复的菜单页目录（`ITEM0001.png` …）。 |
+| `menu_style` | `dvd`（默认：单列 + 逐页背景）/ `grid`（旧版 2×5 网格）。 |
 | `play_mode` | `auto` / `core`（进程内）/ `external`。 |
 | `core` | 显式指定 libretro NES 核心路径。 |
 | `state_dir` | 存档目录。 |
@@ -181,21 +184,24 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 原盘菜单页是 704×576 的 MPEG-1 帧。每帧本应有 36 个切片，盘上只存了 32 个；
 缺失的 18/25/27/35 会让画面右侧约 1/3 出现竖向拖影。已经穷举排除了 6 种解码参数组合、
 分包错位、音频干扰，以及 VCD/EXT 下的 `PSD`/`LOT` 表——**缺失数据确实不在盘上**。
-所以现在菜单是「版式忠实重建」，不是原图像素。细节见 `docs/FORMAT.md` §4。
+所以盘上不存在「动画走完」的完整像素；现在用逐页重绘页做背景，再用 16px 宋体
+重排文字。细节见 `docs/FORMAT.md` §4。
 
-### 导入恢复出来的原图
+### 逐页菜单背景（DVD 风格）
 
-如果你拿到了原盘菜单页（录屏、真机截图），先规范成 `assets/pages/`，再把
-`page_art_dir` 指过去：
+默认菜单是单列 10 条、16px 宋体，背景用原盘每页的卡通画。画源是
+[VCD300-CHS-Games-Simulator](https://github.com/MattUan/VCD300-CHS-Games-Simulator)
+发布的 30 张重绘页（`menus/01.png` … `30.png`）；`tools/prepare_menu_pages.py`
+会把重绘的文字区抹掉，只留背景：
 
 ```bash
-pip install pillow
-python tools/patch_pages.py shots/ --out assets/pages --crop 40,20,40,20 --size 704x576
+python tools/prepare_menu_pages.py --src menus --out assets/pages
 ```
 
-工具会裁边、缩放到 704×576，可选把右侧预览图贴回去
-（`--overlay`、`--overlay-at X,Y,W,H`），并写出 `manifest.json`。
-`assets/pages/` 已被 git 忽略，光盘美术资源不会进入仓库。
+`assets/pages/` 已被 git 忽略，美术资源不会进入仓库。没有这些图时，菜单回退到
+`assets/menu_bg.png`（`tools/make_menu_bg.py` 从 ITEM 页生成）或代码画的黄底箭头。
+
+旧版 `tools/patch_pages.py` + `page_art_dir` 仍可用于 `"menu_style": "grid"`。
 
 ### 从录像 OCR 菜单名
 

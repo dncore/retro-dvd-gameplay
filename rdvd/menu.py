@@ -10,7 +10,7 @@ import os
 
 import pygame
 
-from . import theme
+from . import paths, theme
 
 PER_PAGE = 10
 COLS = 2
@@ -18,7 +18,8 @@ ROWS = PER_PAGE // COLS
 
 
 class Menu:
-    def __init__(self, catalog, font_path=None, page_art_dir=None, size=(704, 576)):
+    def __init__(self, catalog, font_path=None, page_art_dir=None, size=(704, 576),
+                 style="dvd"):
         self.entries = catalog["entries"]
         self.total = len(self.entries)
         self.pages = max(1, (self.total + PER_PAGE - 1) // PER_PAGE)
@@ -28,6 +29,10 @@ class Menu:
         self.size = size
         self.page_art_dir = page_art_dir
         self._art_cache = {}
+        self.style = style
+        self.dvd_fonts = theme.Fonts(size=16, path=theme.find_simsun() or font_path)
+        self._bg_cache = None
+        self._page_cache = {}
         self.message = None
         self._msg_timer = 0
 
@@ -142,8 +147,116 @@ class Menu:
         self._art_cache[page_no] = img
         return img
 
+    def _background(self):
+        if self._bg_cache is not None:
+            return self._bg_cache
+        for p in (paths.app_path("assets", "menu_bg.png"),
+                  paths.resource("assets", "menu_bg.png")):
+            if os.path.exists(p):
+                try:
+                    self._bg_cache = pygame.image.load(p).convert()
+                    return self._bg_cache
+                except pygame.error:
+                    pass
+        w, h = self.size
+        bg = pygame.Surface((w, h))
+        theme.draw_vgradient(bg, pygame.Rect(0, 0, w, h), theme.BG_TOP, theme.BG_BOTTOM)
+        band = pygame.Rect(0, 0, w, 100)
+        theme.draw_vgradient(bg, band, (240, 155, 30), (205, 100, 0))
+        for i in range(w // 100 + 1):
+            x = i * 100
+            pygame.draw.polygon(bg, (226, 112, 0),
+                                [(x + 8, 92), (x + 50, 8), (x + 92, 92)])
+        self._bg_cache = bg
+        return bg
+
+    def _page_bg(self):
+        page_no = self.page + 1
+        if page_no in self._page_cache:
+            return self._page_cache[page_no]
+        img = None
+        for p in (paths.app_path("assets", "pages", "%02d.png" % page_no),
+                  paths.resource("assets", "pages", "%02d.png" % page_no)):
+            if os.path.exists(p):
+                try:
+                    img = pygame.image.load(p).convert()
+                    break
+                except pygame.error:
+                    pass
+        self._page_cache[page_no] = img
+        return img
+
+    def _render_dvd(self, surf):
+        w, h = self.size
+        art = self._page_bg()
+        if art is not None:
+            surf.blit(art, (0, 0))
+        else:
+            surf.blit(self._background(), (0, 0))
+
+        tf = self.dvd_fonts.get(22)
+        tf.set_bold(True)
+        sh = tf.render("游戏菜单", True, (255, 255, 255))
+        title = tf.render("游戏菜单", True, (0, 0, 0))
+        surf.blit(sh, (91, 113))
+        surf.blit(title, (90, 112))
+        tf.set_bold(False)
+
+        f = self.dvd_fonts.get(16)
+        base = self.page * PER_PAGE
+        for i in range(PER_PAGE):
+            idx = base + i
+            if idx >= self.total:
+                break
+            e = self.entries[idx]
+            y = 175 + i * 30
+            selected = (i == self.cursor)
+            if selected:
+                bar = pygame.Rect(78, y - 4, 286, 26)
+                pygame.draw.rect(surf, theme.CURSOR_BG, bar)
+                pygame.draw.rect(surf, (255, 205, 90), bar, 1)
+
+            color = theme.CURSOR_TEXT if selected else (0, 0, 0)
+            num = f.render("%d." % (i + 1), True, color)
+            surf.blit(num, (92, y))
+
+            title = e.get("dvd_name") or e.get("display") or e["title"]
+            maxw = 246
+            if f.size(title)[0] > maxw:
+                while title and f.size(title + "…")[0] > maxw:
+                    title = title[:-1]
+                title += "…"
+            if not selected:
+                sh = f.render(title, True, (255, 255, 255))
+                surf.blit(sh, (127, y + 1))
+            t = f.render(title, True, color)
+            surf.blit(t, (126, y))
+
+        if art is None:
+            fp = self.dvd_fonts.get(14)
+            pg = fp.render("%d/%d" % (self.page + 1, self.pages), True, (96, 62, 4))
+            surf.blit(pg, pg.get_rect(topright=(w - 24, 106)))
+
+        fh = self.dvd_fonts.get(12)
+        hint = fh.render("F2 按键  Q/E 翻页  M 音乐", True,
+                         (255, 255, 255) if art is not None else (110, 78, 12))
+        hr = hint.get_rect(bottomright=(w - 18, h - 10))
+        if art is not None:
+            box = hr.inflate(14, 6)
+            layer = pygame.Surface(box.size, pygame.SRCALPHA)
+            layer.fill((0, 0, 0, 90))
+            surf.blit(layer, box.topleft)
+            surf.blit(hint, hint.get_rect(center=box.center))
+        else:
+            surf.blit(hint, hr)
+        if self.message:
+            self._draw_message(surf, w, h)
+        return surf
+
     def render(self, surf):
         w, h = self.size
+        if self.style == "dvd":
+            return self._render_dvd(surf)
         theme.draw_vgradient(surf, pygame.Rect(0, 0, w, h),
                              theme.BG_TOP, theme.BG_BOTTOM)
 
