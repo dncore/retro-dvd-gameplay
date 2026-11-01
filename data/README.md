@@ -2,6 +2,10 @@
 
 - `catalog.json` — generated from the user's own ISO/ROM set (`G001`–`G300`). No ROM data
   is stored here, only paths, mapper/size metadata and display names.
+- `roms.csv` — one row per unique ROM content: `md5,size,slots,rom_name,menu_name`.
+  It contains only checksums and names, **no ROM bytes and no download links**. Use it to
+  verify a collection you already own, or regenerate it against your own paths:
+  `python tools/rom_checksums.py --roms <dir> --out data/roms.csv`.
 - `dvd_names_tieba.txt` / `tieba_names.json` — the 300 Chinese menu names, transcribed
   by a Baidu Tieba user from the disc's menu:
   <https://tieba.baidu.com/p/2179922897>. Obvious hand-typing errors were corrected
@@ -14,5 +18,5 @@ The English titles used for cross-checking come from the BootlegGames Wiki artic
 Note that the wiki's "main menu" screenshot is a fan recreation, not a real capture, so
 it was used only to check ordering and canonical game titles.
 
-Game names are factual labels; no disc artwork, ROMs or ISO data are included in this
-repository.
+Game names are factual labels. No ROMs or ISO data are included in this repository;
+the menu artwork under `assets/menu_pages/` is not MIT-licensed (see `NOTICE.md`).

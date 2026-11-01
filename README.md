@@ -246,6 +246,9 @@ The games, the disc and its artwork remain the property of their respective righ
 holders. Use this project only with material you are legally allowed to use. See
 [`LEGAL.md`](LEGAL.md) and [`NOTICE.md`](NOTICE.md).
 
+`data/roms.csv` lists the MD5, size, slot range and name of each unique ROM so you can
+verify a collection you already own; it contains no ROM data or download links.
+
 The shipped catalog references relative paths in the author's ROM set. If your
 collection uses different names, rebuild it:
 

@@ -232,6 +232,9 @@ python tools/ocr_menu_video.py menu.mp4 --out out/menu --crop 80,100,420,80 --oc
 游戏、光盘及其美术资源归各自权利人所有。请只在你有权使用的素材上运行本项目。详见
 [`LEGAL.md`](LEGAL.md) 和 [`NOTICE.md`](NOTICE.md)。
 
+`data/roms.csv` 列出每款唯一 ROM 的 MD5、大小、槽位和名称，只用于校验你自己已经
+拥有的收藏；不含 ROM 数据，也不含下载地址。
+
 仓库里的 catalog 用的是作者 ROM 库的相对路径。如果你的收藏文件名不同，重建一份：
 
 ```bash
