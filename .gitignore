@@ -1,5 +1,6 @@
 # Generated / disc-derived data (never commit)
 assets/pages/
+roms/
 *.BIN
 *.DAT
 *.iso

@@ -54,11 +54,46 @@ def load_catalog(path):
         return json.load(fh)
 
 
+_ROM_INDEX = {}
+
+
+def _rom_index(roms_dir):
+    """(basename -> path, stem -> [paths])，兼容目录重组和 .zip/.nes 互换"""
+    if roms_dir in _ROM_INDEX:
+        return _ROM_INDEX[roms_dir]
+    by_name = {}
+    by_stem = {}
+    for root, _dirs, files in os.walk(roms_dir):
+        for name in files:
+            path = os.path.join(root, name)
+            by_name.setdefault(name.lower(), path)
+            stem = os.path.splitext(name)[0].lower()
+            by_stem.setdefault(stem, []).append(path)
+    for paths in by_stem.values():
+        paths.sort(key=lambda p: (not p.lower().endswith(".nes"),
+                                  not p.lower().endswith(".fds"), len(p)))
+    _ROM_INDEX[roms_dir] = (by_name, by_stem)
+    return _ROM_INDEX[roms_dir]
+
+
 def resolve_rom(catalog, roms_dir, entry):
     rel = entry.get("rom")
     if not rel:
         return None
-    return os.path.join(roms_dir, rel) if roms_dir else rel
+    rel = rel.replace("\\", os.sep).replace("/", os.sep)
+    if not roms_dir:
+        return rel
+    path = os.path.join(roms_dir, rel)
+    if os.path.exists(path):
+        return path
+    by_name, by_stem = _rom_index(roms_dir)
+    base = os.path.basename(rel)
+    alt = by_name.get(base.lower())
+    if alt:
+        return alt
+    stem = os.path.splitext(base)[0].lower()
+    candidates = by_stem.get(stem)
+    return candidates[0] if candidates else path
 
 
 def media_cache_dir(cfg):
