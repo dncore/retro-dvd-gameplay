@@ -177,8 +177,13 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | Select | Right Shift | Y |
 | Back to menu (auto-save) | Esc / F12 | Back |
 | Save / load state | F5 / F7 | LB / RB |
+| Delete current save state | F8 | — |
 | Filter: sharp / smooth / scanlines | F3 | — |
 | Speed down / up (non-1x is muted) | F4 / F6 | — |
+
+The game writes a save state when you leave it. By default the next launch starts
+fresh and shows “save found, F7 to load”; press F7 to resume, or set
+`"auto_load_state": true` to resume automatically.
 
 ### Remapping
 
@@ -208,6 +213,7 @@ Gamepads are hot-pluggable: connect or disconnect one at any time.
 | `play_mode` | `auto` / `core` (in-process) / `external`. |
 | `core` | Explicit path to a libretro NES core. |
 | `state_dir` | Where save states are written. |
+| `auto_load_state` | Load the per-ROM state on launch. Default `false`; press F7 to resume. |
 | `emulator`, `args` | External emulator command and argument template (`{rom}`, `{core}`). |
 | `font` | Explicit CJK font path; otherwise common system fonts are probed. |
 | `bindings` | Key/button map maintained by the F2 screen. Tokens are `key:<code>` and `joy:<index>`; you can also edit them by hand. |

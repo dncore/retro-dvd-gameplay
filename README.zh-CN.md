@@ -165,8 +165,12 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | Select | 右 Shift | Y |
 | 回菜单（自动存档） | Esc / F12 | Back |
 | 存档 / 读档 | F5 / F7 | LB / RB |
+| 删除当前存档 | F8 | — |
 | 滤镜：清晰 / 平滑 / 扫描线 | F3 | — |
 | 减速 / 加速（非 1x 静音） | F4 / F6 | — |
+
+退出游戏时会写一份存档。默认下次进入从头开始，并提示“检测到存档，F7 读取”；按 F7
+续玩，或把 `"auto_load_state"` 设为 `true` 自动读档。
 
 ### 按键设置
 
@@ -195,6 +199,7 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | `play_mode` | `auto` / `core`（进程内）/ `external`。 |
 | `core` | 显式指定 libretro NES 核心路径。 |
 | `state_dir` | 存档目录。 |
+| `auto_load_state` | 进入游戏时自动读档。默认 `false`，按 F7 续玩。 |
 | `emulator`、`args` | 外部模拟器命令与参数模板（`{rom}`、`{core}`）。 |
 | `font` | 显式中文字体路径；不填则自动探测系统字体。 |
 | `bindings` | 由 F2 界面维护的按键绑定。token 为 `key:<键码>` / `joy:<按钮号>`，也可以手改。 |

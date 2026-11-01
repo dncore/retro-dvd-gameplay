@@ -13,5 +13,6 @@
   "args": null,
   "font": null,
   "menu_style": "dvd",
-  "bgm": false
+  "bgm": false,
+  "auto_load_state": false
 }

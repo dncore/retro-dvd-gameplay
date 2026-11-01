@@ -10,6 +10,7 @@
     ESC / 手柄 Back           → 退出回菜单（同时存档）
     F5 / 手柄 LB              → 立即存档
     F7 / 手柄 RB              → 读档
+    F8                        → 删除当前存档
     F3                        → 滤镜：清晰 / 平滑 / 扫描线
     F4 / F6                   → 减速 / 加速（非 1x 静音）
 """
@@ -128,6 +129,7 @@ class PlayScreen:
         self.bindings = bindings or Bindings()
         self.core = None
         self.state_path = None
+        self._skip_save = False
         self.audio_ok = False
         self.audio_rate = 44100
         self.mixer_rate = 44100
@@ -177,7 +179,7 @@ class PlayScreen:
         return surf
 
     def play(self, rom_path, screen, clock, joy=None, state_dir=None, title="",
-             max_frames=None, audio=True):
+             max_frames=None, audio=True, auto_load=False):
         """阻塞运行，返回 reason: 'back' / 'quit' / 'error: ...'
 
         max_frames 只用于自动化测试，跑到指定帧数就返回。
@@ -185,6 +187,7 @@ class PlayScreen:
         self.core = LibretroCore(self.core_path,
                                  system_dir=os.path.dirname(self.core_path),
                                  save_dir=state_dir or tempfile.gettempdir())
+        self._skip_save = False
         try:
             av = self.core.load_game(rom_path)
         except Exception as e:
@@ -201,11 +204,14 @@ class PlayScreen:
             if not os.path.exists(load_from) and os.path.exists(legacy):
                 load_from = legacy
             if os.path.exists(load_from):
-                try:
-                    with open(load_from, "rb") as fh:
-                        self.core.load_state(fh.read())
-                except Exception:
-                    pass
+                if auto_load:
+                    try:
+                        with open(load_from, "rb") as fh:
+                            self.core.load_state(fh.read())
+                    except Exception:
+                        pass
+                else:
+                    self._osd("检测到存档，F7 读取；F8 删除", frames=180)
 
         fps = av.get("fps") or 60.0
         if audio:
@@ -225,9 +231,21 @@ class PlayScreen:
                     if ev.key in (pygame.K_ESCAPE, pygame.K_F12):
                         running = False
                     elif ev.key == pygame.K_F5:
-                        self._osd("已存档" if self._save() else "存档失败")
+                        ok = self._save()
+                        self._skip_save = not ok
+                        self._osd("已存档" if ok else "存档失败")
                     elif ev.key == pygame.K_F7:
                         self._osd("已读档" if self._load() else "没有存档")
+                    elif ev.key == pygame.K_F8:
+                        if self.state_path and os.path.exists(self.state_path):
+                            try:
+                                os.remove(self.state_path)
+                                self._skip_save = True
+                                self._osd("已删除存档")
+                            except OSError:
+                                self._osd("删除失败")
+                        else:
+                            self._osd("没有存档")
                     elif ev.key == pygame.K_F3:
                         self.filter_mode = (self.filter_mode + 1) % len(FILTER_NAMES)
                         PlayScreen._filter_mode = self.filter_mode
@@ -278,7 +296,8 @@ class PlayScreen:
                 if max_frames <= 0:
                     running = False
 
-        self._save()
+        if not self._skip_save:
+            self._save()
         self._stop_audio()
         self.core.close()
         self.core = None

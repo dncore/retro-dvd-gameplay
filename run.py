@@ -327,7 +327,8 @@ def main():
                     ps = PlayScreen(core, size, bindings=bindings)
                     why = ps.play(rom, screen, clock, joy=inp.joy,
                                   state_dir=state_dir, title=extra.get("display"),
-                                  audio=not args.no_audio)
+                                  audio=not args.no_audio,
+                                  auto_load=bool(cfg.get("auto_load_state", False)))
                     if why.startswith("error"):
                         menu.flash(why, frames=180)
                     else:
