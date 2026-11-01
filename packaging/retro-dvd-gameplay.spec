@@ -21,6 +21,7 @@ datas = [
     (os.path.join(ROOT, "README.md"), "."),
     (os.path.join(ROOT, "README.zh-CN.md"), "."),
     (os.path.join(ROOT, "NOTICE.md"), "."),
+    (os.path.join(ROOT, "LEGAL.md"), "."),
     (os.path.join(ROOT, "LICENSE"), "."),
 ]
 

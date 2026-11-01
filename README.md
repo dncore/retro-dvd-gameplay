@@ -237,14 +237,21 @@ It uses `pytesseract` when available, otherwise the built-in Windows `zh-Hans-CN
 
 ## Data and legal
 
-This repository contains **no** ISO, ROM, or standalone disc artwork; the screenshots in
-`docs/` may show menu art for documentation. `data/catalog.json` holds only file names
-and metadata needed to match your own files. The boot animation, music and menu art are
-extracted at runtime from a disc image **you** provide.
+This repository contains **no** ISO or ROM. `data/catalog.json` holds only relative
+paths and metadata; the bytes are read from files **you** provide.
+`assets/menu_pages/` contains reconstructed menu backgrounds for
+preservation/identification; they are not covered by the MIT license.
 
 The games, the disc and its artwork remain the property of their respective rights
 holders. Use this project only with material you are legally allowed to use. See
-[`NOTICE.md`](NOTICE.md) for third-party attributions.
+[`LEGAL.md`](LEGAL.md) and [`NOTICE.md`](NOTICE.md).
+
+The shipped catalog references relative paths in the author's ROM set. If your
+collection uses different names, rebuild it:
+
+```bash
+python tools/build_catalog.py "300nes_disc v1.iso" --roms /path/to/nes --out data/catalog.json
+```
 
 ## Third-party components
 

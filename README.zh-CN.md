@@ -225,10 +225,18 @@ python tools/ocr_menu_video.py menu.mp4 --out out/menu --crop 80,100,420,80 --oc
 
 ## 数据与授权
 
-本仓库**不包含** ISO、ROM 或提取出来的光盘画面。`data/catalog.json` 只保存用于匹配
-你自己文件的文件名和元数据。片头、音乐和菜单图都在运行时从**你提供的**镜像里提取。
+本仓库**不包含** ISO 或 ROM。`data/catalog.json` 只保存相对路径和元数据，字节从
+**你提供的**文件里读取。`assets/menu_pages/` 内置了 30 张重绘菜单背景，仅用于保留和
+辨识，不归 MIT 许可。
 
-游戏、光盘及其美术资源归各自权利人所有。请只在你有权使用的素材上运行本项目。
+游戏、光盘及其美术资源归各自权利人所有。请只在你有权使用的素材上运行本项目。详见
+[`LEGAL.md`](LEGAL.md) 和 [`NOTICE.md`](NOTICE.md)。
+
+仓库里的 catalog 用的是作者 ROM 库的相对路径。如果你的收藏文件名不同，重建一份：
+
+```bash
+python tools/build_catalog.py "300nes_disc v1.iso" --roms /path/to/nes --out data/catalog.json
+```
 
 ## 第三方组件
 
