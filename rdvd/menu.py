@@ -224,8 +224,8 @@ class Menu:
         return img
 
     def label(self, entry):
-        """列表显示真实 ROM 名（display），碟面标签只作回退"""
-        return (entry.get("display") or entry.get("dvd_name")
+        """列表保留碟面中文标签；display 只用于窗口标题/OSD"""
+        return (entry.get("dvd_name") or entry.get("display")
                 or entry.get("title") or "")
 
     def _render_dvd(self, surf):

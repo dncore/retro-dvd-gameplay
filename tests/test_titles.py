@@ -34,11 +34,11 @@ class TestTitles(unittest.TestCase):
         self.assertFalse(valid_title("▒Σ╨╬╒╜╗·Z"))
         self.assertTrue(valid_title("1942"))
 
-    def test_menu_prefers_real_display(self):
+    def test_menu_keeps_disc_label(self):
         pygame.init()
         try:
             m = Menu(catalog("1944", "1943"))
-            self.assertEqual(m.label(m.entries[0]), "1944")
+            self.assertEqual(m.label(m.entries[0]), "1943")
         finally:
             pygame.quit()
 
