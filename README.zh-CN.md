@@ -34,8 +34,8 @@
 - **DVD 风格菜单**：单列 10 条、16px 宋体、橙色选中条，背后是逐页原盘画；
   键盘与 SDL 手柄都可操作
 - 旧版 **2×5 网格** 可通过 `"menu_style": "grid"` 切回
-- 启动时播放原盘 **22 秒开机动画**（`CDI_BUM.DAT`，运行时从你自己的镜像提取）
-- 菜单循环播放原盘**背景音乐**
+- **实验性**：原盘 22 秒开机动画和菜单 BGM。默认关闭（`boot: false`、`bgm: false`），
+  因为盘内 PES/MPEG 容器不标准，开启后可能出现花屏或噪音
 - **内置 libretro 宿主**（`rdvd/libretro.py`，`ctypes` 直调）：fceumm / Nestopia
   在同一个进程里跑，不需要装 RetroArch；退出自动存档
 - **游戏音频**接进和菜单音乐同一个 `pygame.mixer`（16-bit 立体声，核心采样率不同时
@@ -188,13 +188,14 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 
 | 键 | 含义 |
 |---|---|
-| `disc` | 你的 `300nes_disc v1.iso` 路径，用于片头和音乐。 |
+| `disc` | 你的 `300nes_disc v1.iso` 路径，仅在开启片头/BGM 时读取。 |
 | `roms` | `data/catalog.json` 里相对路径所基于的 NES ROM 根目录。 |
 | `bgm_dat` | 直接用已抽出的 `CDI_BUM.DAT`，不再读 ISO。 |
 | `bgm_wav` | 背景音乐转码后的缓存路径。 |
-| `boot` | 是否播放开机动画（默认 `true`）。 |
+| `bgm` | 实验性菜单 BGM，默认 `false`；开启后可能是噪音。 |
+| `boot` | 实验性开机动画，默认 `false`；开启后可能花屏。 |
 | `boot_cache` | 片头帧与音乐的缓存目录，默认 `~/.cache/retro-dvd-gameplay/boot`。 |
-| `page_art_dir` | 旧版网格专用：已恢复的菜单页目录（`ITEM0001.png` …）。 |
+| `page_art_dir` | 菜单页 PNG 目录（`01.png`…`30.png`），会覆盖打包的 `assets/menu_pages`。 |
 | `menu_style` | `dvd`（默认：单列 + 逐页背景）/ `grid`（旧版 2×5 网格）。 |
 | `play_mode` | `auto` / `core`（进程内）/ `external`。 |
 | `core` | 显式指定 libretro NES 核心路径。 |

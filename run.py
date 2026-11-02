@@ -196,13 +196,15 @@ def main():
                 size=size, style=cfg.get("menu_style", "dvd"))
     rebind = RebindScreen(bindings, menu.fonts, size)
 
-    # 片头动画（原盘 CDI_BUM.DAT）
+    # 片头/音乐都关闭时不要解析 ISO，启动零额外开销
     disc = _abs(args.disc) if args.disc else _abs(cfg.get("disc"))
     cache_root = media_cache_dir(cfg)
+    want_boot = (not args.no_boot) and cfg.get("boot", False)
+    want_bgm = (not args.no_audio) and cfg.get("bgm", False)
     media_dat = None
-    if not args.render_frames:
+    if not args.render_frames and (want_boot or want_bgm):
         media_dat = _abs(cfg.get("bgm_dat")) or resolve_disc_media(disc, cache_root)
-        if (not args.no_boot) and cfg.get("boot", True) and media_dat:
+        if want_boot and media_dat:
             b = Boot(media_dat, cache_root)
             if b.ok:
                 b.play(screen, clock=pygame.time.Clock())
@@ -217,7 +219,7 @@ def main():
     music = bgm_mod.Bgm(
         dat_path=media_dat,
         cache_path=_abs(cfg.get("bgm_wav")),
-        enabled=(not args.no_audio) and cfg.get("bgm", True),
+        enabled=want_bgm,
     )
     music.play()
 

@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """MP2 帧扫描测试"""
+import os
+import tempfile
 import unittest
+from unittest import mock
 
-from rdvd.bgm import scan_mp2
+from rdvd.bgm import Bgm, scan_mp2
 
 
 class TestScanMp2(unittest.TestCase):
@@ -16,6 +19,20 @@ class TestScanMp2(unittest.TestCase):
 
     def test_ignores_invalid_headers(self):
         self.assertEqual(scan_mp2(b"\xff\xfd\x00\x00" + b"\x00" * 100), b"")
+
+
+class TestDisabledBgm(unittest.TestCase):
+    def test_disabled_does_not_scan_or_transcode(self):
+        with tempfile.TemporaryDirectory() as d:
+            dat = os.path.join(d, "CDI_BUM.DAT")
+            with open(dat, "wb") as fh:
+                fh.write(b"not audio")
+            with mock.patch("rdvd.bgm.scan_mp2") as scan:
+                b = Bgm(dat_path=dat, cache_path=os.path.join(d, "bgm.wav"),
+                        enabled=False)
+            scan.assert_not_called()
+            self.assertFalse(b.ok)
+            self.assertIsNone(b.path)
 
 
 if __name__ == "__main__":

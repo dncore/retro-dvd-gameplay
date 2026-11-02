@@ -28,7 +28,6 @@ class Menu:
         self.fonts = theme.Fonts(size=24, path=font_path)
         self.size = size
         self.page_art_dir = page_art_dir
-        self._art_cache = {}
         self.style = style
         self.dvd_fonts = theme.Fonts(size=16, path=theme.find_simsun() or font_path)
         self._bg_cache = None
@@ -166,22 +165,6 @@ class Menu:
                 self.message = None
 
     # ---------- 渲染 ----------
-    def _load_art(self, page_no):
-        if not self.page_art_dir:
-            return None
-        if page_no in self._art_cache:
-            return self._art_cache[page_no]
-        path = os.path.join(self.page_art_dir, "ITEM%04d.png" % (page_no + 1))
-        img = None
-        if os.path.exists(path):
-            try:
-                img = pygame.image.load(path).convert()
-                img = pygame.transform.smoothscale(img, self.size)
-            except pygame.error:
-                img = None
-        self._art_cache[page_no] = img
-        return img
-
     def _background(self):
         if self._bg_cache is not None:
             return self._bg_cache
@@ -210,10 +193,16 @@ class Menu:
         if page_no in self._page_cache:
             return self._page_cache[page_no]
         img = None
-        for p in (paths.app_path("assets", "pages", "%02d.png" % page_no),
-                  paths.resource("assets", "pages", "%02d.png" % page_no),
-                  paths.app_path("assets", "menu_pages", "%02d.jpg" % page_no),
-                  paths.resource("assets", "menu_pages", "%02d.jpg" % page_no)):
+        candidates = []
+        if self.page_art_dir:
+            candidates.append(os.path.join(self.page_art_dir, "%02d.png" % page_no))
+        candidates += [
+            paths.app_path("assets", "pages", "%02d.png" % page_no),
+            paths.resource("assets", "pages", "%02d.png" % page_no),
+            paths.app_path("assets", "menu_pages", "%02d.jpg" % page_no),
+            paths.resource("assets", "menu_pages", "%02d.jpg" % page_no),
+        ]
+        for p in candidates:
             if os.path.exists(p):
                 try:
                     img = pygame.image.load(p).convert()
@@ -303,12 +292,6 @@ class Menu:
                              theme.BG_TOP, theme.BG_BOTTOM)
 
         # 如果解出了原盘页面，把它作为底纹（压低透明度当装饰）
-        art = self._load_art(self.page)
-        if art is not None:
-            ghost = art.copy()
-            ghost.fill((255, 255, 255, 60), special_flags=pygame.BLEND_RGBA_MULT)
-            surf.blit(ghost, (0, 0), special_flags=pygame.BLEND_ADD)
-
         self._draw_topbar(surf, w)
         self._draw_grid(surf, w)
         self._draw_bottom(surf, w, h)

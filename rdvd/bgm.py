@@ -44,10 +44,18 @@ class Bgm:
         self.ok = False
         self.path = None
         self.volume = 0.6
-        if dat_path and os.path.exists(dat_path):
-            self.path = self._ensure_wav(dat_path, cache_path)
-        if self.path and enabled:
+        self._dat = dat_path
+        self._cache = cache_path
+        # 关闭时不要扫描/转码，启动零开销；之后 toggle 再懒加载
+        if enabled:
+            self._load()
+
+    def _load(self):
+        if self.path is None and self._dat and os.path.exists(self._dat):
+            self.path = self._ensure_wav(self._dat, self._cache)
+        if self.path and not self.ok:
             self.ok = self._init_mixer()
+        return self.ok
 
     def _ensure_wav(self, dat, cache):
         if cache is None:
@@ -130,6 +138,7 @@ class Bgm:
     def toggle(self):
         self.enabled = not self.enabled
         if self.enabled:
+            self._load()
             self.resume()
         else:
             self.pause()

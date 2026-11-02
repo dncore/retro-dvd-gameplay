@@ -35,8 +35,9 @@ the disc's own layout and boot animation, a recreated menu, and an in-process li
 - **DVD-style menu**: 10-row single column, 16 px SimSun, orange cursor bar, and the
   disc's per-page artwork behind it; keyboard and SDL gamepad both work
 - Legacy **2×5 grid** available with `"menu_style": "grid"`
-- The disc's **22-second boot animation** (`CDI_BUM.DAT`), extracted from your own image at runtime
-- The disc's **background music**, looping in the menu
+- **Experimental**: the disc's 22-second boot animation and menu BGM. Both are off by
+  default (`boot: false`, `bgm: false`) because the disc's PES/MPEG container is
+  non-standard; enabling them can produce garbled video or noisy audio
 - **Built-in libretro host** (`rdvd/libretro.py`, `ctypes`): fceumm or Nestopia runs in-process,
   no RetroArch installation required; automatic save state on exit
 - **Game audio** mixed through the same `pygame.mixer` as the menu music (16-bit stereo,
@@ -202,13 +203,14 @@ Gamepads are hot-pluggable: connect or disconnect one at any time.
 
 | Key | Meaning |
 |---|---|
-| `disc` | Path to your `300nes_disc v1.iso`. Used for the intro and music. |
+| `disc` | Path to your `300nes_disc v1.iso`. Only read when boot/BGM is enabled. |
 | `roms` | Root directory for the NES ROM set referenced by `data/catalog.json`. |
 | `bgm_dat` | Use an already-extracted `CDI_BUM.DAT` instead of reading the ISO. |
 | `bgm_wav` | Cache path for the transcoded background music. |
-| `boot` | Play the boot animation (`true` by default). |
+| `bgm` | Experimental menu BGM. Default `false`; enabling it may produce noisy audio. |
+| `boot` | Experimental boot animation. Default `false`; enabling it may garble video. |
 | `boot_cache` | Where extracted frames and music are cached. Defaults to `~/.cache/retro-dvd-gameplay/boot`. |
-| `page_art_dir` | Legacy grid style only: directory of recovered menu pages (`ITEM0001.png` …). |
+| `page_art_dir` | Directory of page PNGs (`01.png`…`30.png`); overrides bundled `assets/menu_pages`. |
 | `menu_style` | `dvd` (default: single column + per-page artwork) or `grid` (legacy 2×5). |
 | `play_mode` | `auto` / `core` (in-process) / `external`. |
 | `core` | Explicit path to a libretro NES core. |

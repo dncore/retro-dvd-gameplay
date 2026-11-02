@@ -133,8 +133,6 @@ class PlayScreen:
         self.audio_ok = False
         self.audio_rate = 44100
         self.mixer_rate = 44100
-        self.audio_channels = []
-        self.audio_pending = bytearray()
         self._audio_keep = []
         self.audio_queued = 0
         self.audio_thread = None
@@ -370,7 +368,6 @@ class PlayScreen:
     def _init_audio(self, sample_rate):
         self._stop_audio()
         self.audio_ok = False
-        self.audio_pending = bytearray()
         self._audio_keep = []
         self.audio_queued = 0
         self.audio_rate = int(round(sample_rate or 44100))
@@ -463,7 +460,6 @@ class PlayScreen:
                 pass
         self.audio_channel = None
         self.audio_thread = None
-        self.audio_pending = bytearray()
         self.audio_ok = False
 
     def _save(self):

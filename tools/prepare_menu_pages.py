@@ -21,13 +21,6 @@ except ImportError:  # pragma: no cover
 
 # 只处理标题和 10 行正文；底部「第 N 页」和左右花纹/右侧卡通画保留
 TEXT_BOX = (80, 90, 285, 480)
-TEXT_LEVEL = 160          # 三通道都低于此值视为文字笔画
-DILATE = 2                # 覆盖抗锯齿边缘
-
-
-def _is_text(px, x, y):
-    r, g, b = px[x, y]
-    return r < TEXT_LEVEL and g < TEXT_LEVEL and b < TEXT_LEVEL
 
 
 def clean_white_background(im):
@@ -133,43 +126,6 @@ def strip_text(im, pattern=None, white_bg=False):
                 for k in range(start, end + 1):
                     px[x0 + k, y] = fallback
             xx = end + 1
-    return im
-
-
-def recolor_white_to_yellow(im, base):
-    """把与边缘连通的白色/浅灰背景换成 base 的黄底，保留封闭的白色高光"""
-    w, h = im.size
-    px = im.load()
-    bpx = base.load()
-    bg = bytearray(w * h)
-
-    def is_bg(c):
-        return min(c) > 170 and max(c) - min(c) < 40
-
-    q = deque()
-    for x in range(w):
-        for y in (0, h - 1):
-            if is_bg(px[x, y]) and not bg[y * w + x]:
-                bg[y * w + x] = 1
-                q.append((x, y))
-    for y in range(h):
-        for x in (0, w - 1):
-            if is_bg(px[x, y]) and not bg[y * w + x]:
-                bg[y * w + x] = 1
-                q.append((x, y))
-    while q:
-        x, y = q.popleft()
-        for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
-            if 0 <= nx < w and 0 <= ny < h and not bg[ny * w + nx]:
-                if is_bg(px[nx, ny]):
-                    bg[ny * w + nx] = 1
-                    q.append((nx, ny))
-    for y in range(h):
-        col = bpx[20, y]
-        row = y * w
-        for x in range(w):
-            if bg[row + x]:
-                px[x, y] = col
     return im
 
 
