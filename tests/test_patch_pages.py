@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""tools/patch_pages.py 的合成测试（不需要真实素材）"""
+"""tools/legacy/patch_pages.py 的合成测试（不需要真实素材）"""
 import json
 import os
 import tempfile
@@ -10,7 +10,7 @@ try:
 except ImportError:  # pragma: no cover - minimal installs
     raise unittest.SkipTest("Pillow is not installed")
 
-from tools.patch_pages import patch_pages
+from tools.legacy.patch_pages import patch_pages
 
 
 def make_images(d, names):

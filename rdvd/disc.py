@@ -6,11 +6,18 @@ import struct
 SECTOR = 2352
 DATA_OFF = 24
 DATA_LEN = 2048
+FORM2_LEN = 2324
+CACHE_VERSION = ".v3"
 
 
-def _sector(fh, n):
+def _raw_sector(fh, n, length=24):
+    fh.seek(n * SECTOR)
+    return fh.read(length)
+
+
+def _sector(fh, n, length=DATA_LEN):
     fh.seek(n * SECTOR + DATA_OFF)
-    return fh.read(DATA_LEN)
+    return fh.read(length)
 
 
 def _read_dir(fh, sect, length):
@@ -36,18 +43,20 @@ def _read_dir(fh, sect, length):
     return out
 
 
-def _read_file(fh, sect, length):
+def _read_file(fh, sect, length, data_len=DATA_LEN):
     out = bytearray()
     s = sect
     while len(out) < length:
-        out += _sector(fh, s)
+        out += _sector(fh, s, data_len)
         s += 1
     return bytes(out[:length])
 
 
 def extract_file(iso_path, dirname, filename, out_path):
     """把 iso 里 <dirname>/<filename> 抽到 out_path，返回字节数或 None"""
-    if os.path.exists(out_path) and os.path.getsize(out_path) > 1024:
+    marker = out_path + CACHE_VERSION
+    if (os.path.exists(out_path) and os.path.getsize(out_path) > 1024
+            and os.path.exists(marker)):
         return os.path.getsize(out_path)
     try:
         with open(iso_path, "rb") as fh:
@@ -67,10 +76,19 @@ def extract_file(iso_path, dirname, filename, out_path):
                 if flags & 2:
                     continue
                 if name.split(";")[0].upper() == filename.upper():
-                    data = _read_file(fh, ext, size)
+                    # CDI_BUM.DAT 是 Mode 2 Form 2：用户数据 2324 字节/扇区。
+                    # 目录里的 size 仍按 2048 计，所以扇区数要单独算。
+                    raw = _raw_sector(fh, ext)
+                    data_len = FORM2_LEN if (len(raw) > 18 and raw[18] & 0x20) else DATA_LEN
+                    nsec = (size + DATA_LEN - 1) // DATA_LEN
+                    data = _read_file(fh, ext, nsec * data_len, data_len)
                     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
                     with open(out_path, "wb") as out:
                         out.write(data)
+                    try:
+                        open(marker, "w").close()
+                    except OSError:
+                        pass
                     return len(data)
     except Exception:
         return None

@@ -34,6 +34,8 @@ class Menu:
         self._page_cache = {}
         self.message = None
         self._msg_timer = 0
+        self.music_on = True
+        self.music_rect = pygame.Rect(0, 0, 0, 0)
 
     # ---------- 状态 ----------
     @property
@@ -217,6 +219,9 @@ class Menu:
         return (entry.get("dvd_name") or entry.get("display")
                 or entry.get("title") or "")
 
+    def set_music(self, on):
+        self.music_on = bool(on)
+
     def _render_dvd(self, surf):
         w, h = self.size
         art = self._page_bg()
@@ -269,9 +274,9 @@ class Menu:
             surf.blit(pg, pg.get_rect(topright=(w - 24, 106)))
 
         fh = self.dvd_fonts.get(12)
-        hint = fh.render("F2 按键  Q/E 翻页  M 音乐", True,
+        hint = fh.render("F2 按键  Q/E 翻页", True,
                          (255, 255, 255) if art is not None else (110, 78, 12))
-        hr = hint.get_rect(bottomright=(w - 18, h - 10))
+        hr = hint.get_rect(bottomright=(w - 18, h - 50))
         if art is not None:
             box = hr.inflate(14, 6)
             layer = pygame.Surface(box.size, pygame.SRCALPHA)
@@ -280,6 +285,19 @@ class Menu:
             surf.blit(hint, hint.get_rect(center=box.center))
         else:
             surf.blit(hint, hr)
+
+        r = pygame.Rect(w - 152, h - 44, 120, 30)
+        self.music_rect = r
+        if self.music_on:
+            pygame.draw.rect(surf, (64, 104, 46), r, border_radius=6)
+            pygame.draw.rect(surf, (180, 220, 120), r, 1, border_radius=6)
+            label, color = "音乐 开", (245, 255, 220)
+        else:
+            pygame.draw.rect(surf, (40, 28, 18), r, border_radius=6)
+            pygame.draw.rect(surf, (130, 100, 70), r, 1, border_radius=6)
+            label, color = "音乐 关", (190, 165, 130)
+        mt = self.fonts.get(16).render(label, True, color)
+        surf.blit(mt, mt.get_rect(center=r.center))
         if self.message:
             self._draw_message(surf, w, h)
         return surf
@@ -376,9 +394,22 @@ class Menu:
         pygame.draw.rect(surf, theme.BAR_BG, bar)
         pygame.draw.line(surf, theme.BAR_LINE, (0, bar.top), (w, bar.top), 2)
         f = self.fonts.get(18)
-        hints = "方向键 选择  回车 开始  X 返回  Q/E 翻页  M 音乐  F2 按键"
+        hints = "方向键 选择  回车 开始  Q/E 翻页  F2 按键"
         t = f.render(hints, True, theme.TEXT)
         surf.blit(t, t.get_rect(midleft=(32, bar.centery)))
+
+        r = pygame.Rect(w - 154, h - 44, 122, 30)
+        self.music_rect = r
+        if self.music_on:
+            pygame.draw.rect(surf, (64, 104, 46), r, border_radius=6)
+            pygame.draw.rect(surf, (180, 220, 120), r, 1, border_radius=6)
+            label, color = "音乐 开", (245, 255, 220)
+        else:
+            pygame.draw.rect(surf, (64, 48, 36), r, border_radius=6)
+            pygame.draw.rect(surf, (130, 100, 70), r, 1, border_radius=6)
+            label, color = "音乐 关", (190, 165, 130)
+        mt = f.render(label, True, color)
+        surf.blit(mt, mt.get_rect(center=r.center))
 
     def _draw_message(self, surf, w, h):
         f = self.fonts.get(24)

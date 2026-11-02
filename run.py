@@ -199,8 +199,8 @@ def main():
     # 片头/音乐都关闭时不要解析 ISO，启动零额外开销
     disc = _abs(args.disc) if args.disc else _abs(cfg.get("disc"))
     cache_root = media_cache_dir(cfg)
-    want_boot = (not args.no_boot) and cfg.get("boot", False)
-    want_bgm = (not args.no_audio) and cfg.get("bgm", False)
+    want_boot = (not args.no_boot) and cfg.get("boot", True)
+    want_bgm = (not args.no_audio) and cfg.get("bgm", True)
     media_dat = None
     if not args.render_frames and (want_boot or want_bgm):
         media_dat = _abs(cfg.get("bgm_dat")) or resolve_disc_media(disc, cache_root)
@@ -222,6 +222,7 @@ def main():
         enabled=want_bgm,
     )
     music.play()
+    menu.set_music(music.ok)
 
     inp = InputState(bindings)
     if inp.joy:
@@ -259,6 +260,15 @@ def main():
                 clock.tick(60)
                 continue
             events = []
+
+        if not rebind.open:
+            for ev in events:
+                if (ev.type == pygame.MOUSEBUTTONDOWN and ev.button == 1
+                        and menu.music_rect.collidepoint(ev.pos)):
+                    on = music.toggle()
+                    menu.set_music(on)
+                    menu.flash("背景音乐：%s" % ("开" if on else "关"))
+                    break
 
         actions = inp.poll_events(events)
         for a in ("UP", "DOWN", "LEFT", "RIGHT"):
@@ -302,6 +312,7 @@ def main():
         for a in actions:
             if a == "TOGGLE_MUSIC":
                 on = music.toggle()
+                menu.set_music(on)
                 menu.flash("背景音乐：%s" % ("开" if on else "关"))
                 continue
             if a == "TOGGLE_FULLSCREEN":

@@ -2,7 +2,7 @@
 """DVD 名单 ID 解析测试"""
 import unittest
 
-from tools.import_dvd_names import parse_text
+from tools.legacy.import_dvd_names import parse_text
 
 
 class TestParseText(unittest.TestCase):

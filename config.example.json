@@ -3,7 +3,7 @@
   "roms": null,
   "bgm_dat": null,
   "bgm_wav": null,
-  "boot": false,
+  "boot": true,
   "boot_cache": null,
   "page_art_dir": null,
   "play_mode": "auto",
@@ -13,6 +13,6 @@
   "args": null,
   "font": null,
   "menu_style": "dvd",
-  "bgm": false,
+  "bgm": true,
   "auto_load_state": false
 }

@@ -6,7 +6,9 @@ SunPlus/Rolsen 芯片 DVD 播放器专用非标准 VCD）。
 ## English summary
 
 - The image is a raw **Mode 2 Form 1** disc: 2352-byte sectors, user data at offset 24,
-  2048 usable bytes per sector.
+  2048 usable bytes per sector. `CDI/CDI_BUM.DAT` is the exception: its sectors are
+  **Mode 2 Form 2** (2324 user bytes), so reading 2048 bytes per sector truncates every
+  PES packet and produces the classic blocky video / noisy audio.
 - `NEWROM/G001.BIN`–`G300.BIN` are NES ROMs behind a 12-byte MIPS trampoline. The jump
   target (`0x4002xxxx`) encodes the mapper; ROM data starts at `be16(bin[6:8]) + 0x61C0`.
 - `SEGMENT/ITEM0001.DAT`–`ITEM0031.DAT` are 150-sector VCD segments holding two MPEG-1
@@ -17,16 +19,17 @@ SunPlus/Rolsen 芯片 DVD 播放器专用非标准 VCD）。
   the right side smears vertically. Six decode-parameter combinations, packet
   misalignment, audio interference and the VCD/EXT `PSD`/`LOT` tables were ruled out.
 - The complete menu text is drawn by the player's OSD, not stored on the disc; recover
-  it from a real-machine recording with `tools/ocr_menu_video.py`.
-- `CDI_BUM.DAT` is not background music: it is a 22-second MPEG-1 intro (499 frames,
-  352×288), which the app plays on startup.
+  it from a real-machine recording with `tools/legacy/ocr_menu_video.py`.
+- `CDI_BUM.DAT` is the 22-second MPEG-1 intro **plus menu BGM**. It is stored as
+  Mode 2 Form 2, 1707 sectors × 2324 bytes; ffmpeg's `mpeg` demuxer decodes 568 video
+  frames and the C0 audio stream contains about 16.5 s of MP2.
 - Each `ITEM*.DAT` contains exactly one I-frame (verified across all 31 files: one
   sequence header, one GOP, one picture; several end with the `B7` sequence-end code).
   There is no later frame to wait for: the full menu text is drawn by the player's OSD,
   not stored on the disc.
 - The menu is therefore a code re-creation; recovered pages can be imported with
-  `tools/patch_pages.py`, and menu recordings can be OCR'd with
-  `tools/ocr_menu_video.py`.
+  `tools/legacy/patch_pages.py`, and menu recordings can be OCR'd with
+  `tools/legacy/ocr_menu_video.py`.
 
 ## 1. 镜像层
 
@@ -35,6 +38,8 @@ SunPlus/Rolsen 芯片 DVD 播放器专用非标准 VCD）。
 - 扇区同步头：`00 ff ff ff ff ff ff ff ff ff ff 00`
 - 用户数据起始偏移：**24**（12 同步 + 4 头 + 8 子头）
 - 每扇区有效数据 2048 字节
+- **例外**：`CDI/CDI_BUM.DAT` 的扇区是 **Mode 2 Form 2**，用户数据 **2324 字节**；
+  按 2048 读取会把每条 PES 包尾部截掉 276 字节，片头会花屏、BGM 会有噪音
 - PVD 在第 16 扇区（文件偏移 `16*2352+24 = 37656`）
 
 ```
@@ -45,7 +50,7 @@ iso_offset(sector) = sector * 2352 + 24
 
 | 目录 | 内容 |
 |---|---|
-| `CDI/` | `CDI_ALL.RTF`(全 0)、`CDI_BUM.DAT`(背景音乐)、`CDI_FONT.FNT`(点阵字库)、`CDI_VCD.APP` |
+| `CDI/` | `CDI_ALL.RTF`(全 0)、`CDI_BUM.DAT`(片头 + BGM，Form 2)、`CDI_FONT.FNT`(点阵字库)、`CDI_VCD.APP` |
 | `EXT/` | `LOT_X.VCD`、`PSD_X.VCD` |
 | `MPEGAV/` | 空 |
 | `NEWROM/` | 300 个 `G001.BIN` ~ `G300.BIN`，共 34.5 MB |
@@ -119,14 +124,14 @@ E2 的 slice 数在 31–34/36 之间，缺 slice 的位置随页面不同；ffm
 只取 E2 的 53 个包（约 107 KB）重组，`ffmpeg -f mpegvideo` 可解出一帧 704×576：
 
 ```
-python tools/decode_pages.py <iso> --outdir out/pages
+python tools/legacy/decode_pages.py <iso> --outdir out/pages
 ```
 
 E1 单独解是均匀灰色（939 字节的 PNG），没有可利用的内容。
 
 因此「完整菜单文字」不在盘上：盘上只有一张带渐变/拖影的底图，**文字由播放器的
 OSD 叠加绘制**。要拿到完整文字，只能从真机录屏里等画面稳定后取帧，用
-`tools/ocr_menu_video.py` 做 OCR。
+`tools/legacy/ocr_menu_video.py` 做 OCR。
 
 ### 试过但失败的方案
 

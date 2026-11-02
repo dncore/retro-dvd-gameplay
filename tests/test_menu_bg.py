@@ -8,7 +8,7 @@ except ImportError:  # pragma: no cover
     Image = None
 
 from tools.prepare_menu_pages import strip_text
-from tools.make_menu_bg import clean
+from tools.legacy.make_menu_bg import clean
 
 
 @unittest.skipIf(Image is None, "需要 Pillow")

@@ -1,31 +1,31 @@
-﻿slot,menu_label,source_rom,title,size
-2,1943,1943中途岛海战 汉化你妹汉化版.nes,1943,262672
-3,冒险岛,冒险岛 - Justin汉化 (CN).NES,Adventure Island,65552
-21,橄榄球,10-Yard Fight (Japan) (Rev 1).nes,10-Yard Fight,24592
-32,战场,杀戮战场 Nokoh汉化版.nes,Field Combat,49168
-38,龙战士,Dragon Unit (Japan).nes,Dragon Unit,131088
-49,飞狼,飞狼.nes,Gyrodine,49168
-59,功夫小子,YieAr功夫 (v1.0)[九班汉化](JP)[FTG](0.18Mb).nes,Yie Ar Kung-Fu,24592
-66,4人麻将,4人麻将.nes,4-nin Uchi Mahjong,24592
-72,忍者2,Ninja-kun - Majou no Bouken (Japan).nes,Ninja-kun - Majou no Bouken,24592
-74,黑白棋,黑白棋 (v1.0)[九班汉化](US)[TAB](0.31Mb).nes,Othello,40976
-79,动物小镇,Onyanko Town (Japan).nes,Onyanko Town,40976
-90,小蜜蜂2,Space Invaders (Japan).nes,Space Invaders,24592
-103,佣兵,Dough Boy (Japan).nes,Dough Boy,40976
-108,巧巧弹,Chack'n Pop (Japan).nes,Chack'n Pop,24592
-147,西游记,Son Son (Japan).nes,Son Son,40976
-155,冒险岛,冒险岛 - Justin汉化 (CN).NES,Adventure Island,65552
-161,西游记,Son Son (Japan).nes,Son Son,40976
-171,龙战士,Dragon Unit (Japan).nes,Dragon Unit,131088
-181,飞狼,飞狼.nes,Gyrodine,49168
-184,小蜜蜂2,Space Invaders (Japan).nes,Space Invaders,24592
-192,忍者2,Ninja-kun - Majou no Bouken (Japan).nes,Ninja-kun - Majou no Bouken,24592
-193,功夫小子,YieAr功夫 (v1.0)[九班汉化](JP)[FTG](0.18Mb).nes,Yie Ar Kung-Fu,24592
-198,黑白棋,黑白棋 (v1.0)[九班汉化](US)[TAB](0.31Mb).nes,Othello,40976
-207,巧巧弹,Chack'n Pop (Japan).nes,Chack'n Pop,24592
-242,佣兵,Dough Boy (Japan).nes,Dough Boy,40976
-249,橄榄球,10-Yard Fight (Japan) (Rev 1).nes,10-Yard Fight,24592
-284,动物小镇,Onyanko Town (Japan).nes,Onyanko Town,40976
-285,1943,1943中途岛海战 汉化你妹汉化版.nes,1943,262672
-295,战场,杀戮战场 Nokoh汉化版.nes,Field Combat,49168
-228,四人麻将,4人麻将.nes,4-nin Uchi Mahjong,24592
+﻿slot,menu_label,source_rom,source_rel,title,size
+2,1943,1943中途岛海战 汉化你妹汉化版.nes,_汉化\1943中途岛海战 汉化你妹汉化版.nes,1943,262672
+3,冒险岛,冒险岛 - Justin汉化 (CN).NES,_HACK\冒险岛 - Justin汉化 (CN).NES,Adventure Island,65552
+21,橄榄球,10-Yard Fight (Japan) (Rev 1).nes,_日版\10-Yard Fight (Japan) (Rev 1).nes,10-Yard Fight,24592
+32,战场,杀戮战场 Nokoh汉化版.nes,_汉化\杀戮战场 Nokoh汉化版.nes,Field Combat,49168
+38,龙战士,Dragon Unit (Japan).nes,_日版\Dragon Unit (Japan).nes,Dragon Unit,131088
+49,飞狼,飞狼.nes,_世界版\飞狼.nes,Gyrodine,49168
+59,功夫小子,YieAr功夫 (v1.0)[九班汉化](JP)[FTG](0.18Mb).nes,_汉化\YieAr功夫 (v1.0)[九班汉化](JP)[FTG](0.18Mb).nes,Yie Ar Kung-Fu,24592
+66,4人麻将,4人麻将.nes,_世界版\4人麻将.nes,4-nin Uchi Mahjong,24592
+72,忍者2,Ninja-kun - Majou no Bouken (Japan).nes,_日版\Ninja-kun - Majou no Bouken (Japan).nes,Ninja-kun - Majou no Bouken,24592
+74,黑白棋,黑白棋 (v1.0)[九班汉化](US)[TAB](0.31Mb).nes,_汉化\黑白棋 (v1.0)[九班汉化](US)[TAB](0.31Mb).nes,Othello,40976
+79,动物小镇,Onyanko Town (Japan).nes,_日版\Onyanko Town (Japan).nes,Onyanko Town,40976
+90,小蜜蜂2,Space Invaders (Japan).nes,_日版\Space Invaders (Japan).nes,Space Invaders,24592
+103,佣兵,Dough Boy (Japan).nes,_日版\Dough Boy (Japan).nes,Dough Boy,40976
+108,巧巧弹,Chack'n Pop (Japan).nes,_日版\Chack'n Pop (Japan).nes,Chack'n Pop,24592
+147,西游记,Son Son (Japan).nes,_日版\Son Son (Japan).nes,Son Son,40976
+155,冒险岛,冒险岛 - Justin汉化 (CN).NES,_HACK\冒险岛 - Justin汉化 (CN).NES,Adventure Island,65552
+161,西游记,Son Son (Japan).nes,_日版\Son Son (Japan).nes,Son Son,40976
+171,龙战士,Dragon Unit (Japan).nes,_日版\Dragon Unit (Japan).nes,Dragon Unit,131088
+181,飞狼,飞狼.nes,_世界版\飞狼.nes,Gyrodine,49168
+184,小蜜蜂2,Space Invaders (Japan).nes,_日版\Space Invaders (Japan).nes,Space Invaders,24592
+192,忍者2,Ninja-kun - Majou no Bouken (Japan).nes,_日版\Ninja-kun - Majou no Bouken (Japan).nes,Ninja-kun - Majou no Bouken,24592
+193,功夫小子,YieAr功夫 (v1.0)[九班汉化](JP)[FTG](0.18Mb).nes,_汉化\YieAr功夫 (v1.0)[九班汉化](JP)[FTG](0.18Mb).nes,Yie Ar Kung-Fu,24592
+198,黑白棋,黑白棋 (v1.0)[九班汉化](US)[TAB](0.31Mb).nes,_汉化\黑白棋 (v1.0)[九班汉化](US)[TAB](0.31Mb).nes,Othello,40976
+207,巧巧弹,Chack'n Pop (Japan).nes,_日版\Chack'n Pop (Japan).nes,Chack'n Pop,24592
+242,佣兵,Dough Boy (Japan).nes,_日版\Dough Boy (Japan).nes,Dough Boy,40976
+249,橄榄球,10-Yard Fight (Japan) (Rev 1).nes,_日版\10-Yard Fight (Japan) (Rev 1).nes,10-Yard Fight,24592
+284,动物小镇,Onyanko Town (Japan).nes,_日版\Onyanko Town (Japan).nes,Onyanko Town,40976
+285,1943,1943中途岛海战 汉化你妹汉化版.nes,_汉化\1943中途岛海战 汉化你妹汉化版.nes,1943,262672
+295,战场,杀戮战场 Nokoh汉化版.nes,_汉化\杀戮战场 Nokoh汉化版.nes,Field Combat,49168
+228,四人麻将,4人麻将.nes,_世界版\4人麻将.nes,4-nin Uchi Mahjong,24592

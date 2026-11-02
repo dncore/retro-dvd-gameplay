@@ -12,24 +12,23 @@ import subprocess
 import pygame
 
 DATA_LEN = 2048
+FORM2_LEN = 2324
 PACK_HDR = 12
 PES_HDR = 6
+CACHE_VERSION = "boot.v3"
 
 
 def extract_video(dat_path, out_m1v):
     """从 CDI_BUM.DAT 里剥出 MPEG-1 裸流"""
     with open(dat_path, "rb") as fh:
         blob = fh.read()
+    packet = FORM2_LEN if len(blob) % FORM2_LEN == 0 else DATA_LEN
+    cut = 20 if packet == FORM2_LEN else 18
     pay = bytearray()
-    first = True
-    for i in range(len(blob) // DATA_LEN):
-        s = blob[i * DATA_LEN:(i + 1) * DATA_LEN]
+    for i in range(len(blob) // packet):
+        s = blob[i * packet:(i + 1) * packet]
         if s[0:4] == b"\x00\x00\x01\xba" and s[12:16] == b"\x00\x00\x01\xe0":
-            body = s[PACK_HDR + PES_HDR:]
-            if not first and body[:2] == b"\xff\x0f":
-                body = body[2:]
-            pay += body
-            first = False
+            pay += s[cut:]
     k = pay.find(b"\x00\x00\x01\xb3")
     if k < 0:
         return None
@@ -50,10 +49,25 @@ class Boot:
             return
         os.makedirs(cache_dir, exist_ok=True)
 
+        # v3: 旧缓存是按 2048 截断的 DAT，必须整体作废
+        marker = os.path.join(cache_dir, CACHE_VERSION)
+        if not os.path.exists(marker):
+            for f in os.listdir(cache_dir):
+                if f.startswith("f") and f.endswith(".jpg"):
+                    try:
+                        os.remove(os.path.join(cache_dir, f))
+                    except OSError:
+                        pass
+            self.frames = []
+
         # 已经有解好的帧就直接用；没有才去调 ffmpeg
         if not self._load_frames(cache_dir):
             if not self._decode(dat_path, cache_dir):
                 return
+            try:
+                open(marker, "w").close()
+            except OSError:
+                pass
             self._load_frames(cache_dir)
         self.ok = len(self.frames) > 0
 
@@ -65,9 +79,29 @@ class Boot:
         return len(self.frames) > 0
 
     def _decode(self, dat_path, cache_dir):
-        """剥裸流 + ffmpeg 转 JPG 序列；失败时不留下半成品，便于下次重试"""
+        """优先让 ffmpeg 直接按 MPEG-PS 解 Form2 DAT；失败再回退裸流"""
         if not shutil.which("ffmpeg"):
             return False
+        pattern = os.path.join(cache_dir, "f%04d.jpg")
+        for f in os.listdir(cache_dir):
+            if f.startswith("f") and f.endswith(".jpg"):
+                try:
+                    os.remove(os.path.join(cache_dir, f))
+                except OSError:
+                    pass
+        try:
+            subprocess.run(
+                ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+                 "-f", "mpeg", "-i", dat_path, "-map", "0:v:0", "-an",
+                 "-fps_mode", "passthrough", "-q:v", "2", pattern],
+                check=False, timeout=300, stderr=subprocess.DEVNULL,
+            )
+        except (OSError, subprocess.SubprocessError):
+            return False
+        if self._load_frames(cache_dir):
+            return True
+
+        # 兼容旧的 2048 字节抽取或特殊容器
         m1v = os.path.join(cache_dir, "boot.m1v")
         try:
             if extract_video(dat_path, m1v) is None:

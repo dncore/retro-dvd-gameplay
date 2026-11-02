@@ -12,7 +12,23 @@ import pygame
 # MPEG-1 Layer II
 _BITRATES = [0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384, 0]
 _RATES = [44100, 48000, 32000, 0]
-_CACHE_VERSION = ".v2"
+_CACHE_VERSION = ".v3"
+
+
+def extract_audio_mp2(blob):
+    """只取 C0 音频 PES 的负载，避开视频扇区里的假 MP2 帧"""
+    packet = 2324 if len(blob) % 2324 == 0 else 2048
+    out = bytearray()
+    for i in range(len(blob) // packet):
+        s = blob[i * packet:(i + 1) * packet]
+        if s[:4] != b"\x00\x00\x01\xba" or s[12:16] != b"\x00\x00\x01\xc0":
+            continue
+        k = s.find(b"\xff\xfd", 12)
+        if k < 0:
+            continue
+        end = min(len(s), 12 + 6 + int.from_bytes(s[16:18], "big"))
+        out += s[k:end]
+    return scan_mp2(bytes(out))
 
 
 def scan_mp2(blob):
@@ -49,6 +65,8 @@ class Bgm:
         # 关闭时不要扫描/转码，启动零开销；之后 toggle 再懒加载
         if enabled:
             self._load()
+            if not self.ok:
+                self.enabled = False
 
     def _load(self):
         if self.path is None and self._dat and os.path.exists(self._dat):
@@ -69,7 +87,7 @@ class Bgm:
                 blob = fh.read()
         except OSError:
             return None
-        mp2 = scan_mp2(blob)
+        mp2 = extract_audio_mp2(blob)
         if len(mp2) < 4096:
             return None
         mp2_path = os.path.join(os.path.dirname(cache), "bgm.mp2")
@@ -136,10 +154,13 @@ class Bgm:
                 pass
 
     def toggle(self):
-        self.enabled = not self.enabled
         if self.enabled:
-            self._load()
-            self.resume()
-        else:
+            self.enabled = False
             self.pause()
-        return self.enabled
+            return False
+        self.enabled = True
+        if not self._load():
+            self.enabled = False
+            return False
+        self.resume()
+        return True

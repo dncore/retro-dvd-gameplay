@@ -35,9 +35,8 @@ the disc's own layout and boot animation, a recreated menu, and an in-process li
 - **DVD-style menu**: 10-row single column, 16 px SimSun, orange cursor bar, and the
   disc's per-page artwork behind it; keyboard and SDL gamepad both work
 - Legacy **2×5 grid** available with `"menu_style": "grid"`
-- **Experimental**: the disc's 22-second boot animation and menu BGM. Both are off by
-  default (`boot: false`, `bgm: false`) because the disc's PES/MPEG container is
-  non-standard; enabling them can produce garbled video or noisy audio
+- The disc's **22-second boot animation** and **menu BGM**, extracted from the
+  Mode 2 Form 2 `CDI_BUM.DAT`; the menu bar has a clickable music on/off switch
 - **Built-in libretro host** (`rdvd/libretro.py`, `ctypes`): fceumm or Nestopia runs in-process,
   no RetroArch installation required; automatic save state on exit
 - **Game audio** mixed through the same `pygame.mixer` as the menu music (16-bit stereo,
@@ -98,7 +97,12 @@ slots). To pick them from a local collection and lay them out as `roms/G001.nes`
 
 ```bash
 python tools/pick_roms.py --source "D:\No-Intro\NES" --out roms
+python tools/apply_rom_fixes.py --source "D:\ROMs" --roms roms
 ```
+
+`apply_rom_fixes.py` re-applies the 30 slots in `data/rom_fixes.csv` after `pick_roms`,
+so a fresh copy also gets the corrected / Chinese-translated ROMs. Its `--source` must
+contain those exact filenames, so it can point at a larger library than `pick_roms`.
 
 The tool hashes `.nes` files and the inner ROM of `.zip` archives, matches MD5 exactly,
 copies each match for every slot, rewrites `data/catalog.json`, and sets unmatched
@@ -207,8 +211,8 @@ Gamepads are hot-pluggable: connect or disconnect one at any time.
 | `roms` | Root directory for the NES ROM set referenced by `data/catalog.json`. |
 | `bgm_dat` | Use an already-extracted `CDI_BUM.DAT` instead of reading the ISO. |
 | `bgm_wav` | Cache path for the transcoded background music. |
-| `bgm` | Experimental menu BGM. Default `false`; enabling it may produce noisy audio. |
-| `boot` | Experimental boot animation. Default `false`; enabling it may garble video. |
+| `bgm` | Menu BGM. Default `true`; toggle it from the menu bar or with M. |
+| `boot` | Play the boot animation. Default `true`; set `false` to skip it. |
 | `boot_cache` | Where extracted frames and music are cached. Defaults to `~/.cache/retro-dvd-gameplay/boot`. |
 | `page_art_dir` | Directory of page PNGs (`01.png`…`30.png`); overrides bundled `assets/menu_pages`. |
 | `menu_style` | `dvd` (default: single column + per-page artwork) or `grid` (legacy 2×5). |
@@ -233,7 +237,7 @@ your ISO
   user data at offset 24.
 - `tools/build_catalog.py` matches each `GNNN.BIN` to a ROM by hashing the PRG at several
   offsets, then writes `data/catalog.json`.
-- `tools/clean_titles.py` strips No-Intro region/version/translation tags so the menu shows
+- `tools/legacy/clean_titles.py` strips No-Intro region/version/translation tags so the menu shows
   something close to what the original DVD displayed.
 - `rdvd/boot.py` peels pack/PES headers out of `CDI_BUM.DAT` and asks ffmpeg for the frames.
 - `rdvd/libretro.py` is a minimal `ctypes` frontend for the libretro API.
@@ -271,15 +275,15 @@ python tools/prepare_menu_pages.py --src menus --out assets/pages
 ### OCR from a recording
 
 The disc stores one still per page, so the fully settled menu text only exists in a
-real-machine recording. `tools/ocr_menu_video.py` waits for the transition to settle,
+real-machine recording. `tools/legacy/ocr_menu_video.py` waits for the transition to settle,
 then extracts and OCRs the stable frames:
 
 ```bash
-python tools/ocr_menu_video.py menu.mp4 --out out/menu --crop 80,100,420,80 --ocr
+python tools/legacy/ocr_menu_video.py menu.mp4 --out out/menu --crop 80,100,420,80 --ocr
 ```
 
 It uses `pytesseract` when available, otherwise the built-in Windows `zh-Hans-CN` OCR
-(`tools/win_ocr.ps1`). `stable.json` lists each frame's timestamp and parsed
+(`tools/legacy/win_ocr.ps1`). `stable.json` lists each frame's timestamp and parsed
 `N. 名称` entries.
 
 ## Known limitations

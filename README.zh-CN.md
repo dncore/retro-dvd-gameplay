@@ -34,8 +34,8 @@
 - **DVD 风格菜单**：单列 10 条、16px 宋体、橙色选中条，背后是逐页原盘画；
   键盘与 SDL 手柄都可操作
 - 旧版 **2×5 网格** 可通过 `"menu_style": "grid"` 切回
-- **实验性**：原盘 22 秒开机动画和菜单 BGM。默认关闭（`boot: false`、`bgm: false`），
-  因为盘内 PES/MPEG 容器不标准，开启后可能出现花屏或噪音
+- 原盘 **22 秒开机动画** 与 **菜单 BGM**，从 Mode 2 Form 2 的 `CDI_BUM.DAT` 提取；
+  菜单底栏有可点击的“音乐 开/关”
 - **内置 libretro 宿主**（`rdvd/libretro.py`，`ctypes` 直调）：fceumm / Nestopia
   在同一个进程里跑，不需要装 RetroArch；退出自动存档
 - **游戏音频**接进和菜单音乐同一个 `pygame.mixer`（16-bit 立体声，核心采样率不同时
@@ -93,7 +93,12 @@ No-Intro 发布的是 **DAT**（名称 + 校验值），不是 ROM。若你已�
 
 ```bash
 python tools/pick_roms.py --source "D:\No-Intro\NES" --out roms
+python tools/apply_rom_fixes.py --source "D:\ROMs" --roms roms
 ```
+
+`apply_rom_fixes.py` 会在 `pick_roms` 之后重新覆盖 `data/rom_fixes.csv` 里的 30 个槽位，
+保证新复制的一套也能得到修正后的 ROM / 汉化版。它的 `--source` 必须包含 CSV 里的
+这些文件名，所以可以指向比 `pick_roms` 更大的完整库。
 
 工具会哈希 `.nes` 和 `.zip` 里的内部 ROM，按 MD5 精确匹配，为每个槽位复制成
 `roms/G001.nes` … `G300.nes`，改写 `data/catalog.json`，未匹配的槽位置 `null`。
@@ -192,8 +197,8 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | `roms` | `data/catalog.json` 里相对路径所基于的 NES ROM 根目录。 |
 | `bgm_dat` | 直接用已抽出的 `CDI_BUM.DAT`，不再读 ISO。 |
 | `bgm_wav` | 背景音乐转码后的缓存路径。 |
-| `bgm` | 实验性菜单 BGM，默认 `false`；开启后可能是噪音。 |
-| `boot` | 实验性开机动画，默认 `false`；开启后可能花屏。 |
+| `bgm` | 菜单 BGM，默认 `true`；可在底栏按钮或 M 键切换。 |
+| `boot` | 是否播放开机动画，默认 `true`；设为 `false` 可跳过。 |
 | `boot_cache` | 片头帧与音乐的缓存目录，默认 `~/.cache/retro-dvd-gameplay/boot`。 |
 | `page_art_dir` | 菜单页 PNG 目录（`01.png`…`30.png`），会覆盖打包的 `assets/menu_pages`。 |
 | `menu_style` | `dvd`（默认：单列 + 逐页背景）/ `grid`（旧版 2×5 网格）。 |
@@ -217,7 +222,7 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 - `tools/iso9660.py` 解析非标准镜像：2352 字节/扇区、Mode 2 Form 1、用户数据偏移 24。
 - `tools/build_catalog.py` 用 PRG 多偏移哈希把每个 `GNNN.BIN` 对上 ROM，写出
   `data/catalog.json`。
-- `tools/clean_titles.py` 去掉 No-Intro 的地区 / 版本 / 汉化组标签，让菜单名接近原盘观感。
+- `tools/legacy/clean_titles.py` 去掉 No-Intro 的地区 / 版本 / 汉化组标签，让菜单名接近原盘观感。
 - `rdvd/boot.py` 从 `CDI_BUM.DAT` 里剥 pack/PES 头，再交给 ffmpeg 出帧。
 - `rdvd/libretro.py` 是一个极简的 libretro `ctypes` 前端。
 
@@ -249,15 +254,15 @@ python tools/prepare_menu_pages.py --src menus --out assets/pages
 
 ### 从录像 OCR 菜单名
 
-盘上每页只有一张静帧，完整文字只存在于真机画面里。`tools/ocr_menu_video.py` 会等
+盘上每页只有一张静帧，完整文字只存在于真机画面里。`tools/legacy/ocr_menu_video.py` 会等
 渐变结束、画面稳定后再取帧并 OCR：
 
 ```bash
-python tools/ocr_menu_video.py menu.mp4 --out out/menu --crop 80,100,420,80 --ocr
+python tools/legacy/ocr_menu_video.py menu.mp4 --out out/menu --crop 80,100,420,80 --ocr
 ```
 
 有 `pytesseract` 就用它，否则在 Windows 上调用系统自带的 `zh-Hans-CN` OCR
-（`tools/win_ocr.ps1`）。`stable.json` 会记录每帧的时间点和解析出的
+（`tools/legacy/win_ocr.ps1`）。`stable.json` 会记录每帧的时间点和解析出的
 `序号. 名称`。
 
 ## 已知限制

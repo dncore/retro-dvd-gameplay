@@ -4,7 +4,7 @@ import unittest
 
 from PIL import Image
 
-from tools.ocr_menu_video import find_stable_runs, parse_entries
+from tools.legacy.ocr_menu_video import find_stable_runs, parse_entries
 
 
 class TestParseEntries(unittest.TestCase):
