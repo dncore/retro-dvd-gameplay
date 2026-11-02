@@ -19,8 +19,8 @@ except ImportError:  # pragma: no cover
     print("需要 Pillow：pip install -r requirements-dev.txt")
     raise SystemExit(2)
 
-# 只处理标题和 10 行正文；底部「第 N 页」和花纹保留
-TEXT_BOX = (40, 90, 330, 480)
+# 只处理标题和 10 行正文；底部「第 N 页」和左右花纹边框保留
+TEXT_BOX = (68, 90, 330, 480)
 TEXT_LEVEL = 160          # 三通道都低于此值视为文字笔画
 DILATE = 2                # 覆盖抗锯齿边缘
 
@@ -30,19 +30,22 @@ def _is_text(px, x, y):
     return r < TEXT_LEVEL and g < TEXT_LEVEL and b < TEXT_LEVEL
 
 
-def strip_text(im):
+def strip_text(im, pattern=None):
     w, h = im.size
     px = im.load()
     x0, y0, x1, y1 = TEXT_BOX
     x1, y1 = min(x1, w), min(y1, h)
 
-    # 按整行（含文字区全宽）取中位数，避免只采样左侧窄条造成色块边界；
-    # 白底页会得到纯白，黄底页会得到该行的黄色，水印也一并覆盖。
+    # 用第 1 页左侧的纯背景条平铺，保留细微的黄色纹理，
+    # 又不会把第 5 页的星形边框带进文字区。
     for y in range(y0, y1):
-        vals = sorted(px[x, y] for x in range(x0, x1))
-        col = vals[len(vals) // 2]
+        if pattern is not None:
+            strip = [pattern.getpixel((x, y)) for x in range(2, 38)]
+        else:
+            strip = [px[x, y] for x in range(2, 38)]
+        n = len(strip)
         for x in range(x0, x1):
-            px[x, y] = col
+            px[x, y] = strip[(x - x0) % n]
     return im
 
 
@@ -97,9 +100,10 @@ def main(argv=None):
         if not os.path.exists(p):
             print("缺少", p)
             return 1
-        im = strip_text(Image.open(p).convert("RGB"))
+        im = Image.open(p).convert("RGB")
         if i > 1:
             im = recolor_white_to_yellow(im, base)
+        im = strip_text(im, base)
         im.save(os.path.join(args.out, "%02d.png" % i))
         n += 1
     print("处理 %d 页 -> %s" % (n, args.out))
