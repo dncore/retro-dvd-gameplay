@@ -254,7 +254,7 @@ class Menu:
             y = 175 + i * 30
             selected = (i == self.cursor)
             if selected:
-                bar = pygame.Rect(78, y - 4, 286, 26)
+                bar = pygame.Rect(78, y - 4, 210, 26)
                 pygame.draw.rect(surf, theme.CURSOR_BG, bar)
                 pygame.draw.rect(surf, (255, 205, 90), bar, 1)
 
@@ -263,7 +263,7 @@ class Menu:
             surf.blit(num, (92, y))
 
             title = self.label(e)
-            maxw = 246
+            maxw = 150
             if f.size(title)[0] > maxw:
                 while title and f.size(title + "…")[0] > maxw:
                     title = title[:-1]

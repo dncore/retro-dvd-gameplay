@@ -19,8 +19,8 @@ except ImportError:  # pragma: no cover
     print("需要 Pillow：pip install -r requirements-dev.txt")
     raise SystemExit(2)
 
-# 只处理标题和 10 行正文；底部「第 N 页」和左右花纹边框保留
-TEXT_BOX = (68, 90, 330, 480)
+# 只处理标题和 10 行正文；底部「第 N 页」和左右花纹/右侧卡通画保留
+TEXT_BOX = (80, 90, 285, 480)
 TEXT_LEVEL = 160          # 三通道都低于此值视为文字笔画
 DILATE = 2                # 覆盖抗锯齿边缘
 
@@ -30,22 +30,69 @@ def _is_text(px, x, y):
     return r < TEXT_LEVEL and g < TEXT_LEVEL and b < TEXT_LEVEL
 
 
-def strip_text(im, pattern=None):
+def strip_text(im, pattern=None, clear_white=False):
+    """只补文字笔画和浅色水印，不碰右侧卡通画/边框"""
     w, h = im.size
     px = im.load()
+    base = pattern or im
     x0, y0, x1, y1 = TEXT_BOX
     x1, y1 = min(x1, w), min(y1, h)
 
-    # 用第 1 页左侧的纯背景条平铺，保留细微的黄色纹理，
-    # 又不会把第 5 页的星形边框带进文字区。
+    # 文字区内的白色/浅灰（含 Sample 水印和灰色抗锯齿）先换成第 1 页黄底；
+    # 只处理低饱和浅色，彩色卡通画不受影响。
     for y in range(y0, y1):
-        if pattern is not None:
-            strip = [pattern.getpixel((x, y)) for x in range(2, 38)]
-        else:
-            strip = [px[x, y] for x in range(2, 38)]
-        n = len(strip)
+        bg = base.getpixel((20, y))
         for x in range(x0, x1):
-            px[x, y] = strip[(x - x0) % n]
+            c = px[x, y]
+            if min(c) > 120 and max(c) - min(c) < 40:
+                px[x, y] = bg
+
+    # 2) 找出黑色文字笔画并膨胀，覆盖抗锯齿
+    mask = [[False] * (x1 - x0) for _ in range(y1 - y0)]
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            r, g, b = px[x, y]
+            if r < 150 and g < 150 and b < 150:
+                mask[y - y0][x - x0] = True
+    dil = [row[:] for row in mask]
+    for yy in range(len(mask)):
+        for xx in range(len(mask[0])):
+            if not mask[yy][xx]:
+                continue
+            for dy in range(-2, 3):
+                for dx in range(-2, 3):
+                    ny, nx = yy + dy, xx + dx
+                    if 0 <= ny < len(mask) and 0 <= nx < len(mask[0]):
+                        dil[ny][nx] = True
+
+    # 3) 逐行在左右未遮背景间插值，只填笔画像素
+    for yy in range(len(dil)):
+        y = y0 + yy
+        row = dil[yy]
+        fallback = base.getpixel((20, y))
+        xx = 0
+        while xx < len(row):
+            if not row[xx]:
+                xx += 1
+                continue
+            start = xx
+            while xx + 1 < len(row) and row[xx + 1]:
+                xx += 1
+            end = xx
+            left = start - 1
+            right = end + 1
+            if left >= 0 and right < len(row):
+                c1 = px[x0 + left, y]
+                c2 = px[x0 + right, y]
+                span = right - left
+                for k in range(1, span):
+                    t = k / float(span)
+                    px[x0 + left + k, y] = tuple(
+                        int(c1[c] + (c2[c] - c1[c]) * t) for c in range(3))
+            else:
+                for k in range(start, end + 1):
+                    px[x0 + k, y] = fallback
+            xx = end + 1
     return im
 
 
