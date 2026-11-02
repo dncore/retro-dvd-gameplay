@@ -30,18 +30,58 @@ def _is_text(px, x, y):
     return r < TEXT_LEVEL and g < TEXT_LEVEL and b < TEXT_LEVEL
 
 
-def strip_text(im, pattern=None, clear_white=False):
+def clean_white_background(im):
+    """保留白色底，只清掉与边缘连通的水印/浅灰，不改成黄底"""
+    w, h = im.size
+    px = im.load()
+    seen = bytearray(w * h)
+    q = deque()
+
+    def is_bg(c):
+        return min(c) > 120 and max(c) - min(c) < 40
+
+    def add(x, y):
+        if 0 <= x < w and 0 <= y < h and not seen[y * w + x] and is_bg(px[x, y]):
+            seen[y * w + x] = 1
+            q.append((x, y))
+
+    for x in range(w):
+        add(x, 0)
+        add(x, h - 1)
+    for y in range(h):
+        add(0, y)
+        add(w - 1, y)
+    # 第 5/10/... 页的白色内区被星形边框围住，补几个内部种子
+    for seed in ((70, 80), (70, 300), (70, 500)):
+        add(*seed)
+    while q:
+        x, y = q.popleft()
+        for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
+            add(nx, ny)
+    for y in range(h):
+        row = y * w
+        for x in range(w):
+            if seen[row + x]:
+                px[x, y] = (255, 255, 255)
+    return im
+
+
+def strip_text(im, pattern=None, white_bg=False):
     """只补文字笔画和浅色水印，不碰右侧卡通画/边框"""
     w, h = im.size
     px = im.load()
-    base = pattern or im
+    pattern = pattern or im
     x0, y0, x1, y1 = TEXT_BOX
     x1, y1 = min(x1, w), min(y1, h)
 
-    # 文字区内的白色/浅灰（含 Sample 水印和灰色抗锯齿）先换成第 1 页黄底；
-    # 只处理低饱和浅色，彩色卡通画不受影响。
+    def bg_at(y):
+        if white_bg:
+            return (255, 255, 255)
+        return pattern.getpixel((20, y))
+
+    # 文字区内的白色/浅灰（含 Sample 水印和抗锯齿）换成该页底色
     for y in range(y0, y1):
-        bg = base.getpixel((20, y))
+        bg = bg_at(y)
         for x in range(x0, x1):
             c = px[x, y]
             if min(c) > 120 and max(c) - min(c) < 40:
@@ -69,7 +109,7 @@ def strip_text(im, pattern=None, clear_white=False):
     for yy in range(len(dil)):
         y = y0 + yy
         row = dil[yy]
-        fallback = base.getpixel((20, y))
+        fallback = bg_at(y)
         xx = 0
         while xx < len(row):
             if not row[xx]:
@@ -149,8 +189,8 @@ def main(argv=None):
             return 1
         im = Image.open(p).convert("RGB")
         if i > 1:
-            im = recolor_white_to_yellow(im, base)
-        im = strip_text(im, base)
+            im = clean_white_background(im)
+        im = strip_text(im, base, white_bg=(i > 1))
         im.save(os.path.join(args.out, "%02d.png" % i))
         n += 1
     print("处理 %d 页 -> %s" % (n, args.out))
