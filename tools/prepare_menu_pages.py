@@ -11,7 +11,6 @@
 import argparse
 import os
 import sys
-from collections import deque
 
 try:
     from PIL import Image
@@ -20,43 +19,7 @@ except ImportError:  # pragma: no cover
     raise SystemExit(2)
 
 # 只处理标题和 10 行正文；底部「第 N 页」和左右花纹/右侧卡通画保留
-TEXT_BOX = (80, 90, 285, 480)
-
-
-def clean_white_background(im):
-    """保留白色底，只清掉与边缘连通的水印/浅灰，不改成黄底"""
-    w, h = im.size
-    px = im.load()
-    seen = bytearray(w * h)
-    q = deque()
-
-    def is_bg(c):
-        return min(c) > 120 and max(c) - min(c) < 40
-
-    def add(x, y):
-        if 0 <= x < w and 0 <= y < h and not seen[y * w + x] and is_bg(px[x, y]):
-            seen[y * w + x] = 1
-            q.append((x, y))
-
-    for x in range(w):
-        add(x, 0)
-        add(x, h - 1)
-    for y in range(h):
-        add(0, y)
-        add(w - 1, y)
-    # 第 5/10/... 页的白色内区被星形边框围住，补几个内部种子
-    for seed in ((70, 80), (70, 300), (70, 500)):
-        add(*seed)
-    while q:
-        x, y = q.popleft()
-        for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
-            add(nx, ny)
-    for y in range(h):
-        row = y * w
-        for x in range(w):
-            if seen[row + x]:
-                px[x, y] = (255, 255, 255)
-    return im
+TEXT_BOX = (80, 90, 345, 480)
 
 
 def strip_text(im, pattern=None, white_bg=False):
@@ -72,15 +35,7 @@ def strip_text(im, pattern=None, white_bg=False):
             return (255, 255, 255)
         return pattern.getpixel((20, y))
 
-    # 文字区内的白色/浅灰（含 Sample 水印和抗锯齿）换成该页底色
-    for y in range(y0, y1):
-        bg = bg_at(y)
-        for x in range(x0, x1):
-            c = px[x, y]
-            if min(c) > 120 and max(c) - min(c) < 40:
-                px[x, y] = bg
-
-    # 2) 找出黑色文字笔画并膨胀，覆盖抗锯齿
+    # 找出黑色文字笔画并膨胀，覆盖抗锯齿
     mask = [[False] * (x1 - x0) for _ in range(y1 - y0)]
     for y in range(y0, y1):
         for x in range(x0, x1):
@@ -144,9 +99,23 @@ def main(argv=None):
             print("缺少", p)
             return 1
         im = Image.open(p).convert("RGB")
-        if i > 1:
-            im = clean_white_background(im)
         im = strip_text(im, base, white_bg=(i > 1))
+        # 第 27 页参考图自带的自行车条带：用同款的第 22 页原始底图
+        # 同坐标覆盖（22 页 x>=260 没有菜单文字），边缘羽化避免硬边。
+        if i == 27:
+            ref_path = os.path.join(args.src, "22.png")
+            if os.path.exists(ref_path):
+                ref = Image.open(ref_path).convert("RGB")
+                box = (260, 255, 580, 395)
+                bw, bh = box[2] - box[0], box[3] - box[1]
+                mask = Image.new("L", (bw, bh), 0)
+                mp = mask.load()
+                for yy in range(bh):
+                    for xx in range(bw):
+                        d = min(xx, yy, bw - 1 - xx, bh - 1 - yy)
+                        mp[xx, yy] = min(255, d * 255 // 12)
+                im.paste(Image.composite(ref.crop(box), im.crop(box), mask),
+                         (box[0], box[1]))
         im.save(os.path.join(args.out, "%02d.png" % i))
         n += 1
     print("处理 %d 页 -> %s" % (n, args.out))
