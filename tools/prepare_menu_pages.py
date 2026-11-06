@@ -24,14 +24,14 @@ TEXT_BOX = (80, 90, 285, 480)
 
 
 def clean_white_background(im):
-    """保留白色底，只清掉与边缘连通的水印/浅灰，不改成黄底"""
+    """只把接近纯中性灰的背景/水印刷白，肤色等有色彩倾向的像素保留"""
     w, h = im.size
     px = im.load()
     seen = bytearray(w * h)
     q = deque()
 
     def is_bg(c):
-        return min(c) > 120 and max(c) - min(c) < 40
+        return min(c) > 150 and max(c) - min(c) < 14
 
     def add(x, y):
         if 0 <= x < w and 0 <= y < h and not seen[y * w + x] and is_bg(px[x, y]):
@@ -44,13 +44,13 @@ def clean_white_background(im):
     for y in range(h):
         add(0, y)
         add(w - 1, y)
-    # 第 5/10/... 页的白色内区被星形边框围住，补几个内部种子
     for seed in ((70, 80), (70, 300), (70, 500)):
         add(*seed)
     while q:
         x, y = q.popleft()
         for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
             add(nx, ny)
+
     for y in range(h):
         row = y * w
         for x in range(w):
@@ -133,9 +133,13 @@ def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", required=True)
     ap.add_argument("--out", default=os.path.join("assets", "pages"))
+    ap.add_argument("--jpg-out", default=os.path.join("assets", "menu_pages"),
+                    help="同时输出打包用的 JPEG；传空字符串则跳过")
     args = ap.parse_args(argv)
 
     os.makedirs(args.out, exist_ok=True)
+    if args.jpg_out:
+        os.makedirs(args.jpg_out, exist_ok=True)
     base = Image.open(os.path.join(args.src, "01.png")).convert("RGB")
     n = 0
     for i in range(1, 31):
@@ -175,8 +179,13 @@ def main(argv=None):
                 im.paste(Image.composite(ref.crop(box), im.crop(box), mask),
                          (box[0], box[1]))
         im.save(os.path.join(args.out, "%02d.png" % i))
+        if args.jpg_out:
+            im.save(os.path.join(args.jpg_out, "%02d.jpg" % i),
+                    quality=92, optimize=True)
         n += 1
     print("处理 %d 页 -> %s" % (n, args.out))
+    if args.jpg_out:
+        print("打包用 JPEG -> %s" % args.jpg_out)
     return 0
 
 
