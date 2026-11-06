@@ -11,7 +11,11 @@
 | `pick_roms.py` | 按 `data/roms.csv` 的 MD5 从本地 ROM 集挑出 300 个槽位 |
 | `apply_rom_fixes.py` | 在 `pick_roms` 后应用 `data/rom_fixes.csv` 的手工修正 |
 | `rom_checksums.py` | 从 catalog + ROM 库生成 `data/roms.csv` |
-| `prepare_menu_pages.py` | 从参考菜单页去掉文字/水印，生成 `assets/menu_pages` |
+| `prepare_menu_pages.py` | 从参考菜单页去掉文字/水印，生成 `assets/pages` 和打包用 `assets/menu_pages` |
+
+生成菜单底图（一条命令同时产出 PNG 和打包 JPEG，避免两者不一致）：
+
+    python tools/prepare_menu_pages.py --src <参考页目录> --out assets/pages --jpg-out assets/menu_pages
 
 ## `tools/legacy`（一次性研究/数据整理）
 
