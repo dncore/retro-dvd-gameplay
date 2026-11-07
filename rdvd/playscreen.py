@@ -184,6 +184,8 @@ class PlayScreen:
         self._dest_size = None
         self._video = None
         self._video_depth = None
+        self._bar = None
+        self._tool_cache = {}
 
     def _make_surface(self):
         c = self.core
@@ -465,9 +467,10 @@ class PlayScreen:
         if not self.show_toolbar:
             return
         w = screen.get_width()
-        bar = pygame.Surface((w, TOOLBAR_H), pygame.SRCALPHA)
-        bar.fill((12, 10, 8, 208))
-        screen.blit(bar, (0, 0))
+        if self._bar is None or self._bar.get_width() != w:
+            self._bar = pygame.Surface((w, TOOLBAR_H), pygame.SRCALPHA)
+            self._bar.fill((12, 10, 8, 208))
+        screen.blit(self._bar, (0, 0))
         pygame.draw.line(screen, (126, 98, 40), (0, TOOLBAR_H - 1),
                          (w, TOOLBAR_H - 1))
         f = self._toolbar_font()
@@ -475,8 +478,7 @@ class PlayScreen:
             hovered = key == self._hover
             if hovered:
                 pygame.draw.rect(screen, (214, 142, 32), rect, border_radius=4)
-            label = TOOLBAR_LABELS.get(key, key)
-            surf = f.render(label, True, (20, 14, 6) if hovered else (236, 226, 200))
+            surf = self._tool_text(f, key, hovered)
             screen.blit(surf, surf.get_rect(center=rect.center))
         info = FILTER_NAMES[self.filter_mode]
         if self.speed != 1.0:
@@ -485,6 +487,16 @@ class PlayScreen:
         surf = f.render(info, True, (170, 210, 170))
         screen.blit(surf, (w - surf.get_width() - 8,
                            (TOOLBAR_H - surf.get_height()) // 2))
+
+    def _tool_text(self, font, key, hovered):
+        """按钮文字缓存：每帧只 blit，不重复渲染字形"""
+        cache_key = (key, hovered)
+        surf = self._tool_cache.get(cache_key)
+        if surf is None:
+            surf = font.render(TOOLBAR_LABELS.get(key, key), True,
+                               (20, 14, 6) if hovered else (236, 226, 200))
+            self._tool_cache[cache_key] = surf
+        return surf
 
     # ---------- 画面 ----------
     def _scanlines(self, w, h):
