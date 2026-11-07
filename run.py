@@ -248,6 +248,7 @@ def main():
         dat_path=media_dat,
         cache_path=_abs(cfg.get("bgm_wav")),
         enabled=want_bgm,
+        file_path=_abs(cfg.get("bgm_file")),
     )
     music.play()
     menu.set_music(music.ok)

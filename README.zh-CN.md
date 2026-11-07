@@ -213,6 +213,7 @@ Start / Select / 连发会跟着手柄走：Xbox 系用 `7/6`（Start/Back），
 | `roms` | `data/catalog.json` 里相对路径所基于的 NES ROM 根目录。 |
 | `bgm_dat` | 直接用已抽出的 `CDI_BUM.DAT`，不再读 ISO。 |
 | `bgm_wav` | 背景音乐转码后的缓存路径。 |
+| `bgm_file` | 用你自己的音乐文件（wav/ogg/mp3）代替盘上的配乐。 |
 | `bgm` | 菜单 BGM，默认 `true`；可在底栏按钮或 M 键切换。 |
 | `boot` | 是否播放开机动画，默认 `true`；设为 `false` 可跳过。 |
 | `boot_cache` | 片头帧与音乐的缓存目录，默认 `~/.cache/retro-dvd-gameplay/boot`。 |

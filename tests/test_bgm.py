@@ -60,6 +60,22 @@ class TestPayloadStart(unittest.TestCase):
         self.assertEqual(out[:4], header)
 
 
+class TestCustomFile(unittest.TestCase):
+    def test_file_path_override_wins_over_disc(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "custom.ogg")
+            with open(p, "wb") as fh:
+                fh.write(b"OggS")
+            dat = os.path.join(d, "CDI_BUM.DAT")
+            with open(dat, "wb") as fh:
+                fh.write(b"not audio")
+            with mock.patch("rdvd.bgm.Bgm._init_mixer", return_value=True):
+                b = Bgm(dat_path=dat, cache_path=os.path.join(d, "bgm.wav"),
+                        enabled=True, file_path=p)
+            self.assertTrue(b.ok)
+            self.assertEqual(b.path, p)
+
+
 class TestDisabledBgm(unittest.TestCase):
     def test_disabled_does_not_scan_or_transcode(self):
         with tempfile.TemporaryDirectory() as d:

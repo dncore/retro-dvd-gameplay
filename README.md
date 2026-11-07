@@ -232,6 +232,7 @@ Gamepads are hot-pluggable: connect or disconnect one at any time.
 | `roms` | Root directory for the NES ROM set referenced by `data/catalog.json`. |
 | `bgm_dat` | Use an already-extracted `CDI_BUM.DAT` instead of reading the ISO. |
 | `bgm_wav` | Cache path for the transcoded background music. |
+| `bgm_file` | Use your own music file (wav/ogg/mp3) instead of the disc's cue. |
 | `bgm` | Menu BGM. Default `true`; toggle it from the menu bar or with M. |
 | `boot` | Play the boot animation. Default `true`; set `false` to skip it. |
 | `boot_cache` | Where extracted frames and music are cached. Defaults to `~/.cache/retro-dvd-gameplay/boot`. |

@@ -124,13 +124,14 @@ def make_loop(wav_path, start=LOOP_START, end=LOOP_END, fade=LOOP_FADE):
 
 
 class Bgm:
-    def __init__(self, dat_path=None, cache_path=None, enabled=True):
+    def __init__(self, dat_path=None, cache_path=None, enabled=True, file_path=None):
         self.enabled = enabled
         self.ok = False
         self.path = None
         self.volume = 0.8
         self._dat = dat_path
         self._cache = cache_path
+        self._file = file_path
         # 关闭时不要扫描/转码，启动零开销；之后 toggle 再懒加载
         if enabled:
             self._load()
@@ -138,7 +139,10 @@ class Bgm:
                 self.enabled = False
 
     def _load(self):
-        if self.path is None and self._dat and os.path.exists(self._dat):
+        # 盘上只有片头那一条配乐；想换曲子时用 bgm_file 指一个音频文件即可
+        if self._file and os.path.exists(self._file):
+            self.path = self._file
+        elif self.path is None and self._dat and os.path.exists(self._dat):
             self.path = self._ensure_wav(self._dat, self._cache)
         if self.path and not self.ok:
             self.ok = self._init_mixer()
