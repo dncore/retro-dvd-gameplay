@@ -19,11 +19,16 @@ ROWS = PER_PAGE // COLS
 
 class Menu:
     def __init__(self, catalog, font_path=None, page_art_dir=None, size=(704, 576),
-                 style="dvd"):
+                 style="dvd", start_page=1):
         self.entries = catalog["entries"]
         self.total = len(self.entries)
         self.pages = max(1, (self.total + PER_PAGE - 1) // PER_PAGE)
-        self.page = 0
+        # 记住上次看到第几页，下次启动直接回到那一页
+        try:
+            start_page = int(start_page)
+        except (TypeError, ValueError):
+            start_page = 1
+        self.page = max(0, min(self.pages - 1, start_page - 1))
         self.cursor = 0
         self.fonts = theme.Fonts(size=24, path=font_path)
         self.size = size
@@ -49,41 +54,34 @@ class Menu:
         return None
 
     def select_page(self, page):
-        self.page = max(0, min(self.pages - 1, page))
+        """翻页；越过首尾时循环"""
+        self.page = page % max(1, self.pages)
         if self.index >= self.total:
             self.cursor = max(0, self.total - 1 - self.page * PER_PAGE)
 
     def _move_list(self, d):
-        """DVD 单列模式：上下一次一格，左右翻页"""
+        """DVD 单列模式：上下一次一格，左右翻页（到头循环）"""
         count = min(PER_PAGE, self.total - self.page * PER_PAGE)
         if d == "UP":
             if self.cursor > 0:
                 self.cursor -= 1
                 return True
-            if self.page > 0:
-                self.page -= 1
-                self.cursor = min(PER_PAGE, self.total - self.page * PER_PAGE) - 1
-                return True
-            return False
+            self.page = (self.page - 1) % self.pages
+            self.cursor = min(PER_PAGE, self.total - self.page * PER_PAGE) - 1
+            return True
         if d == "DOWN":
             if self.cursor < count - 1:
                 self.cursor += 1
                 return True
-            if self.page < self.pages - 1:
-                self.page += 1
-                self.cursor = 0
-                return True
-            return False
+            self.page = (self.page + 1) % self.pages
+            self.cursor = 0
+            return True
         if d == "LEFT":
-            if self.page > 0:
-                self.select_page(self.page - 1)
-                return True
-            return False
+            self.select_page(self.page - 1)
+            return True
         if d == "RIGHT":
-            if self.page < self.pages - 1:
-                self.select_page(self.page + 1)
-                return True
-            return False
+            self.select_page(self.page + 1)
+            return True
         return False
 
     def move(self, d):
@@ -268,7 +266,12 @@ class Menu:
             t = f.render(title, True, color)
             surf.blit(t, (126, y))
 
-        if art is None:
+        if art is not None:
+            # 页码统一由这里画：参考图里烤的「第 N 页」各页位置不一致，翻页会跳
+            pn = self.dvd_fonts.get(28).render(
+                "第 %d 页" % (self.page + 1), True, (0, 0, 0))
+            surf.blit(pn, (118, 476))
+        else:
             fp = self.dvd_fonts.get(14)
             pg = fp.render("%d/%d" % (self.page + 1, self.pages), True, (96, 62, 4))
             surf.blit(pg, pg.get_rect(topright=(w - 24, 106)))

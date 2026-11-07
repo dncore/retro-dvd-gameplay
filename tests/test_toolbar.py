@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.join(HERE, ".."))
 
 import pygame  # noqa: E402
 
-from rdvd.bindings import Bindings, joy_token  # noqa: E402
+from rdvd.bindings import Bindings, joy_token, pad_family  # noqa: E402
 from rdvd.libretro import ID_JOYPAD_A, ID_JOYPAD_B  # noqa: E402
 from rdvd.playscreen import (TOOLBAR_H, _joy_buttons,  # noqa: E402
                              PlayScreen)
@@ -54,9 +54,41 @@ class TestTurboDefaults(unittest.TestCase):
     def test_turbo_actions_are_bound_to_shoulder_buttons(self):
         b = Bindings()
         self.assertEqual(b.game_action(joy_token(4)), "TURBO_A")
-        self.assertEqual(b.game_action(joy_token(6)), "TURBO_A")
         self.assertEqual(b.game_action(joy_token(5)), "TURBO_B")
-        self.assertEqual(b.game_action(joy_token(7)), "TURBO_B")
+
+    def test_xbox_profile_uses_start_and_back(self):
+        b = Bindings()
+        b.apply_pad("xbox")
+        self.assertEqual(b.game_action(joy_token(7)), "START")
+        self.assertEqual(b.game_action(joy_token(6)), "SELECT")
+        self.assertIsNone(b.game_action(joy_token(3)))   # Y 不再退出
+
+    def test_ps_profile_uses_options_and_share(self):
+        b = Bindings()
+        b.apply_pad("ps")
+        self.assertEqual(b.game_action(joy_token(9)), "START")
+        self.assertEqual(b.game_action(joy_token(8)), "SELECT")
+        self.assertEqual(b.game_action(joy_token(6)), "TURBO_A")   # L2 也能连发
+
+    def test_switch_profile_uses_plus_and_minus(self):
+        b = Bindings()
+        b.apply_pad("switch")
+        self.assertEqual(b.game_action(joy_token(9)), "START")
+        self.assertEqual(b.game_action(joy_token(8)), "SELECT")
+
+    def test_family_detection(self):
+        self.assertEqual(pad_family("Xbox 360 Controller"), "xbox")
+        self.assertEqual(pad_family("Xbox One S Controller"), "xbox")
+        self.assertEqual(pad_family("DualSense Wireless Controller"), "ps")
+        self.assertEqual(pad_family("PS4 Controller"), "ps")
+        self.assertEqual(pad_family("Nintendo Switch Pro Controller"), "switch")
+        self.assertEqual(pad_family("USB Gamepad"), "generic")
+        self.assertEqual(pad_family(None), "generic")
+
+    def test_custom_binding_survives_pad_profile(self):
+        b = Bindings({"game": {"START": ["key:32"]}})
+        b.apply_pad("xbox")
+        self.assertEqual(b.game_action("key:32"), "START")
 
     def test_select_no_longer_collides_with_turbo(self):
         b = Bindings()

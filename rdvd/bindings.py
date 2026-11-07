@@ -65,13 +65,40 @@ DEFAULT_GAME = {
     "RIGHT": [key_token(pygame.K_RIGHT)],
     "A": [key_token(pygame.K_z), key_token(pygame.K_j), joy_token(0)],
     "B": [key_token(pygame.K_x), key_token(pygame.K_k), joy_token(1)],
-    "START": [key_token(pygame.K_RETURN), joy_token(9)],
-    "SELECT": [key_token(pygame.K_RSHIFT), joy_token(8)],
-    # 连发：4/6 与 5/7 正好覆盖三家手柄的肩键
-    #   PS  L1/L2  ·  Xbox  LB/LT  ·  Switch  L/ZL
-    "TURBO_A": [joy_token(4), joy_token(6)],
-    "TURBO_B": [joy_token(5), joy_token(7)],
+    # 通用布局：Start/Select 同时覆盖 Xbox 系（7/6）与 PS 系（9/8）
+    "START": [key_token(pygame.K_RETURN), joy_token(7), joy_token(9)],
+    "SELECT": [key_token(pygame.K_RSHIFT), joy_token(6), joy_token(8)],
+    # 连发：4/5 在三家手柄上都是左/右肩键（6/7 在 Xbox 上是 Back/Start，不能占）
+    "TURBO_A": [joy_token(4)],
+    "TURBO_B": [joy_token(5)],
 }
+
+# 不同手柄的按钮编号并不一样（SDL 的 joystick 索引）：
+#   Xbox   0=A 1=B 2=X 3=Y 4=LB 5=RB 6=Back 7=Start 8=Guide 9=L3 10=R3
+#   PS4    0=× 1=○ 2=□ 3=△ 4=L1 5=R1 6=L2 7=R2 8=Share 9=Options
+#   Switch 0=B 1=A 2=Y 3=X 4=L 5=R 6=ZL 7=ZR 8=- 9=+
+# 接上手柄后按名字选一套，免得 Xbox 的 Start(7) 被当成 PS 的 L2。
+PAD_PROFILES = {
+    "xbox": {"START": [7], "SELECT": [6], "TURBO_A": [4], "TURBO_B": [5]},
+    "ps": {"START": [9], "SELECT": [8], "TURBO_A": [4, 6], "TURBO_B": [5, 7]},
+    "switch": {"START": [9], "SELECT": [8], "TURBO_A": [4, 6], "TURBO_B": [5, 7]},
+    "generic": {"START": [7, 9], "SELECT": [6, 8],
+                "TURBO_A": [4], "TURBO_B": [5]},
+}
+
+
+def pad_family(name):
+    """按手柄名字判断系列；判断不出就用通用布局"""
+    n = (name or "").lower()
+    if "xbox" in n or "xinput" in n:
+        return "xbox"
+    if any(k in n for k in ("dualshock", "dualsense", "playstation",
+                            "ps3", "ps4", "ps5", "sony")):
+        return "ps"
+    if any(k in n for k in ("switch", "joy-con", "joycon", "pro controller",
+                            "nintendo")):
+        return "switch"
+    return "generic"
 
 DEFAULTS = {"menu": DEFAULT_MENU, "game": DEFAULT_GAME}
 ACTIONS = {"menu": MENU_ACTIONS, "game": GAME_ACTIONS}
@@ -113,6 +140,7 @@ def parse_token(token):
 
 class Bindings:
     def __init__(self, data=None):
+        self._custom = set()
         self.menu = self._merge("menu", data)
         self.game = self._merge("game", data)
         self._rebuild()
@@ -127,7 +155,23 @@ class Bindings:
                                if isinstance(t, str) and t.split(":", 1)[0] in ("key", "joy")]
                     if cleaned:
                         out[action] = cleaned
+                        self._custom.add(action)
         return out
+
+    def apply_pad(self, family):
+        """按手柄系列替换 Start/Select/连发；用户自己改过的动作不动"""
+        profile = PAD_PROFILES.get(family) or PAD_PROFILES["generic"]
+        changed = False
+        for action, buttons in profile.items():
+            if action in self._custom:
+                continue
+            keys = [t for t in self.game[action] if t.startswith("key:")]
+            new = keys + [joy_token(b) for b in buttons]
+            if new != self.game[action]:
+                self.game[action] = new
+                changed = True
+        if changed:
+            self._rebuild()
 
     def _rebuild(self):
         self._reverse = {}
@@ -163,6 +207,7 @@ class Bindings:
             if other != action and token in tokens:
                 tokens.remove(token)
         table[action] = [token]
+        self._custom.add(action)      # 手动改过就不再被手柄系列默认值覆盖
         self._rebuild()
 
     def reset(self, scope, action=None):

@@ -35,7 +35,8 @@
   键盘与 SDL 手柄都可操作
 - 旧版 **2×5 网格** 可通过 `"menu_style": "grid"` 切回
 - 原盘 **22 秒开机动画** 与 **菜单 BGM**，从 Mode 2 Form 2 的 `CDI_BUM.DAT` 提取；
-  菜单底栏有可点击的“音乐 开/关”
+  菜单底栏有可点击的“音乐 开/关”。盘上只有这一条配乐（片头视频的伴音），所以菜单
+  循环的是它中段，接缝做了交叉淡化，不会每 22 秒“咚”一下从头重来
 - **内置 libretro 宿主**（`rdvd/libretro.py`，`ctypes` 直调）：fceumm / Nestopia
   在同一个进程里跑，不需要装 RetroArch；退出自动存档
 - **游戏音频**接进和菜单音乐同一个 `pygame.mixer`（16-bit 立体声，核心采样率不同时
@@ -170,15 +171,20 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | 十字键 | 方向键 | 十字键 / 左摇杆 |
 | NES A | Z / J | A（下方键） |
 | NES B | X / K | B（右侧键） |
-| Start | 回车 | Start / Plus / Menu |
+| Start | 回车 | Start / Options / Plus |
 | Select | 右 Shift | View / Share / Minus |
-| A 连发 | — | L1 或 L2（Xbox LB/LT、Switch L/ZL） |
-| B 连发 | — | R1 或 R2（Xbox RB/RT、Switch R/ZR） |
-| 回菜单（自动存档） | Esc / F12 | Y / △ / X |
+| A 连发 | — | LB / L1 / L（PS、Switch 上 L2/ZL 也行） |
+| B 连发 | — | RB / R1 / R（PS、Switch 上 R2/ZR 也行） |
+| 回菜单（自动存档） | Esc / F12 | Start + Select 同时按 |
 | 存档 / 读档 | F5 / F7 | 点顶部工具条 |
 | 删除当前存档 | F8 | — |
 | 滤镜：清晰 / 平滑 / 扫描线 / CRT | F3 | 点顶部工具条 |
 | 减速 / 加速（非 1x 静音） | F4 / F6 | 点顶部工具条 |
+
+Start / Select / 连发会跟着手柄走：Xbox 系用 `7/6`（Start/Back），PS 系用 `9/8`
+（Options/Share），Switch 系用 `9/8`（Plus/Minus）；系列按手柄名字判断，认不出来时
+用一套兼容两家编号的布局。在 F2 里手动改过的动作优先于这套默认值。
+
 
 游戏画面顶部那条细窄条是工具条：**存档 / 读档 / 滤镜 / 减速 / 加速 / 返回菜单** 都能
 直接点，右侧显示当前滤镜和实时帧率。连发键和别的动作一样可以在 F2 的按键设置里改。
@@ -212,6 +218,7 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | `boot_cache` | 片头帧与音乐的缓存目录，默认 `~/.cache/retro-dvd-gameplay/boot`。 |
 | `page_art_dir` | 菜单页 PNG 目录（`01.png`…`30.png`），会覆盖打包的 `assets/menu_pages`。 |
 | `menu_style` | `dvd`（默认：单列 + 逐页背景）/ `grid`（旧版 2×5 网格）。 |
+| `menu_page` | 上次停留的页码，程序自动写入，下次启动直接回到这一页。 |
 | `play_mode` | `auto` / `core`（进程内）/ `external`。 |
 | `core` | 显式指定 libretro NES 核心路径。 |
 | `state_dir` | 存档目录。 |

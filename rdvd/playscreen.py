@@ -310,9 +310,8 @@ class PlayScreen:
                     elif action:
                         self._toolbar_action(action)
                 elif ev.type == pygame.JOYBUTTONDOWN:
-                    # 手柄上留一个固定退出键（Y / △ / X），连发键不再兼作存档
-                    if ev.button == 3:
-                        running = False
+                    # 不占用任何面板键：要退出请按 Start+Select（见下面的组合键）
+                    pass
 
             if not running:
                 break
@@ -325,6 +324,11 @@ class PlayScreen:
                 if act in ACTION_IDS:
                     buttons.add(ACTION_IDS[act])
             buttons |= _joy_buttons(joy, self.bindings, turbo_phase)
+            # 手柄退出：Start+Select 同时按（各家手柄通用，且不占面板键）
+            if ID_JOYPAD_START in buttons and ID_JOYPAD_SELECT in buttons:
+                self._osd("Start+Select 返回菜单")
+                running = False
+                break
             self.core.set_buttons(buttons)
 
             self.core.run_frame()

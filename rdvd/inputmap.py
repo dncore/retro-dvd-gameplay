@@ -11,7 +11,7 @@
 """
 import pygame
 
-from .bindings import Bindings, joy_token, key_token
+from .bindings import Bindings, joy_token, key_token, pad_family
 
 HATMAP = {
     (0, 1): "UP",
@@ -70,6 +70,9 @@ class InputState:
                 except pygame.error:
                     pass
         self.joy = best
+        if best is not None:
+            # 同一套 joy: 编号在不同手柄上含义不同，按系列换一套默认值
+            self.bindings.apply_pad(pad_family(best.get_name()))
 
     @property
     def joy_name(self):

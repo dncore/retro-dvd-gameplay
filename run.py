@@ -34,6 +34,30 @@ def load_config(path):
     return {}
 
 
+def save_config_value(path, key, value):
+    """只改 config.json 里的一个字段，其余原样保留"""
+    data = {}
+    if path and os.path.exists(path):
+        try:
+            with open(path, encoding="utf-8") as fh:
+                data = json.load(fh)
+        except (OSError, ValueError):
+            data = {}
+    if not isinstance(data, dict):
+        data = {}
+    if data.get(key) == value:
+        return
+    data[key] = value
+    try:
+        tmp = path + ".tmp"
+        with open(tmp, "w", encoding="utf-8", newline="\n") as fh:
+            json.dump(data, fh, ensure_ascii=False, indent=2)
+            fh.write("\n")
+        os.replace(tmp, path)
+    except OSError:
+        pass
+
+
 def default_catalog():
     """优先用 exe/仓库旁的 data/catalog.json，否则用打包进资源的副本"""
     local = paths.app_path("data", "catalog.json")
@@ -193,7 +217,8 @@ def main():
     art_dir = _abs(cfg.get("page_art_dir"))
 
     menu = Menu(catalog, font_path=_abs(cfg.get("font")), page_art_dir=art_dir,
-                size=size, style=cfg.get("menu_style", "dvd"))
+                size=size, style=cfg.get("menu_style", "dvd"),
+                start_page=cfg.get("menu_page", 1))
     rebind = RebindScreen(bindings, menu.fonts, size)
 
     # 片头/音乐都关闭时不要解析 ISO，启动零额外开销
@@ -202,6 +227,9 @@ def main():
     want_boot = (not args.no_boot) and cfg.get("boot", True)
     want_bgm = (not args.no_audio) and cfg.get("bgm", True)
     media_dat = None
+    # 手柄要在片头之前初始化：否则 pygame 不会派发 JOYBUTTONDOWN，
+    # 片头就只能用键盘跳过
+    inp = InputState(bindings)
     if not args.render_frames and (want_boot or want_bgm):
         media_dat = _abs(cfg.get("bgm_dat")) or resolve_disc_media(disc, cache_root)
         if want_boot and media_dat:
@@ -224,7 +252,6 @@ def main():
     music.play()
     menu.set_music(music.ok)
 
-    inp = InputState(bindings)
     if inp.joy:
         menu.flash("手柄: %s" % inp.joy_name, frames=180)
     clock = pygame.time.Clock()
@@ -233,6 +260,7 @@ def main():
     axis_repeat = 0
     last_dir_action = None
     last_dir_ms = 0
+    last_page = menu.page
 
     while running:
         events = pygame.event.get()
@@ -359,6 +387,12 @@ def main():
         pygame.display.flip()
         clock.tick(60)
 
+        # 记住看到第几页：退出游戏回到原页，下次启动也从这里开始
+        if menu.page != last_page:
+            last_page = menu.page
+            save_config_value(config_path, "menu_page", menu.page + 1)
+
+    save_config_value(config_path, "menu_page", menu.page + 1)
     pygame.quit()
     return 0
 

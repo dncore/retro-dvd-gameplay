@@ -33,10 +33,13 @@ the disc's own layout and boot animation, a recreated menu, and an in-process li
 - **Chinese menu names for all 300 slots**, transcribed from the original menu list (obvious
   typos corrected); the catalog keeps the English ROM titles as a fallback
 - **DVD-style menu**: 10-row single column, 16 px SimSun, orange cursor bar, and the
-  disc's per-page artwork behind it; keyboard and SDL gamepad both work
+  disc's per-page artwork behind it; keyboard and SDL gamepad both work. Paging wraps
+  around (last → first, first → last) and the current page is remembered across runs.
 - Legacy **2×5 grid** available with `"menu_style": "grid"`
 - The disc's **22-second boot animation** and **menu BGM**, extracted from the
-  Mode 2 Form 2 `CDI_BUM.DAT`; the menu bar has a clickable music on/off switch
+  Mode 2 Form 2 `CDI_BUM.DAT`; the menu bar has a clickable music on/off switch.
+  The disc only carries one cue (the boot movie's soundtrack), so the menu loops its
+  middle section with a crossfaded seam instead of hitting the intro stab every 22 s
 - **Built-in libretro host** (`rdvd/libretro.py`, `ctypes`): fceumm or Nestopia runs in-process,
   no RetroArch installation required; automatic save state on exit
 - **Game audio** mixed through the same `pygame.mixer` as the menu music (16-bit stereo,
@@ -184,15 +187,20 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | D-pad | Arrow keys | D-pad / left stick |
 | NES A | Z / J | A (bottom) |
 | NES B | X / K | B (right) |
-| Start | Enter | Start / Plus / Menu |
+| Start | Enter | Start / Options / Plus |
 | Select | Right Shift | View / Share / Minus |
-| Turbo A (auto-fire) | — | L1 or L2 (LB/LT, L/ZL) |
-| Turbo B (auto-fire) | — | R1 or R2 (RB/RT, R/ZR) |
-| Back to menu (auto-save) | Esc / F12 | Y / △ / X |
+| Turbo A (auto-fire) | — | LB / L1 / L (and L2 / ZL on PS, Switch) |
+| Turbo B (auto-fire) | — | RB / R1 / R (and R2 / ZR on PS, Switch) |
+| Back to menu (auto-save) | Esc / F12 | Start + Select together |
 | Save / load state | F5 / F7 | toolbar |
 | Delete current save state | F8 | — |
 | Filter: sharp / smooth / scanlines / CRT | F3 | toolbar |
 | Speed down / up (non-1x is muted) | F4 / F6 | toolbar |
+
+Start/Select/turbo follow the pad in your hands: an Xbox pad gets `7/6` (Start/Back), a
+PS pad `9/8` (Options/Share), a Switch pad `9/8` (Plus/Minus); the family is guessed from
+the controller name and anything unknown falls back to a layout that covers both.
+Rebinding an action on the F2 screen wins over the profile.
 
 The thin bar across the top of the game window is a toolbar, not a hint: **存档 / 读档 /
 滤镜 / 减速 / 加速 / 返回菜单** are all clickable, the right side shows the active filter
@@ -229,6 +237,7 @@ Gamepads are hot-pluggable: connect or disconnect one at any time.
 | `boot_cache` | Where extracted frames and music are cached. Defaults to `~/.cache/retro-dvd-gameplay/boot`. |
 | `page_art_dir` | Directory of page PNGs (`01.png`…`30.png`); overrides bundled `assets/menu_pages`. |
 | `menu_style` | `dvd` (default: single column + per-page artwork) or `grid` (legacy 2×5). |
+| `menu_page` | Last page you were on; written by the app and restored on the next start. |
 | `play_mode` | `auto` / `core` (in-process) / `external`. |
 | `core` | Explicit path to a libretro NES core. |
 | `state_dir` | Where save states are written. |
