@@ -17,7 +17,8 @@ MENU_ACTIONS = [
     "UP", "DOWN", "LEFT", "RIGHT", "CONFIRM", "BACK",
     "PAGE_PREV", "PAGE_NEXT", "TOGGLE_MUSIC", "TOGGLE_FULLSCREEN",
 ]
-GAME_ACTIONS = ["UP", "DOWN", "LEFT", "RIGHT", "A", "B", "START", "SELECT"]
+GAME_ACTIONS = ["UP", "DOWN", "LEFT", "RIGHT", "A", "B", "START", "SELECT",
+                "TURBO_A", "TURBO_B"]
 
 MENU_LABELS = {
     "UP": "上", "DOWN": "下", "LEFT": "左", "RIGHT": "右",
@@ -29,6 +30,7 @@ GAME_LABELS = {
     "UP": "十字键 上", "DOWN": "十字键 下",
     "LEFT": "十字键 左", "RIGHT": "十字键 右",
     "A": "A 键", "B": "B 键", "START": "Start", "SELECT": "Select",
+    "TURBO_A": "A 连发（L1/L2）", "TURBO_B": "B 连发（R1/R2）",
 }
 
 
@@ -62,9 +64,13 @@ DEFAULT_GAME = {
     "LEFT": [key_token(pygame.K_LEFT)],
     "RIGHT": [key_token(pygame.K_RIGHT)],
     "A": [key_token(pygame.K_z), key_token(pygame.K_j), joy_token(0)],
-    "B": [key_token(pygame.K_x), key_token(pygame.K_k), joy_token(1), joy_token(2)],
-    "START": [key_token(pygame.K_RETURN), joy_token(9), joy_token(7)],
-    "SELECT": [key_token(pygame.K_RSHIFT), joy_token(3), joy_token(6)],
+    "B": [key_token(pygame.K_x), key_token(pygame.K_k), joy_token(1)],
+    "START": [key_token(pygame.K_RETURN), joy_token(9)],
+    "SELECT": [key_token(pygame.K_RSHIFT), joy_token(8)],
+    # 连发：4/6 与 5/7 正好覆盖三家手柄的肩键
+    #   PS  L1/L2  ·  Xbox  LB/LT  ·  Switch  L/ZL
+    "TURBO_A": [joy_token(4), joy_token(6)],
+    "TURBO_B": [joy_token(5), joy_token(7)],
 }
 
 DEFAULTS = {"menu": DEFAULT_MENU, "game": DEFAULT_GAME}

@@ -41,6 +41,12 @@ the disc's own layout and boot animation, a recreated menu, and an in-process li
   no RetroArch installation required; automatic save state on exit
 - **Game audio** mixed through the same `pygame.mixer` as the menu music (16-bit stereo,
   linearly resampled when the core's rate differs from the mixer's)
+- **In-game toolbar** across the top: save / load / filter / speed / back, all clickable,
+  with the filter name and live frame rate on the right
+- **Turbo A/B** on the shoulder buttons by default (PS L1/L2, Xbox LB/LT, Switch L/ZL),
+  remappable like every other action
+- **CRT filter** (scanlines, aperture-grille mask, vignette) alongside sharp, smooth and
+  plain scanline modes
 - Optional fallback to an external emulator (RetroArch, FCEUX, Mesen, Nestopia)
 - Headless renderer for exporting UI screenshots
 
@@ -176,15 +182,22 @@ dist\retro-dvd-gameplay\retro-dvd-gameplay.exe --check
 | Action | Keyboard | Gamepad |
 |---|---|---|
 | D-pad | Arrow keys | D-pad / left stick |
-| NES A | Z / J | A |
-| NES B | X / K | B |
-| Start | Enter | Start |
-| Select | Right Shift | Y |
-| Back to menu (auto-save) | Esc / F12 | Back |
-| Save / load state | F5 / F7 | LB / RB |
+| NES A | Z / J | A (bottom) |
+| NES B | X / K | B (right) |
+| Start | Enter | Start / Plus / Menu |
+| Select | Right Shift | View / Share / Minus |
+| Turbo A (auto-fire) | — | L1 or L2 (LB/LT, L/ZL) |
+| Turbo B (auto-fire) | — | R1 or R2 (RB/RT, R/ZR) |
+| Back to menu (auto-save) | Esc / F12 | Y / △ / X |
+| Save / load state | F5 / F7 | toolbar |
 | Delete current save state | F8 | — |
-| Filter: sharp / smooth / scanlines | F3 | — |
-| Speed down / up (non-1x is muted) | F4 / F6 | — |
+| Filter: sharp / smooth / scanlines / CRT | F3 | toolbar |
+| Speed down / up (non-1x is muted) | F4 / F6 | toolbar |
+
+The thin bar across the top of the game window is a toolbar, not a hint: **存档 / 读档 /
+滤镜 / 减速 / 加速 / 返回菜单** are all clickable, the right side shows the active filter
+and the measured frame rate. Turbo buttons are remappable on the F2 screen like any
+other action.
 
 The game writes a save state when you leave it. By default the next launch starts
 fresh and shows “save found, F7 to load”; press F7 to resume, or set

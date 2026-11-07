@@ -6,13 +6,17 @@
     Z / J / 手柄 A            → NES A
     X / K / 手柄 B            → NES B
     回车 / 手柄 Start         → START
-    右Shift / 手柄 Y          → SELECT
+    右Shift / 手柄 View       → SELECT
+    L1/L2（Xbox LB/LT、Switch L/ZL） → A 连发
+    R1/R2（Xbox RB/RT、Switch R/ZR） → B 连发
     ESC / 手柄 Back           → 退出回菜单（同时存档）
-    F5 / 手柄 LB              → 立即存档
-    F7 / 手柄 RB              → 读档
+    F5 / 手柄 4              → 立即存档
+    F7 / 手柄 5              → 读档
     F8                        → 删除当前存档
-    F3                        → 滤镜：清晰 / 平滑 / 扫描线
+    F3                        → 滤镜：清晰 / 平滑 / 扫描线 / CRT
     F4 / F6                   → 减速 / 加速（非 1x 静音）
+
+顶部窄条也可以直接用鼠标点。
 """
 import array
 import hashlib
@@ -44,7 +48,13 @@ ACTION_IDS = {
 
 AUDIO_CHANNELS = 6          # 每块约 85ms，合计约 510ms 缓冲
 AUDIO_CHUNK_FRAMES = 4096   # 48kHz 下约 85ms
-FILTER_NAMES = ("清晰", "平滑", "扫描线")
+FILTER_NAMES = ("清晰", "平滑", "扫描线", "CRT")
+TOOLBAR_H = 26              # 顶部工具条高度
+TURBO_HOLD = 2              # 连发：每 2 帧通、2 帧断 -> 约 15Hz
+TOOLBAR_LABELS = {
+    "save": "存档 F5", "load": "读档 F7", "filter": "滤镜 F3",
+    "slower": "减速 F4", "faster": "加速 F6", "back": "返回菜单 Esc",
+}
 
 
 def _state_filename(rom_path):
@@ -82,8 +92,14 @@ def _resample_pcm16(raw, src_rate, dst_rate):
     return out.tobytes()
 
 
-def _joy_buttons(joy, bindings):
+def _joy_buttons(joy, bindings, turbo_phase=0):
+    """读手柄：十字键/摇杆 + 已绑定按钮 + 连发
+
+    turbo_phase 为 0 时连发键按下即通，为 1 时断开，由主循环按帧切换，
+    所以按住 L1 的 A 连发就是约 15Hz 的点按。
+    """
     out = set()
+    turbo = set()
     if not joy:
         return out
     try:
@@ -113,8 +129,15 @@ def _joy_buttons(joy, bindings):
             act = bindings.game_action(joy_token(b))
             if act in ACTION_IDS:
                 out.add(ACTION_IDS[act])
+            elif act in ("TURBO_A", "TURBO_B"):
+                turbo.add(act)
     except pygame.error:
         pass
+    if not turbo_phase:
+        if "TURBO_A" in turbo:
+            out.add(ID_JOYPAD_A)
+        if "TURBO_B" in turbo:
+            out.add(ID_JOYPAD_B)
     return out
 
 
@@ -148,6 +171,19 @@ class PlayScreen:
         self.hint_font = None
         self._scan_cache = None
         self._scan_size = None
+        self.show_toolbar = True
+        self._btn_rects = []
+        self._hover = -1
+        self._fps = 0.0
+        self._fps_frames = 0
+        self._fps_t0 = time.perf_counter()
+        self._frame_index = 0
+        self._crt_cache = None
+        self._crt_size = None
+        self._dest = None
+        self._dest_size = None
+        self._video = None
+        self._video_depth = None
 
     def _make_surface(self):
         c = self.core
@@ -161,8 +197,13 @@ class PlayScreen:
 
         # 直接用原生 16bpp Surface：SDL 的默认掩码正好是 RGB565 / RGB555，
         # 把裸数据写进 buffer 比逐像素 Python 循环快两个数量级。
+        # 复用同一块 Surface，避免每帧新建对象带来的抖动。
         depth = 16 if c.pixel_format == PIXEL_RGB565 else 15
-        surf = pygame.Surface((w, h), 0, depth)
+        if (self._video is None or self._video.get_size() != (w, h)
+                or self._video_depth != depth):
+            self._video = pygame.Surface((w, h), 0, depth)
+            self._video_depth = depth
+        surf = self._video
         raw = c.frame
         row = w * 2
         if len(raw) < row * h:
@@ -219,6 +260,8 @@ class PlayScreen:
         running = True
         reason = "back"
         self.hint_timer = 360
+        self._btn_rects = self._toolbar_layout(w)
+        t_next = time.perf_counter()
 
         while running:
             for ev in pygame.event.get():
@@ -249,46 +292,71 @@ class PlayScreen:
                         PlayScreen._filter_mode = self.filter_mode
                         self._osd("滤镜: %s" % FILTER_NAMES[self.filter_mode])
                     elif ev.key == pygame.K_F4:
-                        self.speed = max(0.5, round(self.speed - 0.25, 2))
-                        PlayScreen._speed = self.speed
-                        self._osd("速度: %.2fx%s" % (
-                            self.speed, "" if self.speed == 1.0 else "（静音）"))
+                        self._change_speed(-0.25)
                     elif ev.key == pygame.K_F6:
-                        self.speed = min(2.0, round(self.speed + 0.25, 2))
-                        PlayScreen._speed = self.speed
-                        self._osd("速度: %.2fx%s" % (
-                            self.speed, "" if self.speed == 1.0 else "（静音）"))
+                        self._change_speed(0.25)
                     else:
                         keys.add(ev.key)
                 elif ev.type == pygame.KEYUP:
                     keys.discard(ev.key)
-                elif ev.type == pygame.JOYBUTTONDOWN:
-                    if ev.button == 8:
+                elif ev.type == pygame.MOUSEMOTION:
+                    self._hover = self._hit_toolbar(ev.pos)
+                elif ev.type == pygame.MOUSEBUTTONDOWN and ev.button == 1:
+                    action = self._hit_toolbar(ev.pos)
+                    if action == "back":
                         running = False
-                    elif ev.button == 4:
-                        self._osd("已存档" if self._save() else "存档失败")
-                    elif ev.button == 5:
-                        self._osd("已读档" if self._load() else "没有存档")
+                    elif action:
+                        self._toolbar_action(action)
+                elif ev.type == pygame.JOYBUTTONDOWN:
+                    # 手柄上留一个固定退出键（Y / △ / X），连发键不再兼作存档
+                    if ev.button == 3:
+                        running = False
 
+            if not running:
+                break
+
+            # 连发：按住连发键时每 TURBO_HOLD 帧通一次
+            turbo_phase = 1 if (self._frame_index // TURBO_HOLD) % 2 else 0
             buttons = set()
             for k in keys:
                 act = self.bindings.game_action(key_token(k))
                 if act in ACTION_IDS:
                     buttons.add(ACTION_IDS[act])
-            buttons |= _joy_buttons(joy, self.bindings)
+            buttons |= _joy_buttons(joy, self.bindings, turbo_phase)
             self.core.set_buttons(buttons)
 
-            if not running:
-                break
             self.core.run_frame()
             self._pump_audio()
             surf = self._make_surface()
             if surf:
                 self._draw_frame(screen, surf)
-                self._draw_hint(screen)
+                self._draw_toolbar(screen)
                 self._draw_osd(screen)
                 pygame.display.flip()
-            clock.tick(max(1, int(round(fps * self.speed))))
+                self._frame_index += 1
+
+            # 绝对时间推进：目标帧率取自核心（60.0998 这类非整数也能跟住），
+            # 落后超过 4 帧就重置，避免慢机器上一直追不上而滚雪球。
+            period = 1.0 / max(1.0, fps * self.speed)
+            t_next += period
+            now = time.perf_counter()
+            if now - t_next > period * 4:
+                t_next = now
+            delay = t_next - now
+            if delay > 0.002:
+                time.sleep(delay - 0.0015)
+                while time.perf_counter() < t_next:
+                    pass
+            elif delay > 0:
+                while time.perf_counter() < t_next:
+                    pass
+
+            self._fps_frames += 1
+            if now - self._fps_t0 >= 0.5:
+                self._fps = self._fps_frames / (now - self._fps_t0)
+                self._fps_frames = 0
+                self._fps_t0 = now
+
             if max_frames is not None:
                 max_frames -= 1
                 if max_frames <= 0:
@@ -329,40 +397,150 @@ class PlayScreen:
         screen.blit(text, (x + 8, y + 4))
         self.osd_timer -= 1
 
-    def _draw_hint(self, screen):
-        if self.hint_timer <= 0:
-            return
+    # ---------- 顶部工具条 ----------
+    TOOLBAR_ITEMS = (
+        ("save", "存档", "F5"),
+        ("load", "读档", "F7"),
+        ("filter", "滤镜", "F3"),
+        ("slower", "减速", "F4"),
+        ("faster", "加速", "F6"),
+        ("back", "返回菜单", "Esc"),
+    )
+
+    def _toolbar_font(self):
         if self.hint_font is None:
             path = theme.find_simsun()
             try:
-                self.hint_font = (pygame.font.Font(path, 16) if path
-                                  else pygame.font.Font(None, 16))
+                self.hint_font = (pygame.font.Font(path, 15) if path
+                                  else pygame.font.Font(None, 15))
             except OSError:
-                self.hint_font = pygame.font.Font(None, 16)
-        text = "F3 滤镜   F4/F6 速度   F5/F7 存档/读档   Esc 返回"
-        surf = self.hint_font.render(text, True, (255, 255, 255))
-        bg = pygame.Surface((screen.get_width(), surf.get_height() + 8),
-                            pygame.SRCALPHA)
-        bg.fill((0, 0, 0, 150))
-        screen.blit(bg, (0, 0))
-        screen.blit(surf, ((screen.get_width() - surf.get_width()) // 2, 4))
-        self.hint_timer -= 1
+                self.hint_font = pygame.font.Font(None, 15)
+        return self.hint_font
+
+    def _toolbar_layout(self, width):
+        """按文字宽度排一行按钮，窄窗口时自动收紧间距"""
+        f = self._toolbar_font()
+        rects = []
+        x = 6
+        for key, label, hotkey in self.TOOLBAR_ITEMS:
+            text = f.render("%s %s" % (label, hotkey), True, (255, 255, 255))
+            w = text.get_width() + 16
+            if x + w > width - 90:      # 给右侧 fps 留位置
+                break
+            rects.append((key, pygame.Rect(x, 3, w, TOOLBAR_H - 6)))
+            x += w + 4
+        return rects
+
+    def _hit_toolbar(self, pos):
+        if not self.show_toolbar:
+            return None
+        for key, rect in self._btn_rects:
+            if rect.collidepoint(pos):
+                return key
+        return None
+
+    def _toolbar_action(self, key):
+        if key == "save":
+            ok = self._save()
+            self._skip_save = not ok
+            self._osd("已存档" if ok else "存档失败")
+        elif key == "load":
+            self._osd("已读档" if self._load() else "没有存档")
+        elif key == "filter":
+            self.filter_mode = (self.filter_mode + 1) % len(FILTER_NAMES)
+            PlayScreen._filter_mode = self.filter_mode
+            self._osd("滤镜: %s" % FILTER_NAMES[self.filter_mode])
+        elif key == "slower":
+            self._change_speed(-0.25)
+        elif key == "faster":
+            self._change_speed(0.25)
+
+    def _change_speed(self, delta):
+        self.speed = min(2.0, max(0.5, round(self.speed + delta, 2)))
+        PlayScreen._speed = self.speed
+        self._osd("速度: %.2fx%s" % (
+            self.speed, "" if self.speed == 1.0 else "（静音）"))
+
+    def _draw_toolbar(self, screen):
+        if not self.show_toolbar:
+            return
+        w = screen.get_width()
+        bar = pygame.Surface((w, TOOLBAR_H), pygame.SRCALPHA)
+        bar.fill((12, 10, 8, 208))
+        screen.blit(bar, (0, 0))
+        pygame.draw.line(screen, (126, 98, 40), (0, TOOLBAR_H - 1),
+                         (w, TOOLBAR_H - 1))
+        f = self._toolbar_font()
+        for key, rect in self._btn_rects:
+            hovered = key == self._hover
+            if hovered:
+                pygame.draw.rect(screen, (214, 142, 32), rect, border_radius=4)
+            label = TOOLBAR_LABELS.get(key, key)
+            surf = f.render(label, True, (20, 14, 6) if hovered else (236, 226, 200))
+            screen.blit(surf, surf.get_rect(center=rect.center))
+        info = FILTER_NAMES[self.filter_mode]
+        if self.speed != 1.0:
+            info += " %.2fx" % self.speed
+        info += "  %.1f fps" % self._fps
+        surf = f.render(info, True, (170, 210, 170))
+        screen.blit(surf, (w - surf.get_width() - 8,
+                           (TOOLBAR_H - surf.get_height()) // 2))
+
+    # ---------- 画面 ----------
+    def _scanlines(self, w, h):
+        if self._scan_cache is None or self._scan_size != (w, h):
+            ov = pygame.Surface((w, h), pygame.SRCALPHA)
+            for y in range(0, h, 3):
+                pygame.draw.line(ov, (0, 0, 0, 90), (0, y), (w, y))
+            self._scan_cache = ov
+            self._scan_size = (w, h)
+        return self._scan_cache
+
+    def _crt_overlay(self, w, h):
+        """CRT 叠加层：荫罩条纹 + 扫描线 + 暗角
+
+        按 crt-easymode 的取向做（锐利、无过曝 bloom、开销低），
+        一次性生成后每帧只是一次 blit。
+        """
+        if self._crt_cache is not None and self._crt_size == (w, h):
+            return self._crt_cache
+        ov = pygame.Surface((w, h), pygame.SRCALPHA)
+        for x in range(0, w - 2, 3):
+            pygame.draw.line(ov, (255, 70, 70, 24), (x, 0), (x, h))
+            pygame.draw.line(ov, (70, 255, 70, 24), (x + 1, 0), (x + 1, h))
+            pygame.draw.line(ov, (70, 70, 255, 24), (x + 2, 0), (x + 2, h))
+        for y in range(0, h, 3):
+            pygame.draw.line(ov, (0, 0, 0, 96), (0, y), (w, y))
+        # 暗角：在 1/8 尺寸上算好再放大，省掉整屏 Python 循环
+        vw, vh = max(8, w // 8), max(8, h // 8)
+        vig = pygame.Surface((vw, vh), pygame.SRCALPHA)
+        cx, cy = (vw - 1) / 2.0, (vh - 1) / 2.0
+        max_d = (cx * cx + cy * cy) ** 0.5 or 1.0
+        for yy in range(vh):
+            for xx in range(vw):
+                dx, dy = xx - cx, yy - cy
+                d = (dx * dx + dy * dy) ** 0.5 / max_d
+                a = int(max(0.0, d - 0.55) / 0.45 * 130)
+                if a:
+                    vig.set_at((xx, yy), (0, 0, 0, a))
+        ov.blit(pygame.transform.smoothscale(vig, (w, h)), (0, 0))
+        self._crt_cache = ov
+        self._crt_size = (w, h)
+        return ov
 
     def _draw_frame(self, screen, surf):
         w, h = screen.get_size()
-        if self.filter_mode == 1:
-            scaled = pygame.transform.smoothscale(surf, (w, h))
+        if self._dest is None or self._dest.get_size() != (w, h):
+            self._dest = pygame.Surface((w, h)).convert()
+        if self.filter_mode == 0:
+            pygame.transform.scale(surf, (w, h), self._dest)
         else:
-            scaled = pygame.transform.scale(surf, (w, h))
-        screen.blit(scaled, (0, 0))
+            pygame.transform.smoothscale(surf, (w, h), self._dest)
+        screen.blit(self._dest, (0, 0))
         if self.filter_mode == 2:
-            if self._scan_cache is None or self._scan_size != (w, h):
-                ov = pygame.Surface((w, h), pygame.SRCALPHA)
-                for y in range(0, h, 3):
-                    pygame.draw.line(ov, (0, 0, 0, 90), (0, y), (w, y))
-                self._scan_cache = ov
-                self._scan_size = (w, h)
-            screen.blit(self._scan_cache, (0, 0))
+            screen.blit(self._scanlines(w, h), (0, 0))
+        elif self.filter_mode == 3:
+            screen.blit(self._crt_overlay(w, h), (0, 0))
 
     # ---------- 音频 ----------
     def _init_audio(self, sample_rate):
