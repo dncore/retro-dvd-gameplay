@@ -12,7 +12,14 @@ import pygame
 # MPEG-1 Layer II
 _BITRATES = [0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384, 0]
 _RATES = [44100, 48000, 32000, 0]
-_CACHE_VERSION = ".v4"
+_CACHE_VERSION = ".v5"
+
+# 这张盘只有一条音频轨（CDI_BUM.DAT 里那段 22 秒的片头配乐）：
+# 0.0-2.4s 是一个重击前排，19s 又是一个收尾重击，直接整段循环会「咚一下重来」。
+# 所以掐掉头尾，只留中间的律动段，并在接缝处做等功率交叉淡入淡出。
+LOOP_START = 3.0
+LOOP_END = 18.8
+LOOP_FADE = 0.9
 
 
 def _payload_start(s):
@@ -72,12 +79,56 @@ def scan_mp2(blob):
     return bytes(out)
 
 
+def make_loop(wav_path, start=LOOP_START, end=LOOP_END, fade=LOOP_FADE):
+    """把一段配乐裁成可无缝循环的片段（等功率交叉淡化接缝）
+
+    盘上唯一的音频是片头配乐：开头有重击、结尾有收束，整段循环会听出「从头
+    再来一遍」。这里只取中间段，并把尾巴淡进开头，循环点就听不出来了。
+    """
+    import array
+    import math
+    import wave
+
+    with wave.open(wav_path, "rb") as fh:
+        rate = fh.getframerate()
+        channels = fh.getnchannels()
+        width = fh.getsampwidth()
+        raw = fh.readframes(fh.getnframes())
+    if width != 2 or channels != 2:
+        return False
+    pcm = array.array("h")
+    pcm.frombytes(raw)
+    a = int(start * rate)
+    b = int(end * rate)
+    f = int(fade * rate)
+    if b - a <= 2 * f or b * 2 > len(pcm):
+        return False
+    body = pcm[a * 2:b * 2]
+    keep = len(body) - f * 2
+    out = array.array("h", body[:keep])
+    for i in range(f):
+        # 等功率：sin/cos 让两段的和接近恒定
+        t = (i + 0.5) / f
+        wi = math.sin(t * math.pi / 2.0)
+        wo = math.cos(t * math.pi / 2.0)
+        head = i * 2
+        tail = keep + i * 2
+        for c in range(2):
+            out[head + c] = int(body[head + c] * wi + body[tail + c] * wo)
+    with wave.open(wav_path, "wb") as fh:
+        fh.setnchannels(2)
+        fh.setsampwidth(2)
+        fh.setframerate(rate)
+        fh.writeframes(out.tobytes())
+    return True
+
+
 class Bgm:
     def __init__(self, dat_path=None, cache_path=None, enabled=True):
         self.enabled = enabled
         self.ok = False
         self.path = None
-        self.volume = 0.6
+        self.volume = 0.8
         self._dat = dat_path
         self._cache = cache_path
         # 关闭时不要扫描/转码，启动零开销；之后 toggle 再懒加载
@@ -121,6 +172,11 @@ class Bgm:
         except Exception:
             return None
         if os.path.exists(cache) and os.path.getsize(cache) > 1024:
+            # 片头配乐掐头去尾做成无缝循环，否则菜单里每隔 22 秒「咚」一下从头开始
+            try:
+                make_loop(cache)
+            except Exception:
+                pass
             try:
                 open(marker, "w").close()
             except OSError:
