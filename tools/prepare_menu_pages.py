@@ -23,43 +23,98 @@ except ImportError:  # pragma: no cover
 TEXT_BOX = (80, 90, 285, 480)
 
 
-def clean_white_background(im):
-    """只把接近纯中性灰的背景/水印刷白，肤色等有色彩倾向的像素保留"""
+def flatten_background(im):
+    """把背景刷成这一页自己的底色，并吃掉紧贴背景的浅灰残影
+
+    参考页底色是 ~235 的浅灰，不是纯白。以前直接刷 255，没被泛洪吃掉的
+    浅灰（水印残影、JPEG 振铃）就变成白底上的噪点。这里改为：
+
+    1. 从边缘泛洪，只认真正中性的像素（有色彩倾向的肤色等一律不动）；
+    2. 取泛洪区域的中位色作为该页底色；
+    3. 再向外吸收几圈「灰但不白」的像素，把残影并进背景；
+    4. 统一刷成这个底色。
+
+    纯白（>=250）保留：那是画里的高光、手套、眼镜片。
+    返回处理后的图和底色。
+    """
     w, h = im.size
     px = im.load()
-    seen = bytearray(w * h)
+    bg = bytearray(w * h)
     q = deque()
 
     def is_bg(c):
-        return min(c) > 150 and max(c) - min(c) < 14
+        return min(c) > 150 and max(c) - min(c) < 14 and c[0] - c[1] < 6
 
-    def add(x, y):
-        if 0 <= x < w and 0 <= y < h and not seen[y * w + x] and is_bg(px[x, y]):
-            seen[y * w + x] = 1
+    def pale(c):
+        return 130 < min(c) and max(c) < 250 and max(c) - min(c) < 26 and c[0] - c[1] < 6
+
+    def push(x, y):
+        if 0 <= x < w and 0 <= y < h and not bg[y * w + x] and is_bg(px[x, y]):
+            bg[y * w + x] = 1
             q.append((x, y))
 
     for x in range(w):
-        add(x, 0)
-        add(x, h - 1)
+        push(x, 0)
+        push(x, h - 1)
     for y in range(h):
-        add(0, y)
-        add(w - 1, y)
+        push(0, y)
+        push(w - 1, y)
+    # 5/10/… 页的白色内区被星形边框围住，补几个内部种子
     for seed in ((70, 80), (70, 300), (70, 500)):
-        add(*seed)
+        push(*seed)
     while q:
         x, y = q.popleft()
         for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
-            add(nx, ny)
+            push(nx, ny)
+
+    # 底色 = 泛洪区域的中位色（隔点抽样，避免整页排序）
+    hist = [[0] * 256 for _ in range(3)]
+    total = 0
+    for y in range(0, h, 2):
+        row = y * w
+        for x in range(0, w, 2):
+            if bg[row + x]:
+                r, g, b = px[x, y]
+                hist[0][r] += 1
+                hist[1][g] += 1
+                hist[2][b] += 1
+                total += 1
+    if total > 500:
+        target = []
+        for ch in range(3):
+            acc = 0
+            value = 235
+            for v in range(256):
+                acc += hist[ch][v]
+                if acc * 2 >= total:
+                    value = v
+                    break
+            target.append(value)
+        target = tuple(target)
+    else:
+        target = (235, 235, 235)
+
+    # 向外吸收 4 圈浅灰残影（只吃灰、不吃白）
+    for _ in range(4):
+        nxt = deque()
+        while q:
+            x, y = q.popleft()
+            for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
+                if 0 <= nx < w and 0 <= ny < h and not bg[ny * w + nx] \
+                        and pale(px[nx, ny]):
+                    bg[ny * w + nx] = 1
+                    nxt.append((nx, ny))
+        q = nxt
 
     for y in range(h):
         row = y * w
         for x in range(w):
-            if seen[row + x]:
-                px[x, y] = (255, 255, 255)
-    return im
+            if bg[row + x]:
+                px[x, y] = target
+    return im, target
 
 
-def strip_text(im, pattern=None, white_bg=False):
+def strip_text(im, pattern=None, bg_color=None):
     """只补文字笔画和浅色水印，不碰右侧卡通画/边框"""
     w, h = im.size
     px = im.load()
@@ -68,8 +123,8 @@ def strip_text(im, pattern=None, white_bg=False):
     x1, y1 = min(x1, w), min(y1, h)
 
     def bg_at(y):
-        if white_bg:
-            return (255, 255, 255)
+        if bg_color is not None:
+            return bg_color
         return pattern.getpixel((20, y))
 
     # 文字区内的白色/浅灰（含 Sample 水印和抗锯齿）换成该页底色
@@ -141,6 +196,7 @@ def main(argv=None):
     if args.jpg_out:
         os.makedirs(args.jpg_out, exist_ok=True)
     base = Image.open(os.path.join(args.src, "01.png")).convert("RGB")
+    targets = {}
     n = 0
     for i in range(1, 31):
         p = os.path.join(args.src, "%02d.png" % i)
@@ -148,11 +204,13 @@ def main(argv=None):
             print("缺少", p)
             return 1
         im = Image.open(p).convert("RGB")
+        bg = None
         if i > 1:
-            im = clean_white_background(im)
-        im = strip_text(im, base, white_bg=(i > 1))
-        # 参考图文字实际排到 x≈345，旧文字框只到 285；这几处是白底上的
-        # 孤立残字，直接补白，避免放宽整块文字区再次产生拖影。
+            im, bg = flatten_background(im)
+            targets[i] = bg
+        im = strip_text(im, base, bg_color=bg)
+        # 参考图文字实际排到 x≈345，旧文字框只到 285；这几处是背景上的
+        # 孤立残字，直接补底色，避免放宽整块文字区再次产生拖影。
         patches = {
             13: [(285, 205, 322, 245)],
             14: [(278, 205, 312, 245)],
@@ -161,13 +219,21 @@ def main(argv=None):
             25: [(266, 316, 300, 372)],
         }
         for box in patches.get(i, ()):
-            im.paste((255, 255, 255), box)
+            im.paste(bg or (255, 255, 255), box)
         # 第 27 页参考图自带自行车条带/水印。第 7 页是同一张底图且已清理，
         # 直接用它的 x>=285 区域整块覆盖，只羽化左边接缝。
         if i == 27:
             ref_path = os.path.join(args.out, "07.png")
             if os.path.exists(ref_path):
                 ref = Image.open(ref_path).convert("RGB")
+                # 两页各自算出的底色可能差一两级，先统一，免得接缝出现竖带
+                t7 = targets.get(7)
+                if t7 and bg and t7 != bg:
+                    rp = ref.load()
+                    for yy in range(ref.size[1]):
+                        for xx in range(ref.size[0]):
+                            if rp[xx, yy] == t7:
+                                rp[xx, yy] = bg
                 w, h = im.size
                 box = (285, 0, w, h)
                 bw, bh = box[2] - box[0], box[3] - box[1]
