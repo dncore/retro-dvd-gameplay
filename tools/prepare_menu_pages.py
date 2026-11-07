@@ -21,6 +21,40 @@ except ImportError:  # pragma: no cover
 
 # 只处理标题和 10 行正文；底部「第 N 页」和左右花纹/右侧卡通画保留
 TEXT_BOX = (80, 90, 285, 480)
+# 参考图把「第 N 页」烤进了画面，而且每页的坐标都不一样，翻页时页码会跳。
+# 这里整块抹掉（按行取左侧底色填），改由菜单在固定坐标重绘。
+PAGE_NO_BOX = (114, 476, 252, 510)
+# 第 1 页是黄底，页码位置更高，而且再往下就是橙色边框，得单独给一个框
+PAGE_NO_BOX_FIRST = (114, 450, 252, 500)
+
+
+def erase_page_number(im, box=PAGE_NO_BOX):
+    """抹掉参考图里烤死的「第 N 页」
+
+    逐行取框内"非笔画"像素的中位色再整行填：白底页得到纯底色，黄底页
+    顺着每行的黄颜色走，不会留下方框或渐变接缝。
+    """
+    x0, y0, x1, y1 = box
+    px = im.load()
+    last = None
+    for y in range(y0, y1):
+        vals = []
+        for x in range(x0, x1):
+            c = px[x, y]
+            if sum(c) > 180:                    # 跳过字形（近黑）和抗锯齿边
+                vals.append(c)
+        if len(vals) * 5 >= (x1 - x0):          # 至少 20% 可用
+            med = []
+            for ch in range(3):
+                col = sorted(v[ch] for v in vals)
+                med.append(col[len(col) // 2])
+            last = tuple(med)
+        fill = last
+        if fill is None:
+            continue
+        for x in range(x0, x1):
+            px[x, y] = fill
+    return im
 
 
 def flatten_background(im):
@@ -184,6 +218,24 @@ def strip_text(im, pattern=None, bg_color=None):
     return im
 
 
+def erase_dark_specks(im, box, limit=320):
+    """把框里残留的深色小点（被切断的字脚）换成同一行的底色
+
+    limit 是"算深色"的亮度上限：黄底约 453、橙边框约 340，取 320 只吃字脚。
+    """
+    x0, y0, x1, y1 = box
+    px = im.load()
+    for y in range(y0, y1):
+        vals = [px[x, y] for x in range(x0, x1) if sum(px[x, y]) > limit]
+        if not vals:
+            continue
+        med = tuple(sorted(v[ch] for v in vals)[len(vals) // 2] for ch in range(3))
+        for x in range(x0, x1):
+            if sum(px[x, y]) <= limit:
+                px[x, y] = med
+    return im
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", required=True)
@@ -209,6 +261,12 @@ def main(argv=None):
             im, bg = flatten_background(im)
             targets[i] = bg
         im = strip_text(im, base, bg_color=bg)
+        # 参考图的页码位置每页都不一样，统一抹掉由菜单重画
+        im = erase_page_number(
+            im, PAGE_NO_BOX_FIRST if i == 1 else PAGE_NO_BOX)
+        if i == 1:
+            # 第 1 页的字脚压在橙色边框上，抹完再清一遍残留的黑点
+            im = erase_dark_specks(im, (114, 494, 252, 512))
         # 参考图文字实际排到 x≈345，旧文字框只到 285；这几处是背景上的
         # 孤立残字，直接补底色，避免放宽整块文字区再次产生拖影。
         patches = {
