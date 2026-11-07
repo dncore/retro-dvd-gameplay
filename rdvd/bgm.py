@@ -12,22 +12,40 @@ import pygame
 # MPEG-1 Layer II
 _BITRATES = [0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384, 0]
 _RATES = [44100, 48000, 32000, 0]
-_CACHE_VERSION = ".v3"
+_CACHE_VERSION = ".v4"
+
+
+def _payload_start(s):
+    """MPEG-1 PES 头的负载起点
+
+    18-19 是 STD buffer，20 起是可选的 PTS/DTS 标记：只有 PTS 时占 5 字节，
+    PTS+DTS 占 10 字节，都没有时 20 是 stuffing 长度。以前用 find(b"\\xff\\xfd")
+    猜帧头，碰到跨包的续帧就会把整帧丢掉，音频每包断一次。
+    """
+    marker = s[20] & 0xF0
+    if marker == 0x20:
+        return 25
+    if marker == 0x30:
+        return 30
+    return 21 + s[20]
 
 
 def extract_audio_mp2(blob):
-    """只取 C0 音频 PES 的负载，避开视频扇区里的假 MP2 帧"""
+    """只取 C0 音频 PES 的负载，避开视频扇区里的假 MP2 帧
+
+    按 PES 头长度一刀切、不猜帧边界：一个 MP2 帧经常横跨两个包，只有把每包
+    负载原样接起来，帧链才是连续的。断开一帧就会在解码后听到一次爆音。
+    """
     packet = 2324 if len(blob) % 2324 == 0 else 2048
     out = bytearray()
     for i in range(len(blob) // packet):
         s = blob[i * packet:(i + 1) * packet]
         if s[:4] != b"\x00\x00\x01\xba" or s[12:16] != b"\x00\x00\x01\xc0":
             continue
-        k = s.find(b"\xff\xfd", 12)
-        if k < 0:
-            continue
-        end = min(len(s), 12 + 6 + int.from_bytes(s[16:18], "big"))
-        out += s[k:end]
+        length = int.from_bytes(s[16:18], "big")
+        end = min(len(s), 18 + length) if length else len(s)
+        start = min(_payload_start(s), end)
+        out += s[start:end]
     return scan_mp2(bytes(out))
 
 
@@ -113,7 +131,9 @@ class Bgm:
     def _init_mixer(self):
         try:
             if not pygame.mixer.get_init():
-                pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=1024)
+                # 4096 采样点 ≈ 93ms：翻页时要解一张 704×576 的 JPEG，
+                # 缓冲太小会被这次卡顿打断成爆音
+                pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
             pygame.mixer.music.load(self.path)
             pygame.mixer.music.set_volume(self.volume)
             return True
